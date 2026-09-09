@@ -1,9 +1,18 @@
-import Image from "next/image";
+import DashboardHomeIndex from '@/modules/dashboard';
+import { Metadata, NextPage } from 'next'
 
-export default function Home() {
+export const metadata: Metadata = {
+  title: "Dashboard - InstantConnect",
+  description: "Welcome back, Admin. InstantConnect overview and quick metrics.",
+};
+
+const Home: NextPage = () => {
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      {/*  */}
-    </div>
+    <>
+      <DashboardHomeIndex />
+    </>
   );
 }
+
+export default Home
