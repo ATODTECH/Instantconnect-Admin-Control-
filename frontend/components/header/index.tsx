@@ -15,7 +15,7 @@ const HeaderIndex = ({icons}: HeaderProps) => {
 
   const nav = [
     {name:"Dashboard", route:"/", icon:LayoutDashboard},
-    {name:"User", route:"", icon:Users},
+    {name:"User", route:"/users", icon:Users},
     {name:"KYC Verifications", route:"", icon:FileText},
     {name:"Live Connections", route:"", icon:LiveConnections},
     {name:"Events", route:"", icon:Calendar},

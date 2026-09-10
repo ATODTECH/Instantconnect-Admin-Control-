@@ -18,7 +18,12 @@
   --color-secondary-green-500: #22C55E;
   --color-neutral-white: #FFFFFF;
   --color-neutral-light-300: #83818E;
+  --color-neutral-light-400: #4F4E59;
+  --color-neutral-light-500: #2B2A31;
   --color-neutral-light-600: #141417;
+  --color-primary-border: #E2E8F0;
+  --color-purple-light-600: #9333EA;
+  --color-bg-purple-light-200: #FAF5FF;
 }
 
 @media (prefers-color-scheme: dark) {
