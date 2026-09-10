@@ -22,7 +22,7 @@ const FooterIndex = ({icons, image}: FooterProps) => {
         <span className=" font-semibold text-sm text-primary">Kola Adebayo</span>
         <span className=" font-normal text-xs text-[#64748B]">Super Admin</span>
       </div>
-      <footerIcon.icon size={18} className={" text-[#64748B] hover:text-red-600 cursor-pointer"} />
+      <footerIcon.icon role="button" size={18} className={" text-[#64748B] hover:text-red-600 cursor-pointer"} onClick={()=>alert("coming soon!")} />
     </footer>
   )
 }

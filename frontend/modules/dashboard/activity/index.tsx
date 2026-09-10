@@ -89,7 +89,7 @@ const ActivityIndex = () => {
   Pending: "text-[#FB923C] bg-[#FFF7ED]",
   Completed: "text-[#A855F7] bg-[#FAF5FF]",
   Successful: "text-[#22C55E] bg-[#F0FDF4]",
-  Rejected: "text-red-500 bg-red-500/5",
+  Rejected: "bg-[#F9E3E3] text-[#991B1B]",
 };
 
   function relativeTimestamp(offsetMinutes: number) {
@@ -108,7 +108,7 @@ const ActivityIndex = () => {
     <>
       <div className="flex items-center justify-between px-6">
         <h3 className="  font-bold text-base text-neutral-light-600">Recent Activity</h3>
-        <button type="submit" className="flex gap-x-2 hover:underline hover:underline-offset-3 cursor-pointer items-center text-[#9333EA] hover:text-violet-700">
+        <button type="submit" className="flex gap-x-2 hover:underline hover:underline-offset-3 cursor-pointer items-center text-purple-light-600 hover:text-violet-700" onClick={()=>alert("coming soon!")}>
           <span className="text-[.8125rem] font-semibold">View all activity</span>
           <ArrowRight size={14} className=" h-3.5 w-3.5" />
         </button>
@@ -154,7 +154,7 @@ const ActivityIndex = () => {
                 </td>
                 <td className="py-3 pr-6">
                   <span
-                    className={`text-xs font-medium py-1 px-2 rounded-md ${STATUS_STYLES[row.status]}`}
+                    className={`text-xs font-semibold py-1 px-2 rounded-md ${STATUS_STYLES[row.status]}`}
                   >
                     {row.status}
                   </span>
