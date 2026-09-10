@@ -1,5 +1,8 @@
+"use client"
+
 import { ActivityRow, ActivityStatus } from "@/types/dashboard";
 import { ArrowRight } from "lucide-react"
+import { useState } from "react";
 
 
 
@@ -40,9 +43,39 @@ const ACTIVITY_TEMPLATES: Omit<ActivityRow, "id" | "date">[] = [
     action: "Created new event 'Business Networking'",
     status: "Rejected",
   },
+  {
+    userName: "Kadijat Yusuf",
+    userEmail: "kadijat.y@gmail.com",
+    avatarSeed: "kadijat",
+    action: "Submitted KYC verification documents",
+    status: "Completed",
+  },
+  {
+    userName: "Taiwo Williams",
+    userEmail: "taiwo@gmail.com",
+    avatarSeed: "taiwo",
+    action: "Upgraded subscription to 'Organizer Pro'",
+    status: "Completed",
+  },
+  {
+    userName: "Zainab Balogun",
+    userEmail: "zainab@gmail.com",
+    avatarSeed: "zainab",
+    action: "Registered on the platform",
+    status: "Successful",
+  },
+  {
+    userName: "Tunde Kekere-Ekun",
+    userEmail: "tunde@gmail.com",
+    avatarSeed: "tunde",
+    action: "Created new event 'Business Networking'",
+    status: "Successful",
+  },
 ];
 
 const ActivityIndex = () => {
+  const [showAll, setShowAll] = useState<boolean>(false)
+
 
   function formatRelativeDate(iso: string) {
     const date = new Date(iso);
@@ -85,30 +118,32 @@ const ActivityIndex = () => {
   ];
 
   const STATUS_STYLES: Record<ActivityStatus, string> = {
-  Approved: "text-[#22C55E] bg-[#F0FDF4]",
-  Pending: "text-[#FB923C] bg-[#FFF7ED]",
-  Completed: "text-[#A855F7] bg-[#FAF5FF]",
-  Successful: "text-[#22C55E] bg-[#F0FDF4]",
-  Rejected: "bg-[#F9E3E3] text-[#991B1B]",
-};
+    Approved: "text-[#22C55E] bg-[#F0FDF4]",
+    Pending: "text-[#FB923C] bg-[#FFF7ED]",
+    Completed: "text-[#A855F7] bg-[#FAF5FF]",
+    Successful: "text-[#22C55E] bg-[#F0FDF4]",
+    Rejected: "bg-[#F9E3E3] text-[#991B1B]",
+  };
 
   function relativeTimestamp(offsetMinutes: number) {
     const d = new Date(Date.now() - offsetMinutes * 60_000);
     return d.toISOString();
   }
+
   const recentActivity: ActivityRow[] = ACTIVITY_TEMPLATES.map(
     (template, i) => ({
       ...template,
       id: `${template.avatarSeed}-${i}`,
       date: relativeTimestamp(i === 0 ? 0 : i * 90 + Math.round(Math.random() * 30)),
     })
-  );
+  )
+  const visibleItems = showAll? recentActivity: recentActivity.slice(0, 5)
 
   return (
     <>
       <div className="flex items-center justify-between px-6">
         <h3 className="  font-bold text-base text-neutral-light-600">Recent Activity</h3>
-        <button type="submit" className="flex gap-x-2 hover:underline hover:underline-offset-3 cursor-pointer items-center text-purple-light-600 hover:text-violet-700" onClick={()=>alert("coming soon!")}>
+        <button type="submit" className="flex gap-x-2 hover:underline hover:underline-offset-3 cursor-pointer items-center text-purple-light-600 hover:text-violet-700" onClick={()=>setShowAll(true)}>
           <span className="text-[.8125rem] font-semibold">View all activity</span>
           <ArrowRight size={14} className=" h-3.5 w-3.5" />
         </button>
@@ -124,7 +159,7 @@ const ActivityIndex = () => {
             </tr>
           </thead>
           <tbody>
-            {recentActivity.map((row, i) => (
+            {visibleItems.map((row, i) => (
               <tr
                 key={row.id}
                 className="border-t border-slate-100 text-sm"

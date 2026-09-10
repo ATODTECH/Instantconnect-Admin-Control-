@@ -1,37 +1,47 @@
 "use client"
 
-import { useState, useMemo, useRef, useEffect, MouseEventHandler } from "react";
-import { ChevronDown, Download, MoreHorizontal, ChevronLeft, ChevronRight, Check, ArrowLeft, ArrowRight, Ellipsis } from "lucide-react";
+import { useState, useMemo, useRef, useEffect } from "react";
+import { ChevronDown, Download, MoreHorizontal, Check, ArrowLeft, ArrowRight, Ellipsis, CircleXIcon, ShieldAlert, MessageSquare, Ban } from "lucide-react";
 import { KycStatus, Plan, Status } from "@/types/users";
 import { useQuery } from "@/components/topbar";
 
+
 interface ExportUserRecord {
-  id: string;
-  name: string;
-  email: string;
-  status: Status;
-  kyc: KycStatus;
-  plan: Plan;
-  isPro: boolean;
-  events: number;
-  joined: string;
+  id: string,
+  name: string,
+  email: string,
+  status: Status,
+  kyc: KycStatus,
+  plan: Plan,
+  isPro: boolean,
+  eventsAttended: number,
+  joined: string,
+  dob: string,
+  gender: string,
+  location: string,
+  phoneNumber: string,
+  userID: string,
+  lastActive: string,
+  eventCreated: string,
+  communities: string,
+  connection: string,
 }
 
 interface UserRecord extends ExportUserRecord {
-  avatar: string;
+  avatar: string,
 }
 
 // to-be API DATA
 const USERS: UserRecord[] = [
-  { id: "1", name: "Halima Lawal", email: "halima.l@gmail.com", avatar: "", status: "Active", kyc: "Verified", plan: "Business", isPro: true, events: 24, joined: "12 Oct 2023" },
-  { id: "2", name: "Chidi Okonkwo", email: "chidi.o@gmail.com", avatar: "", status: "Active", kyc: "Verified", plan: "Premium", isPro: true, events: 15, joined: "08 Nov 2023" },
-  { id: "3", name: "Aisha Mohammed", email: "aisha.mo@gmail.com", avatar: "", status: "Pending", kyc: "Pending", plan: "Free", isPro: false, events: 2, joined: "14 Jan 2024" },
-  { id: "4", name: "Doan Blaq", email: "tunde.bakare@gmail.com", avatar: "", status: "Suspended", kyc: "Rejected", plan: "Free", isPro: false, events: 0, joined: "22 Aug 2023" },
-  { id: "5", name: "Ngozi Uju", email: "ngozi.eze@gmail.com", avatar: "", status: "Active", kyc: "Verified", plan: "Premium", isPro: true, events: 31, joined: "19 May 2023" },
-  { id: "6", name: "Femi Adeyemi", email: "femi.ade@gmail.com", avatar: "", status: "Active", kyc: "Pending", plan: "Free", isPro: false, events: 8, joined: "03 Dec 2023" },
-  { id: "7", name: "Blessing Orija", email: "blessing.ok@gmail.com", avatar: "", status: "Active", kyc: "Verified", plan: "Business", isPro: true, events: 42, joined: "11 Feb 2023" },
-  { id: "8", name: "Ibrahim Musa", email: "ibrahim.m@gmail.com", avatar: "", status: "Suspended", kyc: "Verified", plan: "Free", isPro: false, events: 5, joined: "28 Jun 2023" },
-  { id: "9", name: "Adewole James", email: "adewole.j@gmail.com", avatar: "", status: "Suspended", kyc: "Verified", plan: "Free", isPro: false, events: 5, joined: "28 Jun 2023" },
+  { id: "1", name: "Halima Lawal", email: "halima.l@gmail.com", avatar: "", status: "Active", kyc: "Verified", plan: "Business", isPro: true, eventsAttended: 24, joined: "12 Oct 2023", phoneNumber:"+234 812 345 6789", gender:"female", dob:"13 Mar 1997",location:"Ikeja, Lagos", userID:"#USR-00142", lastActive:"2 hours ago", eventCreated:"8", connection:"128", communities:"5" },
+  { id: "2", name: "Chidi Okonkwo", email: "chidi.o@gmail.com", avatar: "", status: "Active", kyc: "Verified", plan: "Premium", isPro: true, eventsAttended: 15, joined: "08 Nov 2023", phoneNumber:"+234 812 345 6789", gender:"female", dob:"13 Mar 1997",location:"Ikeja, Lagos", userID:"#USR-00142", lastActive:"2 hours ago", eventCreated:"8", connection:"128", communities:"5" },
+  { id: "3", name: "Aisha Mohammed", email: "aisha.mo@gmail.com", avatar: "", status: "Pending", kyc: "Pending", plan: "Free", isPro: false, eventsAttended: 2, joined: "14 Jan 2024", phoneNumber:"+234 812 345 6789", gender:"female", dob:"13 Mar 1997",location:"Ikeja, Lagos", userID:"#USR-00142", lastActive:"2 hours ago", eventCreated:"8", connection:"128", communities:"5" },
+  { id: "4", name: "Doan Blaq", email: "tunde.bakare@gmail.com", avatar: "", status: "Suspended", kyc: "Rejected", plan: "Free", isPro: false, eventsAttended: 0, joined: "22 Aug 2023", phoneNumber:"+234 812 345 6789", gender:"female", dob:"13 Mar 1997",location:"Ikeja, Lagos", userID:"#USR-00142", lastActive:"2 hours ago", eventCreated:"8", connection:"128", communities:"5" },
+  { id: "5", name: "Ngozi Uju", email: "ngozi.eze@gmail.com", avatar: "", status: "Active", kyc: "Verified", plan: "Premium", isPro: true, eventsAttended: 31, joined: "19 May 2023", phoneNumber:"+234 812 345 6789", gender:"female", dob:"13 Mar 1997",location:"Ikeja, Lagos", userID:"#USR-00142", lastActive:"2 hours ago", eventCreated:"8", connection:"128", communities:"5" },
+  { id: "6", name: "Femi Adeyemi", email: "femi.ade@gmail.com", avatar: "", status: "Active", kyc: "Pending", plan: "Free", isPro: false, eventsAttended: 8, joined: "03 Dec 2023", phoneNumber:"+234 812 345 6789", gender:"female", dob:"13 Mar 1997",location:"Ikeja, Lagos", userID:"#USR-00142", lastActive:"2 hours ago", eventCreated:"8", connection:"128", communities:"5" },
+  { id: "7", name: "Blessing Orija", email: "blessing.ok@gmail.com", avatar: "", status: "Active", kyc: "Verified", plan: "Business", isPro: true, eventsAttended: 42, joined: "11 Feb 2023", phoneNumber:"+234 812 345 6789", gender:"female", dob:"13 Mar 1997",location:"Ikeja, Lagos", userID:"#USR-00142", lastActive:"2 hours ago", eventCreated:"8", connection:"128", communities:"5" },
+  { id: "8", name: "Ibrahim Musa", email: "ibrahim.m@gmail.com", avatar: "", status: "Suspended", kyc: "Verified", plan: "Free", isPro: false, eventsAttended: 5, joined: "28 Jun 2023", phoneNumber:"+234 812 345 6789", gender:"female", dob:"13 Mar 1997",location:"Ikeja, Lagos", userID:"#USR-00142", lastActive:"2 hours ago", eventCreated:"8", connection:"128", communities:"5" },
+  { id: "9", name: "Adewole James", email: "adewole.j@gmail.com", avatar: "", status: "Suspended", kyc: "Verified", plan: "Free", isPro: false, eventsAttended: 5, joined: "28 Jun 2023", phoneNumber:"+234 812 345 6789", gender:"female", dob:"13 Mar 1997",location:"Ikeja, Lagos", userID:"#USR-00142", lastActive:"2 hours ago", eventCreated:"8", connection:"128", communities:"5" },
 ];
 
 const AVATAR_COLORS = [
@@ -240,8 +250,8 @@ const UsersHomeIndex = () => {
   const handleExport = () => {
     // Pass in the selected sorted users to export as CSV
     const THE_SELECTED = [...selected].sort()
-    const headers = ['ID','NAME','EMAIL','STATUS','KYC','PLAN','IS_PRO','EVENTS','JOINED']
-    const rows = THE_SELECTED.map((id) => [USERS[+id-1].id, USERS[+id-1].name, USERS[+id-1].email, USERS[+id-1].status, USERS[+id-1].kyc, USERS[+id-1].plan, USERS[+id-1].isPro, USERS[+id-1].events, USERS[+id-1].joined])
+    const headers = ['USER_ID','NAME','EMAIL','PHONE_NUMBER','GENDER','DOB','LOCATION','LAST_ACTIVE','STATUS','KYC','PLAN','IS_PRO','EVENT_CREATED','EVENT_ATTENDED','CONNECTION','COMMUNITY','JOINED']
+    const rows = THE_SELECTED.map((id) => [USERS[+id-1].userID, USERS[+id-1].name, USERS[+id-1].email, USERS[+id-1].phoneNumber, USERS[+id-1].gender, USERS[+id-1].dob, USERS[+id-1].location, USERS[+id-1].lastActive, USERS[+id-1].status, USERS[+id-1].kyc, USERS[+id-1].plan, USERS[+id-1].isPro, USERS[+id-1].eventCreated, USERS[+id-1].eventsAttended, USERS[+id-1].connection, USERS[+id-1].communities, USERS[+id-1].joined])
 
     const csvContent = [
       headers.join(','),
@@ -260,11 +270,138 @@ const UsersHomeIndex = () => {
     document.body.removeChild(link)
   }
 
+
   const handleModal = (index: number) => { 
     const person = USERS[index]
-    console.log(person.name)
-    // setModal()
-    // contentModal(<div>Using HTML LIVE, SUCCESS!</div>)
+    setModal()
+    contentModal(
+      <div className="relative flex flex-col ml-auto h-full w-full max-w-105 bg-neutral-0 border border-b-primary-border shadow-[-20px_0px_60px_#00000026] bg-neutral-white ">
+        <div className="flex items-center justify-between gap-4 text-neutral-light-600 text-lg font-bold pt-7.25 pb-5.25 px-6" onClick={(e)=>e.stopPropagation()}>
+          <h3>User Profile Details</h3>
+          <button className=" h-8 w-8 bg-[#F4F3F5] rounded-full cursor-pointer" onClick={()=>alert('coming soon!')}>
+            <CircleXIcon size={12} className=" h-3 w-3 text-neutral-light-300 mx-auto" />
+          </button>
+        </div>
+        <div onClick={(e)=>e.stopPropagation()} className="flex flex-col gap-y-7 px-6 scrollbar-thin scrollbar-thumb-gray-200 overflow-y-auto">
+          <div className="flex gap-3 items-center w-full rounded-xl border border-bg-purple-light-200 bg-bg-purple-light-200 p-4 ">
+            {
+              (person.avatar.length>0)?
+              <img
+                src={person.avatar}
+                alt={person.name}
+                height={80}
+                width={80}
+                className="w-20 h-20 rounded-full object-cover"
+              /> :
+              <span className={`inline-flex items-center justify-center shrink-0 w-20 h-20 text-xl rounded-full ${
+                AVATAR_COLORS[+person.id-1 % AVATAR_COLORS.length]
+              }`}>{initials(person.name)}</span>
+            }
+            <div className="flex flex-col">
+              <span className=" font-bold text-neutral-light-600 text-xl">{person.name}</span>
+              <span className=" font-normal text-neutral-light-300 text-sm">{person.email}</span>
+              <span className=" font-semibold bg-[#F0FDF4] text-secondary-green-500 py-1 px-3 text-xs rounded-md w-fit">{person.status}</span>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <button className="inline-flex items-center justify-center gap-2 w-full py-2 text-xs font-semibold border border-[#FED7AA] bg-[#FFF7ED] text-[#FB923C] rounded-lg cursor-pointer" onClick={()=>alert("coming soon!")}>
+              <ShieldAlert size={14} className="h-3.5 w-3.5 " />
+              Suspend
+            </button>
+            <button className="inline-flex items-center justify-center gap-2 w-full py-2 text-xs font-semibold border border-purple-light-600 bg-bg-purple-light-200 text-purple-light-600 rounded-lg cursor-pointer" onClick={()=>alert("coming soon!")}>
+              <MessageSquare size={14} className="h-3.5 w-3.5 " />
+              Message
+            </button>
+            <button className="inline-flex items-center justify-center gap-2 w-full py-2 text-xs font-semibold border border-[#EB8C8C] bg-[#FCF2F2] text-[#C92B2B] rounded-lg cursor-pointer" onClick={()=>alert("coming soon!")}>
+              <Ban size={14} className="h-3.5 w-3.5 " />
+              Disabled
+            </button>
+          </div>
+          <div>
+            <h4 className=" uppercase font-semibold text-xs text-purple-light-600 mb-1.5">Personal Information</h4>
+            <div className="text-neutral-light-300 text-sm">
+              <p className="flex justify-between gap-2 py-2.5 border-b-[.5px] border-b-[#F4F3F5]">
+                <span className=" font-medium">Full Name</span>
+                <span className=" text-neutral-light-500 font-semibold">{person.name}</span>
+              </p>
+              <p className="flex justify-between gap-2 py-2.5 border-b-[.5px] border-b-[#F4F3F5]">
+                <span className=" font-medium">Email Address</span>
+                <span className=" text-neutral-light-500 font-semibold">{person.email}</span>
+              </p>
+              <p className="flex justify-between gap-2 py-2.5 border-b-[.5px] border-b-[#F4F3F5]">
+                <span className=" font-medium">Phone Number</span>
+                <span className=" text-neutral-light-500 font-semibold">{person.phoneNumber}</span>
+              </p>
+              <p className="flex justify-between gap-2 py-2.5 border-b-[.5px] border-b-[#F4F3F5]">
+                <span className=" font-medium">Gender</span>
+                <span className=" text-neutral-light-500 font-semibold">{person.gender}</span>
+              </p>
+              <p className="flex justify-between gap-2 py-2.5 border-b-[.5px] border-b-[#F4F3F5]">
+                <span className=" font-medium">Date of Birth</span>
+                <span className=" text-neutral-light-500 font-semibold">{person.dob}</span>
+              </p>
+              <p className="flex justify-between gap-2 py-2.5 border-b-[.5px] border-b-[#F4F3F5]">
+                <span className=" font-medium">Location</span>
+                <span className=" text-neutral-light-500 font-semibold">{person.location}</span>
+              </p>
+            </div>
+          </div>
+          <div>
+            <h4 className=" uppercase font-semibold text-xs text-purple-light-600 mb-1.5">Account Details</h4>
+            <div className="text-neutral-light-300 text-sm">
+              <p className="flex justify-between gap-2 py-2.5 border-b-[.5px] border-b-[#F4F3F5]">
+                <span className=" font-medium">User ID</span>
+                <span className=" text-neutral-light-500 font-semibold">{person.userID}</span>
+              </p>
+              <p className="flex justify-between gap-2 py-2.5 border-b-[.5px] border-b-[#F4F3F5]">
+                <span className=" font-medium">Joined Date</span>
+                <span className=" text-neutral-light-500 font-semibold">{person.joined}</span>
+              </p>
+              <p className="flex justify-between gap-2 py-2.5 border-b-[.5px] border-b-[#F4F3F5]">
+                <span className=" font-medium">Last Active</span>
+                <span className=" text-neutral-light-500 font-semibold">{person.lastActive}</span>
+              </p>
+              <p className="flex justify-between gap-2 py-2.5 border-b-[.5px] border-b-[#F4F3F5]">
+                <span className=" font-medium">KYC Status</span>
+                <span className=" text-purple-light-600 text-[11px] py-0.5 px-2 bg-bg-purple-light-200 rounded-sm font-semibold">{person.kyc}</span>
+              </p>
+              <div className="flex justify-between gap-2 py-2.5 border-b-[.5px] border-b-[#F4F3F5]">
+                <span className=" font-medium">Subscription</span>
+                <div className="flex items-center gap-0.5 border px-0.75 py-0.5 border-[#E9D5FF] bg-bg-purple-light-200 rounded-sm">
+                  <span className="text-neutral-light-500 font-medium text-[.625rem]">{person.plan}</span>
+                  {person.isPro && (
+                    <span className="inline-flex px-1 py-px text-[.5625rem] font-semibold rounded-xs bg-purple-light-600 border border-[#E9D5FF] text-neutral-white">
+                      PRO
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="mb-19.25">
+            <h4 className=" uppercase font-semibold text-xs text-purple-light-600 mb-3">Activity Statistics</h4>
+            <div className="grid grid-cols-2 gap-2.5 text-xl font-bold text-neutral-light-500">
+              <div className="border flex flex-col gap-1 rounded-lg border-[#F4F3F5] bg-primary p-3">
+                <h5 className="uppercase text-neutral-light-300 text-xs font-medium">Events Attended</h5>
+                <span>{person.eventsAttended}</span>
+              </div>
+              <div className="border flex flex-col gap-1 rounded-lg border-[#F4F3F5] bg-primary p-3">
+                <h5 className="uppercase text-neutral-light-300 text-xs font-medium">Events Created</h5>
+                <span>{person.eventCreated}</span>
+              </div>
+              <div className="border flex flex-col gap-1 rounded-lg border-[#F4F3F5] bg-primary p-3">
+                <h5 className="uppercase text-neutral-light-300 text-xs font-medium">Connections</h5>
+                <span>{person.connection}</span>
+              </div>
+              <div className="border flex flex-col gap-1 rounded-lg border-[#F4F3F5] bg-primary p-3">
+                <h5 className="uppercase text-neutral-light-300 text-xs font-medium">Communities</h5>
+                <span>{person.communities}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
 
@@ -410,7 +547,7 @@ const UsersHomeIndex = () => {
                           )}
                         </div>
                       </td>
-                      <td className="py-3 font-semibold text-sm text-neutral-light-500 text-center">{u.events}</td>
+                      <td className="py-3 font-semibold text-sm text-neutral-light-500 text-center">{u.eventsAttended}</td>
                       <td className="py-3 text-neutral-light-400 font-normal text-sm">{u.joined}</td>
                       <td className="py-3 pr-5 text-right">
                         <button className={`p-1.5 rounded-lg text-neutral-light-400 transition-colors 
@@ -462,7 +599,7 @@ const UsersHomeIndex = () => {
                   <button
                     key={item}
                     onClick={() => setPage(item)}
-                    className={`min-w-[40px] h-10 px-3 text-sm font-medium rounded-xl border transition-colors ${
+                    className={`min-w-10 h-10 px-3 text-sm font-medium rounded-xl border transition-colors ${
                       item === safePage
                         ? "bg-purple-light-600 border-purple-light-600 text-white"
                         : "border-slate-200 text-neutral-light-600 hover:bg-slate-50"

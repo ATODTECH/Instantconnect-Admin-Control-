@@ -6,7 +6,8 @@ import TopBarIndex from "@/components/topbar"
 import { Calendar, FileText, LayoutDashboard, LogOutIcon, MessageCircle, Settings, Users, Wallet } from "lucide-react"
 
 import profile from "@/assets/images/profile.jpg"
-import { MouseEventHandler, useState } from "react"
+import { useState } from "react"
+import ModalIndex from "../_lib/ui/modal"
 
 
 const Template = ({ children }: { children: React.ReactNode }) => {
@@ -14,16 +15,12 @@ const Template = ({ children }: { children: React.ReactNode }) => {
   const [modalContent, setModalContent] = useState<React.ReactNode>([]);
 
   const headerIcons = [LayoutDashboard,Users,FileText,Calendar,MessageCircle,Wallet,Settings]
-  const closeOutterModal: MouseEventHandler = () => setModal(false);
 
   
   return (
     <div className="flex relative min-w-5xl w-full h-screen">
       {isModal && (<>
-        <div role='button' className="flex absolute z-20 h-screen w-full bg-[#00000080] " 
-        onClick={closeOutterModal}>
-          {modalContent}
-        </div>
+        <ModalIndex modal={(val)=>setModal(val)} content={modalContent} />
       </>)}
       <aside className="flex gap-y-5 flex-col h-full px-5 py-8 w-65 bg-bg-primary">
         <LogoIndex />
@@ -31,7 +28,7 @@ const Template = ({ children }: { children: React.ReactNode }) => {
         <FooterIndex icons={LogOutIcon} image={profile} />
       </aside>
       <div className="flex-1 relative flex flex-col justify-between gap-6 pl-8 pt-7 bg-bg-secondary">
-        <TopBarIndex contentModal={(val) => setModalContent(val)} setModal={() => setModal(true)} image={profile}>
+        <TopBarIndex contentModal={(val) => setModalContent(val)} setModal={() => setModal(!isModal)} image={profile}>
           {children}
         </TopBarIndex>
       </div>
