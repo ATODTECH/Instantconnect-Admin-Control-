@@ -17,7 +17,7 @@ const HeaderIndex = ({icons}: HeaderProps) => {
     {name:"Dashboard", route:"/", icon:LayoutDashboard},
     {name:"User", route:"/users", icon:Users},
     {name:"KYC Verifications", route:"/kyc-verification", icon:FileText},
-    {name:"Live Connections", route:"", icon:LiveConnections},
+    {name:"Live Connections", route:"/live-connection", icon:LiveConnections},
     {name:"Events", route:"", icon:Calendar},
     {name:"Communities", route:"", icon:MessageCircle},
     {name:"Subscriptions", route:"", icon:Wallet},
