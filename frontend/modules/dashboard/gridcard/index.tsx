@@ -37,7 +37,7 @@ const GridCard = () => {
                 <span className="py-1 px-2 text-xs font-semibold rounded-lg bg-[#F0FDF4] text-secondary-green-500">+ {randomChangePct(Card.min, Card.max)}%</span>
               }
             </div>
-            <div className=" text-[28px] font-bold text-neutral-light-600">
+            <div className=" text-[1.75rem] font-bold text-neutral-light-600">
               {
                 (index === gridCards.length-2)?
                 formatNgn(+Card.value):
