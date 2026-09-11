@@ -28,7 +28,7 @@ const Template = ({ children }: { children: React.ReactNode }) => {
         <FooterIndex icons={LogOutIcon} image={profile} />
       </aside>
       <div className="flex-1 relative flex flex-col justify-between gap-6 pl-8 pt-7 bg-bg-secondary">
-        <TopBarIndex contentModal={(val) => setModalContent(val)} setModal={() => setModal(!isModal)} image={profile}>
+        <TopBarIndex contentModal={(val) => setModalContent(val)} setModal={(val: boolean) => {setModal(val)}} image={profile}>
           {children}
         </TopBarIndex>
       </div>
