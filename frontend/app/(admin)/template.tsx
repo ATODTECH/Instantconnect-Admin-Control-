@@ -12,7 +12,7 @@ import ModalIndex from "../_lib/ui/modal"
 
 const Template = ({ children }: { children: React.ReactNode }) => {
   const [isModal, setModal] = useState<boolean>(false)
-  const [modalContent, setModalContent] = useState<React.ReactNode>([]);
+  const [modalContent, setModalContent] = useState<React.ReactNode>([])
 
   const headerIcons = [LayoutDashboard,Users,FileText,Calendar,MessageCircle,Wallet,Settings]
 
@@ -27,7 +27,7 @@ const Template = ({ children }: { children: React.ReactNode }) => {
         <HeaderIndex icons={headerIcons} />
         <FooterIndex icons={LogOutIcon} image={profile} />
       </aside>
-      <div className="flex-1 relative flex flex-col justify-between gap-6 pl-8 pt-7 bg-bg-secondary">
+      <div className="flex-1 w-[calc(100vw-16.25rem)] relative flex flex-col justify-between gap-6 pl-8 pt-7 bg-bg-secondary">
         <TopBarIndex contentModal={(val) => setModalContent(val)} setModal={(val: boolean) => {setModal(val)}} image={profile}>
           {children}
         </TopBarIndex>
