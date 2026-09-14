@@ -4,6 +4,7 @@ import { useState } from "react"
 import GridCard from "./gridcard"
 import Image from "next/image"
 import { AlertTriangle, CheckCircleIcon, CircleCheck, CircleCheckBigIcon, Clock, MapPin } from "lucide-react"
+import GoogleMapIndex from "./google-maps"
 
 // API DATA
 const LiveConnectUsers: LiveConnectUsersProps[] = [
@@ -372,7 +373,7 @@ const LiveConnectionHomeIndex = () => {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 w-full mb-6">
         <div className="col-span-2 h-screen">
           <div className=" bg-neutral-white w-full h-full border-[.5px] border-primary-border rounded-2xl overflow-hidden">
-            live map
+            <GoogleMapIndex />
           </div>
         </div>
         <div className=" bg-neutral-white border-[.5px] border-primary-border rounded-2xl h-fit">
