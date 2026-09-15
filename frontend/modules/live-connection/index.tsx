@@ -3,7 +3,7 @@
 import { useState } from "react"
 import GridCard from "./gridcard"
 import Image from "next/image"
-import { AlertTriangle, CheckCircleIcon, CircleCheck, CircleCheckBigIcon, Clock, MapPin } from "lucide-react"
+import { AlertTriangle, ArrowLeft, ArrowLeftCircle, CheckCircleIcon, CircleCheck, CircleCheckBigIcon, Clock, MapPin } from "lucide-react"
 import GoogleMapIndex from "./google-maps"
 
 // API DATA
@@ -15,8 +15,8 @@ const LiveConnectUsers: LiveConnectUsersProps[] = [
       name: "Halima Lawal",
       image:"",
       coordinates: {
-        lat: "",
-        lng: "",
+        lat: 6.4300,
+        lng: 3.4220,
       },
       departure: "2:20 PM",
     },
@@ -25,8 +25,8 @@ const LiveConnectUsers: LiveConnectUsersProps[] = [
       name: "Chidi Okonkwo",
       image:"",
       coordinates: {
-        lat: "",
-        lng: "",
+        lat: 6.4494,
+        lng: 3.4811,
       },
       departure: "2:22 PM",
     },
@@ -34,8 +34,8 @@ const LiveConnectUsers: LiveConnectUsersProps[] = [
     location: "Café Neo, Victoria Island",
     meetingType: "Coffee Meetup",
     coordinates: {
-      lat: "",
-      lng: "",
+      lat: 6.42816,
+      lng: 3.41897,
     },
     safetyAlert: false,
     meetingStartTime: "2:30 PM",
@@ -49,8 +49,8 @@ const LiveConnectUsers: LiveConnectUsersProps[] = [
       name: "Blessing Orija",
       image:"",
       coordinates: {
-        lat: "",
-        lng: "",
+        lat: 6.42816,
+        lng: 3.41897,
       },
       departure: "2:20 PM",
     },
@@ -59,17 +59,17 @@ const LiveConnectUsers: LiveConnectUsersProps[] = [
       name: "Ibrahim Musa",
       image:"",
       coordinates: {
-        lat: "",
-        lng: "",
+        lat: 6.46153,
+        lng: 3.45681,
       },
       departure: "2:22 PM",
     },
     acceptConnect: "2:15 PM",
-    location: "Eko Hotel, Victoria Island",
+    location: "Lagos Oriental Hotel, Victoria Island",
     meetingType: "Coffee Meetup",
     coordinates: {
-      lat: "",
-      lng: "",
+      lat: 6.43627,
+      lng: 3.44463,
     },
     safetyAlert: false,
     meetingStartTime: "2:30 PM",
@@ -79,22 +79,22 @@ const LiveConnectUsers: LiveConnectUsersProps[] = [
   {
     id: 3,
     firstRecipient: {
-      id: 15,
+      id: 100,
       name: "Ngozi Ugu",
       image:"",
       coordinates: {
-        lat: "",
-        lng: "",
+        lat: 39.96222,
+        lng: -82.99750,
       },
       departure: "2:20 PM",
     },
     secondRecipient: {
-      id: 24,
+      id: 34,
       name: "Don Blaq",
       image:"",
       coordinates: {
-        lat: "",
-        lng: "",
+        lat: 39.96222,
+        lng: -82.99750,
       },
       departure: "2:22 PM",
     },
@@ -102,8 +102,8 @@ const LiveConnectUsers: LiveConnectUsersProps[] = [
     location: "Trinity's Lounge, Columbus",
     meetingType: "Business Chat",
     coordinates: {
-      lat: "",
-      lng: "",
+      lat: 39.96222,
+      lng: -82.99750,
     },
     safetyAlert: false,
     meetingStartTime: "2:30 PM",
@@ -135,7 +135,7 @@ const calcDistanceApart = (firstUser:UserCoordinates, secondUser: UserCoordinate
   return '0.2 km'
 }
 
-const AVATAR_COLORS = [
+export const AVATAR_COLORS = [
   "bg-violet-100 text-violet-700",
   "bg-blue-100 text-blue-700",
   "bg-pink-100 text-pink-700",
@@ -197,8 +197,11 @@ const LiveConnectionHomeIndex = () => {
               <span>{calcMeetingDuration('connectCard')}</span>
             </div>
           </div>
+
+          {/* firstName + initials */}
           <div className=" w-full text-sm text-neutral-light-600 font-semibold">{intialsConnectionCard(user.firstRecipient.name)} & {intialsConnectionCard(user.secondRecipient.name)}</div>
 
+          {/* location and timeStart */}
           <div className="flex items-center gap-2 text-neutral-light-300 w-full">
             <div className="flex items-center gap-1">
               <MapPin size={11} className="h-2.75 w-2.75" />
@@ -210,6 +213,7 @@ const LiveConnectionHomeIndex = () => {
             </div>
           </div>
 
+          {/* Track */}
           <div className="flex w-full items-center justify-between gap-4">
             <div className="w-full max-w-[60%] h-0 border border-[#F1F5F9]" />
             <button className="py-1.5 px-3.5 rounded-lg bg-bg-purple-light-200 text-xs font-semibold tracking-wide cursor-pointer text-purple-light-600 outline-0" onClick={()=>{setSwitch(!isSwitch); setSwitchVal(user.id)}}>
@@ -354,6 +358,13 @@ const LiveConnectionHomeIndex = () => {
           </div>):
           <></>
         }
+
+        {/* footer button back to state */}
+        <button className=" flex text-xs w-fit py-1.5 px-2 rounded-lg bg-bg-purple-light-200 items-center flex-nowrap gap-2 text-neutral-light-300 hover:text-purple-light-600 cursor-pointer"
+        onClick={()=> setSwitch(!isSwitch)}>
+          <ArrowLeft size={16} />
+          <span className="">Back</span>
+        </button>
       </>
     )
   }
@@ -372,8 +383,9 @@ const LiveConnectionHomeIndex = () => {
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 w-full mb-6">
         <div className="col-span-2 h-screen">
-          <div className=" bg-neutral-white w-full h-full border-[.5px] border-primary-border rounded-2xl overflow-hidden">
-            <GoogleMapIndex />
+          <div className="relative bg-neutral-white w-full h-full border-[.5px] border-primary-border rounded-2xl overflow-hidden">
+            <GoogleMapIndex users={LiveConnectUsers} isSwitch={isSwitch} switchVal={switchVal} setSwitch={(val) => setSwitch(val)} setSwitchVal={(id) => setSwitchVal(id)} />
+           
           </div>
         </div>
         <div className=" bg-neutral-white border-[.5px] border-primary-border rounded-2xl h-fit">

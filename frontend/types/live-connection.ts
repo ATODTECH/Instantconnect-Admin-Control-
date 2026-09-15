@@ -8,8 +8,8 @@ interface ConnectionCardProps {
 }
 
 interface UserCoordinates {
-  lat: string,
-  lng: string,
+  lat: number,
+  lng: number,
 }
 
 interface LiveConnectUsersProps {
@@ -19,8 +19,8 @@ interface LiveConnectUsersProps {
     name: string,
     image: '',
     coordinates: {
-      lat: string,
-      lng: string,
+      lat: number,
+      lng: number,
     },
     departure: string,
   },
@@ -29,8 +29,8 @@ interface LiveConnectUsersProps {
     name: string,
     image:'',
     coordinates: {
-      lat: string,
-      lng: string,
+      lat: number,
+      lng: number,
     },
     departure: string,
   },
@@ -38,8 +38,8 @@ interface LiveConnectUsersProps {
   location: string,
   meetingType: string,
   coordinates: {
-    lat: string,
-    lng: string,
+    lat: number,
+    lng: number,
   },
   safetyAlert: boolean,
   meetingStartTime: string,
