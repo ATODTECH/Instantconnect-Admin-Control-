@@ -25,15 +25,15 @@ const HeaderIndex = ({icons}: HeaderProps) => {
   ]
 
   return (
-    <header className="flex  flex-col gap-0.5 h-full overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-secondary [&::-webkit-scrollbar-track]:bg-[#1E293B] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:rounded-full ">
+    <header className="flex flex-col gap-0.5 h-full overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-secondary [&::-webkit-scrollbar-track]:bg-[#1E293B] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:rounded-full ">
       {
         nav.map((route, index) => (
           <Link key={route.name} href={route.route}
           className={`flex gap-3 py-2.25 px-3.25 mr-1 items-center rounded-lg ${pathname===route.route?'bg-[#1E293B] text-primary':'text-secondary'}`}>
-            {index===3?<route.icon className={"h-5 w-5"} />:<route.icon size={20} className={` ${pathname===route.route?' text-[#9333EA]':''}`} />}
+            {index===3? <route.icon color={`${pathname===route.route? '#9333EA': '#94A3B8'}`} className={"h-5 w-5"} />:<route.icon size={20} className={` ${pathname===route.route? ' text-purple-light-600': ''}`} />}
             <span className={"inline-flex justify-between w-full font-medium text-sm"}>
               {route.name}
-              {(pathname===route.route)&&(<span className="inline-flex space-y-1 w-1 rounded-lg bg-[#9333EA]"></span>)}
+              {(pathname===route.route)&&(<span className="inline-flex space-y-1 w-1 rounded-lg bg-purple-light-600"></span>)}
             </span>
           </Link>
         ))
