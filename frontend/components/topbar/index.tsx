@@ -28,6 +28,7 @@ const TopBarIndex = ({image, setModal, contentModal, children}: TopBarProps) => 
     {title:"User Management", content:"Manage platform members, KYC verification records, and billing tiers."},
     {title:"KYC Verification", content:"Review and verify user identity documents."},
     {title:"Live Connection", content:"Monitor active meetups and connection locations in real-time."},
+    {title:"Events", content:"Review and verify user identity documents."},
   ]
 
   const content= () => {
@@ -84,6 +85,19 @@ const TopBarIndex = ({image, setModal, contentModal, children}: TopBarProps) => 
             </form>
           </div>
         )    
+      case "/events":
+        return (
+          <div className="flex flex-1 gap-x-5 justify-between items-center">
+            <div className="flex flex-col">
+              <h1 className=" font-bold text-2xl text-neutral-light-600">{nav[4].title}</h1>
+              <h4 className=" font-normal text-[13px] text-neutral-light-300">{nav[4].content}</h4>
+            </div>
+            <form className=" relative" onSubmit={(e)=>e.preventDefault()}>
+              <Search size={16} className="absolute left-2 translate-y-[65%] h-4 w-4 text-[#64748B]" />
+              <input type="search" value={query} onChange={(e) => setQuery(e.target.value)}  placeholder="Search users, events..." className=" py-1.5 pl-8 text-[#1d293d] rounded-lg border border-[#E4E7EC] placeholder:text-[#64748B] focus:outline-[#64748B] focus:outline-1 focus:border-none placeholder:text-sm [&::-webkit-search-cancel-button]:hidden" />
+            </form>
+          </div>
+        )
       default:
         return <></>
     }

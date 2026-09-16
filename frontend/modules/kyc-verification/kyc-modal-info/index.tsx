@@ -1,5 +1,6 @@
 "use client"
 
+import { AVATAR_COLORS } from "@/modules/live-connection"
 import { UserRecord } from "@/modules/users"
 import { CheckboxRowProps, ChecklistItem, SubmitStatus } from "@/types/kyc-verification"
 import { CircleXIcon, Image, Loader2Icon } from "lucide-react"
@@ -9,14 +10,6 @@ interface KYCModalInfoProps {
   person: UserRecord;
   modal: (val: boolean) => void;
 }
-
-const AVATAR_COLORS = [
-  "bg-violet-100 text-violet-700",
-  "bg-blue-100 text-blue-700",
-  "bg-pink-100 text-pink-700",
-  "bg-emerald-100 text-emerald-700",
-  "bg-orange-100 text-orange-700",
-]
 
 const initialChecklist: ChecklistItem[] = [
   { id: "photo-match", label: "Photo matches profile photo", checked: true },
@@ -89,14 +82,14 @@ const KYCModalInfo = ({ person, modal }: KYCModalInfoProps) => {
 
   return (
     <>
-    <div className="relative flex flex-col ml-auto h-full w-full max-w-105 bg-neutral-0 border border-b-primary-border shadow-[-20px_0px_60px_#00000026] bg-neutral-white">
-        <div className="flex items-center justify-between gap-4 text-neutral-light-600 text-lg font-bold pt-7.25 pb-5.25 px-6" onClick={(e)=>e.stopPropagation()} >
+      <div className="relative flex flex-col ml-auto h-full w-full max-w-105 bg-neutral-0 shadow-[-20px_0px_60px_#00000026] bg-neutral-white" onClick={(e)=>e.stopPropagation()} >
+        <div className="flex items-center justify-between gap-4 text-neutral-light-600 text-lg font-bold pt-7.25 pb-5.25 px-6 border-b border-b-primary-border">
           <h3>Document Review</h3>
           <button className=" h-8 w-8 bg-[#F4F3F5] rounded-full cursor-pointer" onClick={()=>modal(false)}>
             <CircleXIcon size={12} className=" h-3 w-3 text-neutral-light-300 mx-auto" />
           </button>
         </div>
-        <div onClick={(e)=>e.stopPropagation()} className="flex flex-col gap-y-7 px-6 scrollbar-thin scrollbar-thumb-gray-200 overflow-y-auto">
+        <div className="flex flex-col gap-y-7 px-6 scrollbar-thin scrollbar-thumb-gray-200 overflow-y-auto">
           <div className="flex gap-3 items-center w-full rounded-xl border border-bg-purple-light-200 bg-bg-purple-light-200 p-4 ">
             {
               (person.avatar.length>0)?
