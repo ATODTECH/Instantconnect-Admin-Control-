@@ -41,7 +41,7 @@ const GridCard = () => {
                   formatCompactNumber(+Card.value)
                 }
               </span>
-              <span className={`text-[11px] font-semibold py-0.5 px-1.5 rounded-sm ${subInfoGridCard[index].text} ${subInfoGridCard[index].bg}`}>{subInfoGridCard[index].value}</span>
+              <span className={`text-[11px] font-semibold py-0.5 px-1.5 rounded-sm truncate ${subInfoGridCard[index].text} ${subInfoGridCard[index].bg}`}>{subInfoGridCard[index].value}</span>
             </div>
 
           </div>

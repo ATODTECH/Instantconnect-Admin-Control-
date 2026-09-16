@@ -103,7 +103,7 @@ function generateEvents(count: number): EventRow[] {
       type === "Free" ? 0 : Math.floor((rand() * 2_500_000 + 200_000) / 10_000) * 10_000
 
     const ticket = type === "Paid" ? Math.floor(rand() * 500) + 20: 0
-    const priceTag = type === "Paid" ? 2500 : 0
+    const priceTag = type === "Paid" ? Math.floor((rand() * 10_000 + 25_000) / 500) * 50 : 0
 
     rows.push({
       id: `evt-${i + 1}`,
@@ -131,7 +131,9 @@ const ALL_EVENTS = generateEvents(486)
 
 // .................... End mock data ....................
 
+
 // .................... Formatter ....................
+
 export const fmtDate = (d: Date | null) =>
   d === null
     ? "Ongoing"
@@ -179,8 +181,7 @@ function Dropdown({
         onClick={() => setOpen((o) => !o)}
         className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-colors"
       >
-        {icon}
-        <span>{value === "All" ? label : value}</span>
+        <span>{value === "All" || (value === "All time") ? label : value}</span>
         <ChevronDown className="h-4 w-4 text-gray-400" />
       </button>
 
@@ -211,12 +212,12 @@ function Dropdown({
 
 export function StatusBadge({ status }: { status: EventStatus }) {
   const styles: Record<EventStatus, string> = {
-    Upcoming: "bg-[#DCFCE7] text-[#22C55E] font-semibold text-[11px]",
-    Ongoing: "bg-[#FFF7ED] text-[#FB923C] font-semibold text-[11px]",
-    Past: "bg-[#F4F3F5] text-[#4F4E59] font-semibold text-[11px]",
-  };
+    Upcoming: "bg-[#DCFCE7] text-[#22C55E]",
+    Ongoing: "bg-[#FFF7ED] text-[#FB923C]",
+    Past: "bg-[#F4F3F5] text-[#4F4E59]",
+  }
   return (
-    <span className={`inline-flex rounded-md px-2 py-1 text-xs font-medium ${styles[status]}`}>
+    <span className={`inline-flex rounded-md px-2 py-1 font-semibold text-[11px] ${styles[status]}`}>
       {status}
     </span>
   )
@@ -224,11 +225,11 @@ export function StatusBadge({ status }: { status: EventStatus }) {
 
 function TypeBadge({ type }: { type: EventType }) {
   const styles: Record<EventType, string> = {
-    Paid: "bg-[#EEF2F6] text-[#1E293B] font-semibold text-[11px]",
-    Free: "bg-[#E0F2FE] text-[#0369A1] font-semibold text-[11px]",
+    Paid: "bg-[#EEF2F6] text-[#1E293B]",
+    Free: "bg-[#E0F2FE] text-[#0369A1]",
   };
   return (
-    <span className={`inline-flex rounded-md px-2 py-1 text-xs font-medium ${styles[type]}`}>
+    <span className={`inline-flex rounded-md px-2 py-1 font-semibold text-[11px] ${styles[type]}`}>
       {type}
     </span>
   )
@@ -245,7 +246,6 @@ const EventsHomeIndex = () => {
   const [categoryFilter, setCategoryFilter] = useState<"All" | EventCategory>("All")
   const [dateRange, setDateRange] = useState<DateRange>("All time")
   const [page, setPage] = useState(1)
-  const [selectedEvent, setSelectedEvent] = useState<EventRow | null>(null)
 
   const today = useMemo(() => new Date(2026, 8, 15), []);
 
@@ -407,7 +407,6 @@ const EventsHomeIndex = () => {
               label="Select date range..."
               value={dateRange}
               options={DATE_RANGES}
-              icon={<Calendar className="h-4 w-4 text-gray-400" />}
               onChange={(v) => {
                 setDateRange(v as DateRange);
                 resetToFirstPage();
