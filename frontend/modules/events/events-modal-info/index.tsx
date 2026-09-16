@@ -12,7 +12,7 @@ interface EventsModalInfoProps {
 
 //  ..........Generated MOCK Data from the below ...............
 
-const ATTENDEES = [
+export const ATTENDEES = [
   {name: "Olamide Samuel", portfolio: "Senior Backend Engineer at Paystack", avatar: "", status: "VIP"},
   {name: "Chioma Adebayo", portfolio: "Technical Product Manager at Kuda", avatar: "", status: "Regular"},
   {name: "Tunde Fila", portfolio: "Founder at Speak for Child", avatar: "", status: "Regular"},
@@ -35,7 +35,7 @@ function mulberry32(seed: number) {
 }
 const rand = mulberry32(42)
 
-function generateEvents(count: number): AttendeeEventRow[] {
+export function generateEvents(count: number): AttendeeEventRow[] {
   const rows: AttendeeEventRow[] = [];
 
   for (let i = 0; i < count; i++) {
@@ -77,7 +77,7 @@ const EventModalIndex = ({person, modal}: EventsModalInfoProps) => {
       .map((part) => part[0])
       .slice(0, 2)
       .join("")
-      .toUpperCase();
+      .toUpperCase()
   }
 
   const percentCalc = (attendee: number, ticket: number) => {
@@ -87,7 +87,7 @@ const EventModalIndex = ({person, modal}: EventsModalInfoProps) => {
   return (
     <div className="relative flex flex-col ml-auto h-full w-full max-w-105 bg-neutral-0 shadow-[-20px_0px_60px_#00000026] bg-neutral-white" onClick={(e)=>e.stopPropagation()} >
       <div className="flex items-center justify-between gap-4 text-neutral-light-600 text-lg font-bold pt-7.25 pb-5.25 px-6 border-b border-b-primary-border">
-        <h3>Document Review</h3>
+        <h2>Document Review</h2>
         <button className=" h-8 w-8 bg-[#F4F3F5] rounded-full cursor-pointer" onClick={()=>modal(false)}>
           <CircleXIcon size={12} className=" h-3 w-3 text-neutral-light-300 mx-auto" />
         </button>
@@ -169,9 +169,9 @@ const EventModalIndex = ({person, modal}: EventsModalInfoProps) => {
                           src={attendee.avatar}
                           alt={attendee.name}
                           draggable={false}
-                          className={`w-8 h-8 rounded-full border-2 border-neutral-white object-cover select-none -translate-y-4 text-xs ${translater(index)}`}
+                          className={`w-8 h-8 rounded-full border-2 text-[10px] border-neutral-white object-cover select-none -translate-y-4 ${translater(index)}`}
                         /> :
-                        <span className={`inline-flex absolute items-center justify-center shrink-0 w-8 h-8 border-2 border-neutral-white rounded-full select-none -translate-y-4 ${translater(index)} ${
+                        <span className={`inline-flex absolute text-[10px] items-center justify-center shrink-0 w-8 h-8 border-2 border-neutral-white rounded-full select-none -translate-y-4 ${translater(index)} ${
                           AVATAR_COLORS[index % AVATAR_COLORS.length]
                         }`}>{initials(attendee.name)}</span>
                       }
@@ -179,7 +179,7 @@ const EventModalIndex = ({person, modal}: EventsModalInfoProps) => {
                   ))}
                 </div>
                 {(person.attendees>6) && 
-                  <span className="inline-flex relative font-medium text-sm text-neutral-light-300 select-none">+&nbsp;{person.attendees-6}</span>
+                  <span className="inline-flex relative font-medium text-sm text-neutral-light-300 select-none">+{person.attendees-6}&nbsp;more</span>
                 }
               </div>
               <div className="flex flex-col border-[.5px] border-[#E6E5EA] py-2 px-4 rounded-xl">
@@ -191,9 +191,9 @@ const EventModalIndex = ({person, modal}: EventsModalInfoProps) => {
                           src={attendee.avatar}
                           alt={attendee.name}
                           draggable={false}
-                          className="w-9 h-9 rounded-full  object-cover select-none text-xs"
+                          className="w-9 h-9 rounded-full  object-cover select-none text-[10px]"
                         /> :
-                        <span className={`inline-flex items-center justify-center shrink-0 w-9 h-9 rounded-full select-none ${
+                        <span className={`inline-flex items-center justify-center text-[10px] shrink-0 w-9 h-9 rounded-full select-none ${
                           AVATAR_COLORS[index % AVATAR_COLORS.length]
                         }`}>{initials(attendee.name)}</span>
                       }
