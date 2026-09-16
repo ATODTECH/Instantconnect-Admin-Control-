@@ -148,23 +148,23 @@ const KYCHomeIndex = () => {
     // Pass in the selected sorted users to export as CSV
     const THE_SELECTED = [...selected].sort()
     const headers = ['USER_ID','NAME','EMAIL','PHONE_NUMBER','GENDER','DOB','LOCATION','DOC_TYPE','SUBMITTED_DATE','KYC_STATUS','KYC_ACTION']
-    const rows = THE_SELECTED.map((id) => [USERS[+id-1].userID, USERS[+id-1].name, USERS[+id-1].email, USERS[+id-1].phoneNumber, USERS[+id-1].gender, USERS[+id-1].dob, USERS[+id-1].location, USERS[+id-1].docType, USERS[+id-1].kycDateSubmitted, USERS[+id-1].kyc, USERS[+id-1].action])
+    const rows = THE_SELECTED.map((id) => 
+      [USERS[+id-1].userID, USERS[+id-1].name, USERS[+id-1].email, USERS[+id-1].phoneNumber, USERS[+id-1].gender, USERS[+id-1].dob, USERS[+id-1].location, [USERS[+id-1].docType.nin, USERS[+id-1].docType.otherKYCType], USERS[+id-1].kycDateSubmitted, USERS[+id-1].kyc, USERS[+id-1].action]
+      .map((field) => `"${String(field).replace(/"/g, '""')}"`)
+      .join(",")
+    )
 
-    const csvContent = [
-      headers.join(','),
-      ...rows.map((row) => row.join(',')),
-    ].join('\n');
+    const csvContent = [headers.join(','), ...rows].join('\n');
     const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'})
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
-    
-    link.setAttribute('href', url)
-    link.setAttribute('download', 'InstantConnect_KYC_Users.csv')
+    link.href = url
+    link.download = 'InstantConnect-KYC-Users.csv'
     document.body.appendChild(link)
-    
     // Trigger download and clean up
     link.click()
-    document.body.removeChild(link)
+    link.remove()
+    URL.revokeObjectURL(url)
   }
 
   const handleModal = (index: number) => {

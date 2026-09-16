@@ -256,23 +256,23 @@ const UsersHomeIndex = () => {
     // Pass in the selected sorted users to export as CSV
     const THE_SELECTED = [...selected].sort()
     const headers = ['USER_ID','NAME','EMAIL','PHONE_NUMBER','GENDER','DOB','LOCATION','LAST_ACTIVE','STATUS','KYC','PLAN','IS_PRO','EVENT_CREATED','EVENT_ATTENDED','CONNECTION','COMMUNITY','JOINED']
-    const rows = THE_SELECTED.map((id) => [USERS[+id-1].userID, USERS[+id-1].name, USERS[+id-1].email, USERS[+id-1].phoneNumber, USERS[+id-1].gender, USERS[+id-1].dob, USERS[+id-1].location, USERS[+id-1].lastActive, USERS[+id-1].status, USERS[+id-1].kyc, USERS[+id-1].plan, USERS[+id-1].isPro, USERS[+id-1].eventCreated, USERS[+id-1].eventsAttended, USERS[+id-1].connection, USERS[+id-1].communities, USERS[+id-1].joined])
+    const rows = THE_SELECTED.map((id) => 
+      [USERS[+id-1].userID, USERS[+id-1].name, USERS[+id-1].email, USERS[+id-1].phoneNumber, USERS[+id-1].gender, USERS[+id-1].dob, USERS[+id-1].location, USERS[+id-1].lastActive, USERS[+id-1].status, USERS[+id-1].kyc, USERS[+id-1].plan, USERS[+id-1].isPro, USERS[+id-1].eventCreated, USERS[+id-1].eventsAttended, USERS[+id-1].connection, USERS[+id-1].communities, USERS[+id-1].joined]
+      .map((field) => `"${String(field).replace(/"/g, '""')}"`)
+      .join(",")
+    )
 
-    const csvContent = [
-      headers.join(','),
-      ...rows.map((row) => row.join(',')),
-    ].join('\n');
+    const csvContent = [headers.join(','), ...rows].join('\n');
     const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'})
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
-    
-    link.setAttribute('href', url)
-    link.setAttribute('download', 'InstantConnect_Users.csv')
+    link.href = url
+    link.download = 'InstantConnect-Users.csv'
     document.body.appendChild(link)
-    
     // Trigger download and clean up
     link.click()
-    document.body.removeChild(link)
+    link.remove()
+    URL.revokeObjectURL(url)
   }
 
   const handleModal = (index: number) => { 
@@ -571,6 +571,7 @@ const UsersHomeIndex = () => {
 
           {/* Footer / pagination */}
           <div className="flex items-center justify-between px-5 py-4 border-t border-slate-100 flex-wrap gap-3">
+            
             <p className="text-sm font-semibold text-neutral-light-300/60">
               {
                 (filtered.length===0)?
@@ -580,7 +581,9 @@ const UsersHomeIndex = () => {
                 </span>
               }
             </p>
+
             <div className="flex items-center gap-2">
+              
               {/* Previous */}
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
@@ -619,7 +622,7 @@ const UsersHomeIndex = () => {
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={safePage === totalPages}
                 className={`inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-xl border transition-colors ${
-                  safePage === totalPages
+                  (safePage === totalPages)
                     ? "border-slate-200 text-slate-300 cursor-not-allowed"
                     : "border-slate-200 text-slate-700 hover:bg-slate-50"
                 }`}
