@@ -190,7 +190,7 @@ const KYCModalInfo = ({ person, modal }: KYCModalInfoProps) => {
               placeholder="Add review notes or reason for rejection here..." 
               className=" w-full font-normal text-sm bg-[#FBFBFD] text-neutral-light-500 placeholder:text-[#64748B] rounded-lg border border-primary-border p-3 outline-0 min-h-18 mb-5"></textarea>
             <div className="flex items-center gap-4">
-              <button className=" w-full py-3 text-center rounded-lg text-sm text-neutral-white font-semibold bg-secondary-green-500 disabled:cursor-not-allowed cursor-pointer" disabled={status === "submitting"} onClick={() => handleDecision("approved")}>Approve</button>
+              <button className=" w-full py-3 text-center rounded-lg text-sm text-neutral-white font-semibold bg-secondary-green-500 disabled:cursor-not-allowed cursor-pointer" disabled={(status === "submitting") || (person.action==="Review")} onClick={() => {(person.action==="Review") ? "": handleDecision("approved")}}>Approve</button>
               <button className=" w-full py-3 text-center rounded-lg text-sm text-neutral-white font-semibold bg-[#EF4444] disabled:cursor-not-allowed cursor-pointer" disabled={status === "submitting"} onClick={() => handleDecision("rejected")}>Reject</button>
             </div>
             {status=== "submitting" && <Loader2Icon size={24} strokeWidth={2} className="h-5 w-5 text-secondary-green-500 animate-spin mt-4" />}

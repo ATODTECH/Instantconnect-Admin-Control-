@@ -113,7 +113,7 @@ function generateCommunities(count: number): CommunityRow[] {
   return rows.sort((a, b) => b.dateCreated.getTime() - a.dateCreated.getTime());
 }
 
-const ALL_EVENTS = generateCommunities(486)
+const ALL_COMMUNITIES = generateCommunities(486)
 
 // .................... End mock data ....................
 
@@ -232,7 +232,7 @@ const CommunitiesHomeIndex = () => {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
 
-    return ALL_EVENTS.filter((ev) => {
+    return ALL_COMMUNITIES.filter((ev) => {
       if (q && !ev.createdBy.toLowerCase().includes(q) && !ev.communityName.toLowerCase().includes(q)) return false;
       if (activeTab !== "All" && ev.status !== activeTab) return false;
       if (categoryFilter !== "All" && ev.category !== categoryFilter) return false;

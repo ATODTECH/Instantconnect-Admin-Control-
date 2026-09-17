@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useRef, useEffect } from "react";
 import { ChevronDown, Download, MoreHorizontal, Check, ArrowLeft, ArrowRight, Ellipsis, CircleXIcon, ShieldAlert, MessageSquare, Ban } from "lucide-react";
-import { KycStatus, Plan, Status } from "@/types/users";
 import { useQuery } from "@/components/topbar";
 import { Action, KYCDocType, Priority } from "@/types/kyc-verification";
 

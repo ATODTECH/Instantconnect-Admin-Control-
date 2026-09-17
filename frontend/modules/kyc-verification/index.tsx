@@ -1,6 +1,5 @@
 "use client"
 
-import { KycStatus } from "@/types/users";
 import GridCard from "./gridcard"
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@/components/topbar";
