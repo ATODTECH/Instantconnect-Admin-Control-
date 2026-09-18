@@ -179,7 +179,7 @@ function Dropdown({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-colors"
+        className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-colors cursor-pointer"
       >
         <span>{value === "All" || (value === "All time") ? label : value}</span>
         <ChevronDown className="h-4 w-4 text-gray-400" />
@@ -365,7 +365,7 @@ const EventsHomeIndex = () => {
                 <button
                   key={tab.label}
                   onClick={() => handleTab(tab.status)}
-                  className={`rounded-md px-3.5 py-1.5 text-[13px] font-medium transition-colors ${
+                  className={`rounded-md px-3.5 py-1.5 text-[13px] font-medium transition-colors cursor-pointer ${
                     activeTab === tab.status
                       ? "bg-white text-neutral-light-600 shadow-sm font-semibold"
                       : "text-neutral-light-400 hover:text-gray-700"

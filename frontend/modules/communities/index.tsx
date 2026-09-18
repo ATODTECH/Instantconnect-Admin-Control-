@@ -342,7 +342,7 @@ const CommunitiesHomeIndex = () => {
                 <button
                   key={tab.label}
                   onClick={() => handleTab(tab.status)}
-                  className={`rounded-md px-3.5 py-1.5 text-[13px] font-medium transition-colors ${
+                  className={`rounded-md px-3.5 py-1.5 text-[13px] font-medium transition-colors cursor-pointer ${
                     activeTab === tab.status
                       ? "bg-white text-neutral-light-600 shadow-sm font-semibold"
                       : "text-neutral-light-400 hover:text-gray-700"

@@ -21,7 +21,7 @@ const HeaderIndex = ({icons}: HeaderProps) => {
     {name:"Events", route:"/events", icon:Calendar},
     {name:"Communities", route:"/communities", icon:MessageCircle},
     {name:"Subscriptions", route:"/subscriptions", icon:Wallet},
-    {name:"Platform Settings", route:"", icon:Settings},
+    {name:"Platform Settings", route:"/settings", icon:Settings},
   ]
 
   return (
