@@ -2,6 +2,8 @@
 import { useState } from "react"
 import GeneralSettings from "./general";
 import NotificationSettings from "./notifications";
+import SecuritySettings from "./security";
+import PaymentSettings from "./payment";
 
 const TABS: { 
   id: TabId; 
@@ -43,6 +45,10 @@ const SettingsHomeIndex = () => {
           (<GeneralSettings />)}
           {(activeTab==="notifications") && 
           (<NotificationSettings />)}
+          {(activeTab==="security") && 
+          (<SecuritySettings />)}
+          {(activeTab==="payment") && 
+          (<PaymentSettings />)}
         </div>
       </div>
     </div>

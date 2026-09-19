@@ -43,7 +43,7 @@ export const Toggle = ({
       className={[
         "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full",
         "transition-colors duration-200 ease-in-out",
-        "focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-light-600 focus-visible:ring-offset-2 cursor-pointer",
+        "focus:outline-none focus-visible:ring-1 focus-visible:ring-purple-light-600 focus-visible:ring-offset-2 cursor-pointer",
         checked ? "bg-purple-light-600" : "bg-[#CBD5E1]",
       ].join(" ")}
     >
@@ -98,7 +98,7 @@ export const TextField = ({
         className,
         "rounded-lg border border-slate-200 bg-neutral-white px-3 py-2 text-sm font-normal text-neutral-light-500 truncate",
         "shadow-sm transition-colors",
-        "focus:outline-none focus:ring-2 focus:ring-purple-light-600 focus:border-purple-light-600",
+        "focus:outline-none focus:ring-1 focus:ring-purple-light-600 focus:border-purple-light-600",
       ].join(" ")}
     />
   )
@@ -123,7 +123,7 @@ export const NumberField = ({
           suffix ? "pr-7" : "",
           "rounded-lg border border-slate-200 bg-neutral-white px-3 py-2 text-sm font-normal text-neutral-light-500",
           "shadow-sm transition-colors",
-          "focus:outline-none focus:ring-2 focus:ring-purple-light-600 focus:border-purple-light-600",
+          "focus:outline-none focus:ring-1 focus:ring-purple-light-600 focus:border-purple-light-600",
         ].join(" ")}
       />
       {suffix && (
@@ -152,7 +152,7 @@ export const SelectField = ({
           className,
           "appearance-none rounded-lg border border-slate-200 bg-neutral-white px-3 py-2 pr-9 text-sm font-normal text-neutral-light-500",
           "shadow-sm transition-colors",
-          "focus:outline-none focus:ring-2 focus:ring-purple-light-600 focus:border-purple-light-600",
+          "focus:outline-none focus:ring-1 focus:ring-purple-light-600 focus:border-purple-light-600",
         ].join(" ")}
       >
         {options.map((opt) => (
@@ -443,7 +443,7 @@ const GeneralSettings = () => {
       {/* Actions */}
       <div className="flex items-center justify-end gap-3 pb-4">
         {justSaved && (
-          <span className="mr-auto text-sm font-medium text-emerald-600">
+          <span className="mr-auto text-sm font-medium text-secondary-green-500">
             Changes saved
           </span>
         )}
