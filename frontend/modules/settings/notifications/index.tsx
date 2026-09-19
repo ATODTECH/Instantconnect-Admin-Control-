@@ -4,28 +4,6 @@ import { KeyboardEvent, useRef, useState } from "react";
 import { FieldShell, Panel, Toggle } from "../general";
 import { CircleX } from "lucide-react";
 
-interface NotificationState {
-  welcomeEmail: boolean;
-  subscriptionConfirmation: boolean;
-  paymentReceipt: boolean;
-  paymentFailedAlert: boolean;
-  eventReminder: boolean;
-  kycStatusUpdate: boolean;
-  accountDeactivationWarning: boolean;
-
-  newMessage: boolean;
-  connectionRequest: boolean;
-  eventUpdates: boolean;
-  communityActivity: boolean;
-  nearbyEvents: boolean;
-
-
-  failedPaymentAlerts: boolean;
-  newKycSubmission: boolean;
-  reportedContent: boolean;
-  highTrafficWarning: boolean;
-  adminEmailRecipients: string[];
-}
 
 const initialNotification: NotificationState = {
   welcomeEmail: true,
@@ -75,20 +53,20 @@ const EmailRecipientsField = ({
     onChange([...emails, value]);
     setDraft("");
     setError(null);
-  };
+  }
 
   const removeEmail = (email: string) => {
-    onChange(emails.filter((e) => e !== email));
-  };
+    onChange(emails.filter((e) => e !== email))
+  }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" || e.key === ",") {
-      e.preventDefault(); 
-      commitDraft();
+      e.preventDefault()
+      commitDraft()
     } else if (e.key === "Backspace" && draft === "" && emails.length > 0) {
-      onChange(emails.slice(0, -1));
+      onChange(emails.slice(0, -1))
     }
-  };
+  }
 
   return (
     <div className="mt-6">
@@ -102,7 +80,7 @@ const EmailRecipientsField = ({
           "transition-colors cursor-text",
           error
             ? "border-red-300 ring-1 ring-red-200"
-            : "border-slate-200 focus-within:ring-2 focus-within:ring-purple-light-600 focus-within:border-puli600ring-purple-light-600",
+            : "border-slate-200 focus-within:ring-1 focus-within:ring-purple-light-600 ring-purple-light-600",
         ].join(" ")}
       >
         {emails.map((email) => (
@@ -153,13 +131,13 @@ const NotificationSettings = () => {
   const set = <K extends keyof NotificationState>(key: K, value: NotificationState[K]) =>
     setSettings((prev) => ({ ...prev, [key]: value }))
 
-  const handleDiscard = () => setSettings(savedSettings);
+  const handleDiscard = () => setSettings(savedSettings)
 
   const handleSave = () => {
-    setSavedSettings(settings);
-    setJustSaved(true);
-    window.setTimeout(() => setJustSaved(false), 2000);
-  };
+    setSavedSettings(settings)
+    setJustSaved(true)
+    window.setTimeout(() => setJustSaved(false), 2000)
+  }
 
   return (
     <div className="space-y-6">
@@ -337,7 +315,7 @@ const NotificationSettings = () => {
       {/* Actions */}
       <div className="flex items-center justify-end gap-3 pb-4">
         {justSaved && (
-          <span className="mr-auto text-sm font-medium text-emerald-600">
+          <span className="mr-auto text-sm font-medium text-secondary-green-500">
             Changes saved
           </span>
         )}
