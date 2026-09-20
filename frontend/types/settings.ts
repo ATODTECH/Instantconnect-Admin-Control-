@@ -81,10 +81,41 @@ interface SecurityState {
   rightToDeletion: boolean;
 }
 
+interface ContentModerationState {
+  aIContentFilter: boolean;
+  profanityFilter: boolean;
+  spamDetection: boolean;
+  nsfwImageDetection: boolean;
+  linkScreening: boolean;
+  sensitivityLevel: string;
+
+  reportsThresholdForAutoHide: number;
+  reportsThresholdForAutoBan: number;
+  reviewQueuePriority: string;
+  notifyReporterOnAction: boolean;
+  appealWindow: number;
+
+  blockedWords: string[];
+  blockedDomains: string[];
+  blockedFileTypes: string[];
+
+  firstOffense: string;
+  secondOffense: string;
+  thirdOffense: string;
+  repeatOffender: string;
+  autoEscalation: boolean;
+}
 
 interface WhitelistedIPsProps {
   ips: string[];
   onChange: (emails: string[]) => void;
+}
+
+interface BannedFieldProps {
+  title: string;
+  description: string;
+  ban: string[];
+  onChange: (ban: string[]) => void;
 }
 
 interface ToggleProps {

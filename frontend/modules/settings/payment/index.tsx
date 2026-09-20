@@ -75,7 +75,7 @@ const initialState: BillingState = {
   },
 }
 
-const FieldPayment = ({
+export const FieldPayment = ({
   label,
   description,
   htmlFor,
@@ -96,30 +96,14 @@ const baseInputClasses = [
   "w-full rounded-lg border border-slate-200 bg-neutral-white px-3 py-2 text-sm text-neutral-light-600",
   "shadow-sm transition-colors",
   "focus:outline-none focus:ring-1 focus:ring-purple-light-600 focus:border-purple-light-600",
-].join(" ");
+].join(" ")
 
-const TextFieldPayment = ({
-  id,
-  value,
-  onChange,
-}: TextFieldProps) => {
-  return (
-    <input
-      id={id}
-      type="text"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className={baseInputClasses}
-    />
-  )
-}
-
-function SelectField({
+export const SelectFieldPayment = ({
   id,
   value,
   onChange,
   options,
-}: SelectFieldProps) {
+}: SelectFieldProps) => {
   return (
     <div className="relative">
       <select
@@ -140,7 +124,7 @@ function SelectField({
 }
 
 /** A numeric input with a fixed, non-editable prefix badge, e.g. "NGN 500" or "% 85". */
-const PrefixedNumberField = ({
+export const PrefixedNumberField = ({
   id,
   prefix,
   value,
@@ -163,29 +147,6 @@ const PrefixedNumberField = ({
         onChange={(e) => onChange(Number(e.target.value))}
         className="w-full rounded-r-lg bg-transparent px-3 py-2 text-sm font-normal text-neutral-light-600 focus:outline-none"
       />
-    </div>
-  )
-}
-
-// marked for removal, replaces fieldShell
-function ToggleRow({
-  label,
-  description,
-  checked,
-  onChange,
-}: {
-  label: string;
-  description: string;
-  checked: boolean;
-  onChange: (value: boolean) => void;
-}) {
-  return (
-    <div className="flex items-start justify-between gap-6">
-      <div>
-        <p className="text-sm font-medium text-slate-800">{label}</p>
-        <p className="mt-0.5 text-xs text-slate-400">{description}</p>
-      </div>
-      <Toggle checked={checked} onChange={onChange} label={label} />
     </div>
   )
 }
@@ -261,7 +222,7 @@ const CopyField = ({ id, value }: CopyFieldProps) => {
   )
 }
 
-const CurrencyChips = ({
+export const CurrencyChips = ({
   currencies,
   onChange,
 }: CurrencyChipsProps) => {
@@ -512,7 +473,7 @@ const PaymentSettings = () => {
             description="Main payment processor for all transactions" 
             htmlFor="primaryGateway"
           >
-            <SelectField
+            <SelectFieldPayment
               id="primaryGateway"
               value={state.paymentGateway.primaryGateway}
               onChange={(v) => setGateway("primaryGateway", v)}
@@ -575,7 +536,7 @@ const PaymentSettings = () => {
             description="Primary currency for all transactions" 
             htmlFor="defaultCurrency"
           >
-            <SelectField
+            <SelectFieldPayment
               id="defaultCurrency"
               value={state.currencyPricing.defaultCurrency}
               onChange={(v) => setCurrency("defaultCurrency", v)}
@@ -674,7 +635,7 @@ const PaymentSettings = () => {
           </FieldPayment>
 
           <FieldPayment label="Payout Schedule" description="How often payouts are processed" htmlFor="payoutSchedule">
-            <SelectField
+            <SelectFieldPayment
               id="payoutSchedule"
               value={state.payout.payoutSchedule}
               onChange={(v) => setPayout("payoutSchedule", v)}

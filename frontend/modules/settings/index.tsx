@@ -4,6 +4,7 @@ import GeneralSettings from "./general";
 import NotificationSettings from "./notifications";
 import SecuritySettings from "./security";
 import PaymentSettings from "./payment";
+import ContentModerationSettings from "./content-moderation";
 
 const TABS: { 
   id: TabId; 
@@ -49,6 +50,8 @@ const SettingsHomeIndex = () => {
           (<SecuritySettings />)}
           {(activeTab==="payment") && 
           (<PaymentSettings />)}
+          {(activeTab==="content-moderation") && 
+          (<ContentModerationSettings />)}
         </div>
       </div>
     </div>

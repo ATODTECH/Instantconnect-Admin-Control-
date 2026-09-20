@@ -47,7 +47,7 @@ const SectionHead = ({
     <div className="flex items-center justify-between pb-4">
       <div>
         <h3
-          className="block text-sm font-semibold text-neutral-light-500"
+          className="block text-base font-semibold text-neutral-light-600"
         >
           {title}
         </h3>
