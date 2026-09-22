@@ -1,5 +1,4 @@
 "use client"
-
 import GridCard from "./gridcard"
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@/components/topbar";
@@ -8,6 +7,7 @@ import { ArrowLeft, ArrowRight, Download, MoreHorizontal, RefreshCw } from "luci
 import { Action, Priority } from "@/types/kyc-verification";
 import KYCModalInfo from "./kyc-modal-info";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const kycStyles: Record<KycStatus, string> = {
   Verified: "bg-[#DCFCE7] text-[#4ADE80]",
@@ -87,7 +87,6 @@ const KYCHomeIndex = () => {
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [kycFilter, setKycFilter] = useState<string>(KYC_OPTIONS[0])
   const [page, setPage] = useState(1)
-
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -174,6 +173,18 @@ const KYCHomeIndex = () => {
     )
   }
 
+  
+  // for test
+  const [isView, setView] = useState(false)
+  const router = useRouter()
+  useEffect(() => {
+    let role = localStorage.getItem('roleTest')
+    if (role) {setView(true)}
+    else {router.replace('/login')}
+  }, [])
+
+  if (isView === false) return (<></>);
+  // end for test
 
   return (
     <div className="flex-1 flex flex-col gap-y-6 overflow-y-auto scrollbar-thin pr-8">

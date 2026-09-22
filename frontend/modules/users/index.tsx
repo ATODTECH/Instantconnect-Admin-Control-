@@ -1,9 +1,9 @@
 "use client"
-
 import { useState, useMemo, useRef, useEffect } from "react";
 import { ChevronDown, Download, MoreHorizontal, Check, ArrowLeft, ArrowRight, Ellipsis, CircleXIcon, ShieldAlert, MessageSquare, Ban } from "lucide-react";
 import { useQuery } from "@/components/topbar";
 import { Action, KYCDocType, Priority } from "@/types/kyc-verification";
+import { useRouter } from "next/navigation";
 
 
 interface ExportUserRecord {
@@ -190,7 +190,7 @@ const UsersHomeIndex = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [])
 
- const filtered = useMemo(() => {
+  const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     const windowDays = DATE_WINDOW_DAYS[dateFilter as (typeof DATE_OPTIONS)[number]];
  
@@ -244,11 +244,11 @@ const UsersHomeIndex = () => {
   
   const initials = (name: string) => {
     return name
-        .split(" ")
-        .map((part) => part[0])
-        .slice(0, 2)
-        .join("")
-        .toUpperCase();
+      .split(" ")
+      .map((part) => part[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
   }
 
   const handleExport = () => {
@@ -406,6 +406,19 @@ const UsersHomeIndex = () => {
       </div>
     )
   }
+
+
+  // for test
+  const [isView, setView] = useState(false)
+  const router = useRouter()
+  useEffect(() => {
+    let role = localStorage.getItem('roleTest')
+    if (role) {setView(true)}
+    else {router.replace('/login')}
+  }, [])
+
+  if (isView === false) return (<></>);
+  // end for test
 
 
   return (

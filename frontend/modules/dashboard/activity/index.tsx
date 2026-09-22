@@ -1,9 +1,7 @@
 "use client"
-
 import { ActivityRow, ActivityStatus } from "@/types/dashboard";
 import { ArrowRight } from "lucide-react"
 import { useState } from "react";
-
 
 
 // to-be API DATA 
@@ -78,7 +76,8 @@ const ActivityIndex = () => {
 
 
   function formatRelativeDate(iso: string) {
-    const date = new Date(iso);
+    // const date = new Date(iso);
+    const date = new Date("Mon Sep 21 2026 14:38:20 GMT+0100");
     const now = new Date();
     const isToday = date.toDateString() === now.toDateString();
     const yesterday = new Date(now);

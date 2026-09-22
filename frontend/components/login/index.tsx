@@ -1,20 +1,18 @@
 "use client"
 import { ValidateLogin } from "@/app/_lib/server/validate-login/login";
+import WorldGlobe from "@/assets/images/world-globe.gif"
 import { ChevronDown } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   useActionState,
+  useEffect,
   useId,
   useRef,
   useState,
   type ChangeEvent,
   type FocusEvent,
 } from "react";
-
-interface AdminLoginPayload {
-  role: AdminRole;
-  username: string;
-  password: string;
-}
 
 const ROLE_OPTIONS: { value: AdminRole; label: string }[] = [
   { value: "admin", label: "As an admin" },
@@ -92,6 +90,7 @@ const LoginHomeIndex = () => {
   const [touched, setTouched] = useState<Touched>({});
   const [showPassword, setShowPassword] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const router = useRouter();
   const [state, login, isPending] = useActionState(ValidateLogin, undefined);
 
   const roleRef = useRef<HTMLSelectElement>(null);
@@ -141,7 +140,7 @@ const LoginHomeIndex = () => {
     }
 
     setValues({
-      role: "",
+      role: "admin" as AdminRole,
       username: "",
       password: "",
     })
@@ -149,14 +148,30 @@ const LoginHomeIndex = () => {
     if (!login) return;
   }
 
-  if (state?.message === 'success') {
+  
+  // to be changed to re-route and not localStorage
+  useEffect(() => {
+    localStorage.clear()
+  }, [])
+  if (state?.message === "admin") {
+    localStorage.setItem('roleTest', 'admin')
+    location.replace('/')
+  } else if (state?.message === "master admin") {
+    localStorage.setItem('roleTest', 'master admin')    
     location.replace('/')
   }
+  // end
 
   return (
     <div className="grid lg:grid-cols-3 h-full">
-      <div className="flex flex-col px-10 justify-center items-center bg-bg-primary">
-        <div aria-hidden={true} className="hidden lg:flex flex-col gap-5 max-w-80 text-neutral-white">
+      <div className="flex flex-col relative isolate justify-center items-center bg-fixed bg-bg-primary">
+        <Image
+          src={WorldGlobe}
+          alt="world globe"
+          loading="eager"
+          className="absolute text-[8px] h-full w-full object-right object-cover mix-blend-multiply"
+        />
+        <div aria-hidden={true} className="hidden lg:flex flex-col gap-5 items-center justify-center z-20 h-full mx-10 max-w-80 text-neutral-white">
           <h1 className="text-3xl text-transparent bg-clip-text bg-[linear-gradient(308.91deg,#FB923C_-14.83%,#F67B58_-0.69%,#F05E7E_17.87%,#EC4899_31.57%,#CE41B5_56.42%,#A136DD_96.49%,#9333EA_106.56%)] font-extrabold">
             Welcome to <br /> Admin InstantConnect
           </h1>
@@ -165,8 +180,15 @@ const LoginHomeIndex = () => {
           </p>
         </div>
       </div>
-      <main className="relative col-span-2 flex items-center justify-center bg-slate-100 px-4 py-10">
-        <section className=" 2xl:w-[40%] overflow-hidden rounded-lg bg-neutral-white shadow-sm ring-1 ring-slate-900/10">
+      <main className="relative col-span-2 flex items-center justify-center isolate bg-bg-primary lg:bg-slate-100 px-4 py-10">
+        <Image
+          src={WorldGlobe}
+          alt="world globe"
+          loading="eager"
+          aria-hidden={true}
+          className="absolute lg:hidden text-[8px] h-full w-full object-cover mix-blend-multiply"
+        />
+        <section className="2xl:w-[40%] overflow-hidden rounded-lg bg-neutral-white shadow-sm ring-1 ring-slate-900/10 z-20">
           <div
             aria-hidden={true}
             className={`h-1.5 motion-safe:transition-colors ${style.strip}`}
@@ -176,7 +198,7 @@ const LoginHomeIndex = () => {
             <h1 className="text-xl font-semibold text-neutral-light-600">
               Admin Sign In
             </h1>
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="mt-1 text-sm text-neutral-light-400">
               Choose your role, then enter your credentials.
             </p>
 
@@ -194,7 +216,7 @@ const LoginHomeIndex = () => {
               <div>
                 <label
                   htmlFor={`${uid}-role`}
-                  className="mb-1.5 block text-sm font-medium text-slate-800"
+                  className="mb-1.5 block text-sm font-medium text-neutral-light-600"
                 >
                   Admin role
                 </label>
@@ -221,7 +243,7 @@ const LoginHomeIndex = () => {
                       <option
                         key={option.value}
                         value={option.value}
-                        className="text-slate-900"
+                        className="text-neutral-light-600"
                       >
                         {option.label}
                       </option>
@@ -256,7 +278,7 @@ const LoginHomeIndex = () => {
               <div>
                 <label
                   htmlFor={`${uid}-username`}
-                  className="mb-1.5 block text-sm font-medium text-slate-800"
+                  className="mb-1.5 block text-sm font-medium text-neutral-light-600"
                 >
                   Username
                 </label>
@@ -303,7 +325,7 @@ const LoginHomeIndex = () => {
               <div>
                 <label
                   htmlFor={`${uid}-password`}
-                  className="mb-1.5 block text-sm font-medium text-slate-800"
+                  className="mb-1.5 block text-sm font-medium text-neutral-light-600"
                 >
                   Password
                 </label>

@@ -1,10 +1,11 @@
 "use client"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import GeneralSettings from "./general";
 import NotificationSettings from "./notifications";
 import SecuritySettings from "./security";
 import PaymentSettings from "./payment";
 import ContentModerationSettings from "./content-moderation";
+import { useRouter } from "next/navigation";
 
 const TABS: { 
   id: TabId; 
@@ -19,6 +20,19 @@ const TABS: {
 
 const SettingsHomeIndex = () => {
   const [activeTab, setActiveTab] = useState<TabId>("general")
+
+  // for test
+  const [isView, setView] = useState(false)
+  const router = useRouter()
+  useEffect(() => {
+    let role = localStorage.getItem('roleTest')
+    if (role) { setView(true) }
+    else { router.replace('/login') }
+    if (role!=="master admin") router.replace('/')
+  }, [])
+
+  if (isView === false) return (<></>);
+  // end for test
 
   return (
     <div className="flex-1 flex flex-col gap-y-6 overflow-y-auto scrollbar-thin pr-8">

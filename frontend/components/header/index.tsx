@@ -2,18 +2,16 @@
 import { LucideIcon } from "lucide-react"
 import LiveConnections from "@/icons/live-users.icon"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-
+import { usePathname, useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 
 interface HeaderProps {
   icons: LucideIcon[]
 }
+
 const HeaderIndex = ({icons}: HeaderProps) => {
-  const pathname = usePathname()
-
   const [LayoutDashboard,Users,FileText,Calendar,MessageCircle,Wallet,Settings] = icons
-
-  const nav = [
+  const route = [
     {name:"Dashboard", route:"/", icon:LayoutDashboard},
     {name:"User", route:"/users", icon:Users},
     {name:"KYC Verifications", route:"/kyc-verification", icon:FileText},
@@ -21,8 +19,19 @@ const HeaderIndex = ({icons}: HeaderProps) => {
     {name:"Events", route:"/events", icon:Calendar},
     {name:"Communities", route:"/communities", icon:MessageCircle},
     {name:"Subscriptions", route:"/subscriptions", icon:Wallet},
-    {name:"Platform Settings", route:"/settings", icon:Settings},
   ]
+  const [nav, setNav] = useState(route)
+  const pathname = usePathname()
+
+  
+  useEffect(() => {
+    let role = localStorage.getItem('roleTest')
+    if (role==="master admin" && nav[nav.length-1].name!=="Platform Settings") {
+      console.log(nav[nav.length-1].name)
+      setNav(prev => [...route, {name:"Platform Settings", route:"/settings", icon:Settings}])
+    }
+  }, [])
+
 
   return (
     <header className="flex flex-col gap-0.5 h-full overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-secondary [&::-webkit-scrollbar-track]:bg-[#1E293B] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:rounded-full ">

@@ -1,13 +1,14 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import GridCard from "./gridcard"
-import { ArrowLeft, ArrowRight, Calendar, ChevronDown, Download, Ellipsis, X } from "lucide-react"
+import { ArrowLeft, ArrowRight, ChevronDown, Download, Ellipsis, X } from "lucide-react"
 import { UserRecord } from "../users"
 import { AVATAR_COLORS } from "../live-connection"
 import { useQuery } from "@/components/topbar"
 import EventModalIndex from "./events-modal-info"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 
 
 //  ..........Generated MOCK Data from the below ...............
@@ -248,7 +249,7 @@ const EventsHomeIndex = () => {
   const [page, setPage] = useState(1)
 
   const today = useMemo(() => new Date(2026, 8, 15), []);
-
+  
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
 
@@ -349,6 +350,19 @@ const EventsHomeIndex = () => {
     setModal(true)
     contentModal(<EventModalIndex person={person} modal={(val)=> setModal(val)} />)
   }
+
+  
+  // for test
+  const [isView, setView] = useState(false)
+  const router = useRouter()
+  useEffect(() => {
+    let role = localStorage.getItem('roleTest')
+    if (role) {setView(true)}
+    else {router.replace('/login')}
+  }, [])
+
+  if (isView === false) return (<></>);
+  // end for test
 
   return (
     <div className="flex-1 flex flex-col gap-y-6 overflow-y-auto scrollbar-thin pr-8">

@@ -1,12 +1,25 @@
 "use client"
-
+import { useEffect, useState } from "react"
 import ActivityIndex from "./activity"
 import ChartIndex from "./charts"
 import GridCard from "./gridcard"
+import { useRouter } from "next/navigation"
 
 
 const DashboardHomeIndex = () => {
 
+  // for test
+  const [isView, setView] = useState(false)
+  const router = useRouter()
+  useEffect(() => {
+    let role = localStorage.getItem('roleTest')
+    if (role) {setView(true)}
+    else {router.replace('/login')}
+  }, [])
+
+  if (isView === false) return (<></>);
+  // end for test
+  
   return (
     <div className=" flex-1 flex flex-col gap-y-6 overflow-y-auto scrollbar-thin pr-8">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 items-center w-full">

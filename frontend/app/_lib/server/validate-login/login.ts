@@ -39,9 +39,13 @@ export const ValidateLogin = async (state: FormState, formData: FormData) => {
     // if (data.status!=200) {
     //   throw data.data;
     // }
+
+    // return {
+    //   message: 'success'
+    // }    
     
     return {
-      message: 'success'
+      message: validatedFields.data.role
     }    
       
   } catch (error: any) {
