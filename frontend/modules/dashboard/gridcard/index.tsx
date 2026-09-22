@@ -1,5 +1,4 @@
 "use client"
-
 const GridCard = () => {
 
   function formatCompactNumber(value: number) {

@@ -6,17 +6,29 @@ import TopBarIndex from "@/components/topbar"
 import { Calendar, FileText, LayoutDashboard, LogOutIcon, MessageCircle, Settings, Users, Wallet } from "lucide-react"
 
 import profile from "@/assets/images/profile.jpg"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import ModalIndex from "../_lib/ui/modal"
+import { useRouter } from "next/navigation"
 
 
 const Template = ({ children }: { children: React.ReactNode }) => {
   const [isModal, setModal] = useState<boolean>(false)
   const [modalContent, setModalContent] = useState<React.ReactNode>([])
 
-  const headerIcons = [LayoutDashboard,Users,FileText,Calendar,MessageCircle,Wallet,Settings]
+  const headerIcons = [LayoutDashboard,Users,FileText,Calendar,MessageCircle,Wallet,Settings] 
 
-  
+  // for test
+  const [isView, setView] = useState(false)
+  const router = useRouter()
+  useEffect(() => {
+    let role = localStorage.getItem('roleTest')
+    if (role) {setView(true)}
+    else { router.replace('/login') }
+  }, [])
+
+  if (isView === false) return (<></>);
+  // end for test
+
   return (
     <div className="flex relative min-w-5xl w-full h-screen">
       {isModal && (<>

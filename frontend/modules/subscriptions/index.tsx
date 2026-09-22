@@ -2,11 +2,12 @@
 import { ArrowLeft, ArrowRight, ChevronDown, Download, Ellipsis, X } from "lucide-react";
 import { USERS } from "../users";
 import GridCard from "./gridcard"
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@/components/topbar";
 import SubscriptionModalIndex from "./subscription-modal-info";
 import { AVATAR_COLORS } from "../live-connection";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 // .................... Start mock data ....................
 
@@ -293,6 +294,18 @@ const SubscriptionsHomeIndex = () => {
     contentModal(<SubscriptionModalIndex user={person} modal={(val)=> setModal(val)} />)
   }
 
+  
+  // for test
+  const [isView, setView] = useState(false)
+  const router = useRouter()
+  useEffect(() => {
+    let role = localStorage.getItem('roleTest')
+    if (role) {setView(true)}
+    else {router.replace('/login')}
+  }, [])
+
+  if (isView === false) return (<></>);
+  // end for test
 
   return (
     <div className="flex-1 flex flex-col gap-y-6 overflow-y-auto scrollbar-thin pr-8">
