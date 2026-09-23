@@ -42,7 +42,13 @@ export const ValidateLogin = async (state: FormState, formData: FormData) => {
 
     // return {
     //   message: 'success'
-    // }    
+    // }
+
+    if (validatedFields.data.username!="technical@admin.instantconnect.com" &&
+      validatedFields.data.password!="@/Admin_Instant#Connect$")
+      {
+      throw "error";
+    }
     
     return {
       message: validatedFields.data.role

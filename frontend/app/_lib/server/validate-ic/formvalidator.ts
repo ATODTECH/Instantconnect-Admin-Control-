@@ -7,7 +7,6 @@ export const LoginFormSchema = z.object({
   username: z
     .string()
     .min(3, {message:"Username must be a valid email. "})
-    .max(32, {message:"Username must be a valid email. "})
     .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, {message:"Email is not valid."})
     .trim(),
   password: z

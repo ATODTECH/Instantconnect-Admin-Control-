@@ -51,7 +51,7 @@ const validate = (values: FormValues): Errors => {
   const username = values.username.trim();
   if (!username) {
     errors.username = "Enter your username.";
-  } else if (username.length < 3 || username.length > 32) {
+  } else if (username.length < 3) {
     errors.username = "Username must be a valid email";
   } else if (!USERNAME_PATTERN.test(username)) {
     errors.username =
@@ -90,7 +90,6 @@ const LoginHomeIndex = () => {
   const [touched, setTouched] = useState<Touched>({});
   const [showPassword, setShowPassword] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const router = useRouter();
   const [state, login, isPending] = useActionState(ValidateLogin, undefined);
 
   const roleRef = useRef<HTMLSelectElement>(null);
@@ -189,7 +188,7 @@ const LoginHomeIndex = () => {
           unoptimized
           className="absolute lg:hidden text-[8px] h-full w-full object-cover mix-blend-multiply"
         />
-        <section className="2xl:w-[40%] overflow-hidden rounded-lg bg-neutral-white shadow-sm ring-1 ring-slate-900/10 z-20">
+        <section className="2xl:w-[40%] overflow-hidden rounded-lg bg-neutral-white shadow-sm ring-[.25px] ring-neutral-white z-20">
           <div
             aria-hidden={true}
             className={`h-1.5 motion-safe:transition-colors ${style.strip}`}
@@ -209,7 +208,7 @@ const LoginHomeIndex = () => {
                   role="alert"
                   className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800"
                 >
-                  An error occurred with your submission
+                  Invalid admin credentials was submitted
                 </div>
               )}
 
