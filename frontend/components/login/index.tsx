@@ -164,14 +164,14 @@ const LoginHomeIndex = () => {
 
   return (
     <div className="grid lg:grid-cols-3 h-full">
-      <div className="flex flex-col relative isolate justify-center items-center bg-fixed bg-bg-primary">
+      <div aria-hidden={true} className="hidden lg:flex flex-col relative isolate justify-center items-center bg-fixed bg-bg-primary">
         <Image
           src={WorldGlobe}
           alt="world globe"
           loading="eager"
           className="absolute text-[8px] h-full w-full object-right object-cover mix-blend-multiply"
         />
-        <div aria-hidden={true} className="hidden lg:flex flex-col gap-5 items-center justify-center z-20 h-full mx-10 max-w-80 text-neutral-white">
+        <div className="flex flex-col gap-5 items-center justify-center z-20 h-full mx-10 max-w-80 text-neutral-white">
           <h1 className="text-3xl text-transparent bg-clip-text bg-[linear-gradient(308.91deg,#FB923C_-14.83%,#F67B58_-0.69%,#F05E7E_17.87%,#EC4899_31.57%,#CE41B5_56.42%,#A136DD_96.49%,#9333EA_106.56%)] font-extrabold">
             Welcome to <br /> Admin InstantConnect
           </h1>
@@ -180,12 +180,13 @@ const LoginHomeIndex = () => {
           </p>
         </div>
       </div>
-      <main className="relative col-span-2 flex items-center justify-center isolate bg-bg-primary lg:bg-slate-100 px-4 py-10">
+      <main className="relative lg:col-span-2 flex items-center justify-center isolate bg-[#122348] lg:bg-slate-100 px-4 py-10">
         <Image
           src={WorldGlobe}
           alt="world globe"
           loading="eager"
           aria-hidden={true}
+          unoptimized
           className="absolute lg:hidden text-[8px] h-full w-full object-cover mix-blend-multiply"
         />
         <section className="2xl:w-[40%] overflow-hidden rounded-lg bg-neutral-white shadow-sm ring-1 ring-slate-900/10 z-20">
