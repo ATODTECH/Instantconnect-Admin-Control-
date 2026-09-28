@@ -3,7 +3,6 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import { ChevronDown, Download, MoreHorizontal, Check, ArrowLeft, ArrowRight, Ellipsis, CircleXIcon, ShieldAlert, MessageSquare, Ban } from "lucide-react";
 import { useQuery } from "@/components/topbar";
 import { Action, KYCDocType, Priority } from "@/types/kyc-verification";
-import { useRouter } from "next/navigation";
 
 
 interface ExportUserRecord {
@@ -408,17 +407,6 @@ const UsersHomeIndex = () => {
   }
 
 
-  // for test
-  const [isView, setView] = useState(false)
-  const router = useRouter()
-  useEffect(() => {
-    let role = localStorage.getItem('roleTest')
-    if (role) {setView(true)}
-    else {router.replace('/login')}
-  }, [])
-
-  if (isView === false) return (<></>);
-  // end for test
 
 
   return (
