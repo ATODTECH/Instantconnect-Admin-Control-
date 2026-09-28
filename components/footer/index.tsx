@@ -1,3 +1,4 @@
+import { SignOut } from "@/app/_lib/server/validate-login/login"
 import { LucideIcon } from "lucide-react"
 import Image, { StaticImageData } from "next/image"
 
@@ -22,7 +23,11 @@ const FooterIndex = ({icons, image}: FooterProps) => {
         <span className=" font-semibold text-sm text-primary">Kola Adebayo</span>
         <span className=" font-normal text-xs text-[#64748B]">Super Admin</span>
       </div>
-      <footerIcon.icon role="button" size={18} className={" text-[#64748B] hover:text-red-600 cursor-pointer"} onClick={()=>alert("coming soon!")} />
+      <form action={SignOut}>
+        <button type="submit" aria-label="Sign out" className="flex text-[#64748B] hover:text-red-600 cursor-pointer">
+          <footerIcon.icon size={18} aria-hidden />
+        </button>
+      </form>
     </footer>
   )
 }

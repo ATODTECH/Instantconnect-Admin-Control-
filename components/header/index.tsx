@@ -2,8 +2,7 @@
 import { LucideIcon } from "lucide-react"
 import LiveConnections from "@/icons/live-users.icon"
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { usePathname } from "next/navigation"
 
 interface HeaderProps {
   icons: LucideIcon[]
@@ -19,24 +18,16 @@ const HeaderIndex = ({icons}: HeaderProps) => {
     {name:"Events", route:"/events", icon:Calendar},
     {name:"Communities", route:"/communities", icon:MessageCircle},
     {name:"Subscriptions", route:"/subscriptions", icon:Wallet},
+    {name:"Platform Settings", route:"/settings", icon:Settings},
   ]
-  const [nav, setNav] = useState(route)
   const pathname = usePathname()
 
   
-  useEffect(() => {
-    let role = localStorage.getItem('roleTest')
-    if (role==="master admin" && nav[nav.length-1].name!=="Platform Settings") {
-      console.log(nav[nav.length-1].name)
-      setNav(prev => [...route, {name:"Platform Settings", route:"/settings", icon:Settings}])
-    }
-  }, [])
-
 
   return (
     <header className="flex flex-col gap-0.5 h-full overflow-y-auto scrollbar-thin scrollbar-thumb-[#1E293B] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-secondary [&::-webkit-scrollbar-track]:bg-[#1E293B] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:rounded-full ">
       {
-        nav.map((route, index) => (
+        route.map((route, index) => (
           <Link 
             key={route.name} 
             href={route.route}

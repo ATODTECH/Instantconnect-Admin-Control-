@@ -2,25 +2,20 @@ import { z } from 'zod'
 
 
 export const LoginFormSchema = z.object({
-  role: z
-    .enum(['admin','master admin'], {message:"Role must be either 'admin' or 'master admin'."}),
-  username: z
+  email: z
     .string()
-    .min(3, {message:"Username must be a valid email. "})
-    .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, {message:"Email is not valid."})
-    .trim(),
+    .trim()
+    .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, {message:"Enter a valid email address."}),
   password: z
     .string()
-    .min(8, {message:"Password must be at least 8 characters."})
-    .trim(),
+    .min(1, {message:"Enter your password."}),
 })
 
 
 export type FormState =
   | {
       errors?: {
-        role?: string[],
-        username?: string[],
+        email?: string[],
         password?: string[],
       }
       message?: string,

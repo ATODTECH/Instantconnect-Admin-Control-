@@ -1,10 +1,9 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import GridCard from "./gridcard"
 import Image from "next/image"
 import { AlertTriangle, ArrowLeft, ArrowLeftCircle, CheckCircleIcon, CircleCheck, CircleCheckBigIcon, Clock, MapPin } from "lucide-react"
 import GoogleMapIndex from "./google-maps"
-import { useRouter } from "next/navigation"
 
 // API DATA
 const LiveConnectUsers: LiveConnectUsersProps[] = [
@@ -150,17 +149,6 @@ const LiveConnectionHomeIndex = () => {
   const activeUser = LiveConnectUsers.filter(val => val.status==='active')
   const pastConnectionUser = LiveConnectUsers.filter(val => val.status!=='active')
 
-  // for test
-  const [isView, setView] = useState(false)
-  const router = useRouter()
-  useEffect(() => {
-    let role = localStorage.getItem('roleTest')
-    if (role) {setView(true)}
-    else {router.replace('/login')}
-  }, [])
-
-  if (isView === false) return (<></>);
-  // end for test
 
   const initials = (name: string) => {
     return name

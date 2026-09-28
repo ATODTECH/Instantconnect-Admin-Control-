@@ -1,63 +1,67 @@
 "use server"
 import z from "zod"
+import { redirect } from "next/navigation"
 import { FormState, LoginFormSchema } from "../validate-ic/formvalidator"
+import { AdminSession, apiUrl, createSession, deleteSession, readRefreshToken } from "../session"
 
 // POST
-export const ValidateLogin = async (state: FormState, formData: FormData) => {
+export const ValidateLogin = async (state: FormState, formData: FormData): Promise<FormState> => {
   const validatedFields = LoginFormSchema.safeParse({
-    role: formData.get('role'),
-    username: formData.get('username'),
+    email: formData.get('email'),
     password: formData.get('password'),
   })
-    
-  // If any form fields are invalid, return early
+
   if (!validatedFields.success) {
-    console.log(validatedFields.error)
     return {
       errors: z.flattenError(validatedFields.error).fieldErrors,
     }
   }
-  
-  // Call the provider or db to create a admin...
+
+  let res: Response
   try {
-    const mainData = JSON.stringify(validatedFields.data);
-
-    // const res = await fetch(`${process.env.API_URL}/admin/login/api/`, {
-    //   method: "POST",
-    //   mode: "cors",
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'API-Key': process.env.API_SECRET_KEY!,
-    //     'Origin': process.env.BASE_URL!,
-    //     'Access-Control-Request-Headers': 'X-PINGOTHER, Content-Type',
-    //     'Access-Control-Request-Method': 'POST',
-    //   },
-    //   body: mainData,
-    // });
-
-    // const data: res = await res.json();
-    // if (data.status!=200) {
-    //   throw data.data;
-    // }
-
-    // return {
-    //   message: 'success'
-    // }
-
-    if (validatedFields.data.username!="technical@admin.instantconnect.com" &&
-      validatedFields.data.password!="@/Admin_Instant#Connect$")
-      {
-      throw "error";
-    }
-    
-    return {
-      message: validatedFields.data.role
-    }    
-      
-  } catch (error: any) {
-    const err: string = error;
-    return {
-      message: err,
-    }
+    res = await fetch(apiUrl('/admin/auth/sign-in'), {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(validatedFields.data),
+      cache: 'no-store',
+    })
+  } catch {
+    return { message: "We couldn't reach the server. Check your connection and try again." }
   }
+
+  if (!res.ok) {
+    return { message: await signInErrorMessage(res) }
+  }
+
+  await createSession(await res.json() as AdminSession)
+  redirect('/')
+}
+
+export const SignOut = async () => {
+  const refreshToken = await readRefreshToken()
+
+  // The cookies go regardless: a failed revoke must not leave the admin signed in on this browser.
+  if (refreshToken) {
+    await fetch(apiUrl('/auth/sign-out'), {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken }),
+      cache: 'no-store',
+    }).catch(() => undefined)
+  }
+
+  await deleteSession()
+  redirect('/login')
+}
+
+async function signInErrorMessage(res: Response): Promise<string> {
+  if (res.status === 429) return "Too many sign in attempts. Wait a minute and try again."
+
+  const body = await res.json().catch(() => null) as { message?: unknown } | null
+
+  if ((res.status === 401 || res.status === 403) && typeof body?.message === 'string') {
+    return body.message
+  }
+
+  return "Something went wrong signing you in. Try again."
 }
