@@ -106,18 +106,6 @@ interface ContentModerationState {
   autoEscalation: boolean;
 }
 
-interface WhitelistedIPsProps {
-  ips: string[];
-  onChange: (emails: string[]) => void;
-}
-
-interface BannedFieldProps {
-  title: string;
-  description: string;
-  ban: string[];
-  onChange: (ban: string[]) => void;
-}
-
 interface ToggleProps {
   checked: boolean;
   onChange: (value: boolean) => void;
@@ -137,39 +125,6 @@ interface TextFieldProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
-}
-
-interface NumberFieldProps {
-  id: string;
-  value: number;
-  onChange: (value: number) => void;
-  suffix?: string;
-  className?: string;
-}
-
-interface SelectFieldProps {
-  id: string;
-  value: string;
-  onChange: (value: string) => void;
-  options: string[];
-  className?: string;
-}
-
-interface SelectField2FA {
-  id: string;
-  checked: boolean[];
-  onChange: (value: number) => void;
-  options: string[];
-}
-
-interface PanelProps {
-  title: string;
-  children: React.ReactNode;
-}
-
-interface EmailRecipientProps {
-  emails: string[];
-  onChange: (emails: string[]) => void;
 }
 
 // payment settings
@@ -210,23 +165,6 @@ interface RefundPolicyState {
   refundWindowHours: number;
   autoApproveRefundsUnder: number;
   requireAdminApproval: boolean;
-}
-
-interface PrefixedNumberFieldProps {
-  id: string;
-  prefix: string;
-  value: number;
-  onChange: (value: number) => void;
-}
-
-interface CopyFieldProps {
-  id: string;
-  value: string;
-}
-
-interface CurrencyChipsProps {
-  currencies: string[];
-  onChange: (currencies: string[]) => void;
 }
 
 interface PlanCardProps {

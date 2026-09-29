@@ -20,9 +20,3 @@ export interface ChecklistItem {
   checked: boolean;
 }
 
-export interface CheckboxRowProps {
-  id: string;
-  label: CheckedVerification;
-  checked: boolean;
-  onChange: () => void;
-}

@@ -1,0 +1,36 @@
+import api from "@/lib/axios"
+import type { AdminUserDetail, AdminUserFilters, AdminUserPage, MessageUserInput } from "@/types/admin-users"
+
+export const getUsers = async (filters: AdminUserFilters, offset: number, limit: number): Promise<AdminUserPage> => {
+  const { data } = await api.get<AdminUserPage>("/admin/users", { params: { ...filters, offset, limit } })
+  return data
+}
+
+export const getUser = async (id: string): Promise<AdminUserDetail> => {
+  const { data } = await api.get<AdminUserDetail>(`/admin/users/${id}`)
+  return data
+}
+
+export const messageUser = async ({ id, ...message }: MessageUserInput & { id: string }): Promise<void> => {
+  await api.post(`/admin/users/${id}/messages`, message)
+}
+
+const filenameFrom = (disposition?: string) =>
+  disposition?.match(/filename="([^"]+)"/)?.[1] ?? "instantconnect-users.csv"
+
+/** Every row matching the filters, or only `ids` when some are ticked. */
+export const exportUsers = async (filters: AdminUserFilters, ids: string[]): Promise<void> => {
+  const response = await api.get<Blob>("/admin/users/export", {
+    params: { ...filters, ids: ids.length ? ids.join(",") : undefined },
+    responseType: "blob",
+  })
+
+  const url = URL.createObjectURL(response.data)
+  const link = document.createElement("a")
+  link.href = url
+  link.download = filenameFrom(response.headers["content-disposition"])
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(url)
+}

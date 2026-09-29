@@ -33,7 +33,9 @@ const LoginForm = () => {
 	const { getFieldProps, errors, touched, handleSubmit } = formik;
 
 	return (
-		<form onSubmit={handleSubmit} noValidate className="w-full">
+		// method="post" keeps credentials out of the URL if the form is submitted
+		// before React has loaded and taken over the submit.
+		<form method="post" onSubmit={handleSubmit} noValidate className="w-full">
 			<h1 className="text-4xl font-semibold text-ink-title">Sign in</h1>
 			<p className="mt-2 text-sm text-ink-meta">
 				Welcome back. Enter your admin credentials to continue.

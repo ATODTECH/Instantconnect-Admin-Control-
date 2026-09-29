@@ -9,3 +9,15 @@ export const ROUTES = {
   subscriptions: "/dashboard/subscriptions",
   settings: "/dashboard/settings",
 } as const
+
+/** The title and one-line description the top bar shows for each page. */
+export const PAGE_HEADINGS: Record<string, { title: string, description: string }> = {
+  [ROUTES.overview]: { title: "Dashboard", description: "Welcome back, Admin. InstantConnect overview and quick metrics." },
+  [ROUTES.users]: { title: "User Management", description: "Manage platform members, KYC verification records, and billing tiers." },
+  [ROUTES.kycVerification]: { title: "KYC Verification", description: "Review and verify user identity documents." },
+  [ROUTES.liveConnection]: { title: "Live Connection", description: "Monitor active meetups and connection locations in real-time." },
+  [ROUTES.events]: { title: "Events", description: "Monitor and manage all platform events." },
+  [ROUTES.communities]: { title: "Community Management", description: "Monitor and manage all platform communities." },
+  [ROUTES.subscriptions]: { title: "Subscription Management", description: "Monitor and manage all platform subscriptions." },
+  [ROUTES.settings]: { title: "Platform Settings", description: "Configure and manage platform preferences." },
+}

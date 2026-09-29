@@ -6,31 +6,19 @@ import TopBarIndex from "@/components/topbar"
 import { Calendar, FileText, LayoutDashboard, LogOutIcon, MessageCircle, Settings, Users, Wallet } from "lucide-react"
 
 import profile from "@/assets/images/profile.jpg"
-import { useState } from "react"
-import ModalIndex from "@/components/modal"
 
+const HEADER_ICONS = [LayoutDashboard, Users, FileText, Calendar, MessageCircle, Wallet, Settings]
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
-  const [isModal, setModal] = useState<boolean>(false)
-  const [modalContent, setModalContent] = useState<React.ReactNode>([])
-
-  const headerIcons = [LayoutDashboard,Users,FileText,Calendar,MessageCircle,Wallet,Settings] 
-
-
   return (
     <div className="flex relative min-w-5xl w-full h-screen">
-      {isModal && (<>
-        <ModalIndex modal={(val)=>setModal(val)} content={modalContent} />
-      </>)}
       <aside className="flex gap-y-5 flex-col h-full px-5 py-8 w-65 bg-bg-primary">
         <LogoIndex />
-        <HeaderIndex icons={headerIcons} />
+        <HeaderIndex icons={HEADER_ICONS} />
         <FooterIndex icons={LogOutIcon} image={profile} />
       </aside>
       <div className="flex-1 w-[calc(100vw-16.25rem)] relative flex flex-col justify-between gap-6 pl-8 pt-7 bg-bg-secondary">
-        <TopBarIndex contentModal={(val) => setModalContent(val)} setModal={(val: boolean) => {setModal(val)}} image={profile}>
-          {children}
-        </TopBarIndex>
+        <TopBarIndex image={profile}>{children}</TopBarIndex>
       </div>
     </div>
   )

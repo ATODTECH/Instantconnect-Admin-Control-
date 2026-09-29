@@ -1,7 +1,10 @@
 "use client"
-import { KeyboardEvent, useEffect, useRef, useState } from "react"
-import { FieldShell, NumberField, SelectField, Toggle } from "../general"
-import { Check, ChevronDown, CircleX } from "lucide-react"
+import { useState } from "react"
+import { Check } from "lucide-react"
+import { CheckboxSelect, FieldShell, NumberField, Panel, SelectField, SettingsActions, TagInput, Toggle } from "@/components/form/settings-fields"
+
+const OCTET = "(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)"
+const IPV4 = new RegExp(`^${OCTET}(?:\\.${OCTET}){3}$`)
 
 
 const initialSecurity: SecurityState = {
@@ -29,16 +32,6 @@ const initialSecurity: SecurityState = {
   rightToDeletion: true,
 }
 
-const Panel = ({
-  children,
-}: {children: React.ReactNode}) => {
-  return (
-    <div className="rounded-xl bg-neutral-white p-6 shadow-[0px_0px_10px_0px_#0000000] space-y-4 border border-primary-border">
-      <div className="divide-y divide-slate-100">{children}</div>
-    </div>
-  )
-}
-
 const SectionHead = ({
   title,
   description,
@@ -53,152 +46,6 @@ const SectionHead = ({
         </h3>
         <p className="mt-0.5 text-xs font-normal text-neutral-light-400">{description}</p>
       </div>
-    </div>
-  )
-}
-
-const SelectField2FA = ({
-  id,
-  checked,
-  onChange,
-  options,
-}: SelectField2FA) => {
-
-  const [open, setOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
- 
-  // Close on outside click
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [])
-
-
-  return (
-    <div className="relative" ref={containerRef}>
-      <button
-        id={id}
-        onClick={() => setOpen((o) => !o)}
-        // onChange={(e) => onChange(e.target.value)}
-        className={[
-          "appearance-none w-56 text-start rounded-lg border border-slate-200 bg-neutral-white px-3 py-2 pr-9 text-sm font-normal text-neutral-light-500",
-          "shadow-sm transition-colors",
-          "focus:outline-none focus:ring-1 focus:ring-purple-light-600 focus:border-purple-light-600",
-        ].join(" ")}
-      >
-        Required for Admin
-      </button>
-      <ChevronDown size={16} className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748BEB]" />
-
-      {open && (
-        <div className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-primary-border bg-neutral-white py-2 px-3 shadow-lg divide-y">
-          {options.map((option, index) => (
-            <button key={option} type="button" className="flex py-2 text-start items-center gap-2 outline-none ring-0 cursor-pointer w-full">
-              <input type="checkbox" name={option} checked={checked[index]} onChange={(e) => onChange(index)} className=" accent-purple-light-600 h-4 w-4" />
-              <span className=" truncate w-full text-sm font-normal text-neutral-light-300">
-                {option}
-              </span>
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
-
-const WhitelistedIPsField = ({
-  ips,
-  onChange,
-}: WhitelistedIPsProps) => {
-  const [draft, setDraft] = useState("")
-  const [error, setError] = useState<string | null>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
-  const IP_RE = /^(?:(:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-
-  const commitDraft = () => {
-    const value = draft.trim().replace(/,$/, "");
-    if (!value) return;
-
-    if (!IP_RE.test(value)) {
-      setError("Enter a valid IP address");
-      return;
-    }
-    if (ips.includes(value)) {
-      setError("That IP is already added");
-      return;
-    }
-
-    onChange([...ips, value]);
-    setDraft("");
-    setError(null);
-  }
-
-  const removeIP = (ip: string) => {
-    onChange(ips.filter((e) => e !== ip));
-  }
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" || e.key === ",") {
-      e.preventDefault(); 
-      commitDraft();
-    } else if (e.key === "Backspace" && draft === "" && ips.length > 0) {
-      onChange(ips.slice(0, -1));
-    }
-  }
-
-  return (
-    <div className="mt-4">
-      <label className="block text-xs font-semibold text-[#334155]">
-        Whitelisted IPs
-      </label>
-      <div
-        onClick={() => inputRef.current?.focus()}
-        className={[
-          "mt-2 flex flex-wrap items-center gap-2 rounded-lg border border-[#D1D5DB] bg-primary px-3 py-2 mb-4",
-          "transition-colors cursor-text",
-          error
-            ? "border-red-300 ring-1 ring-red-200"
-            : "border-slate-200 focus-within:ring-1 focus-within:ring-purple-light-600 ring-purple-light-600",
-        ].join(" ")}
-      >
-        {ips.map((ip) => (
-          <span
-            key={ip}
-            className="inline-flex items-center gap-1.5 rounded-md bg-[#F1F5F9] border border-primary-border px-2.5 py-1 font-medium text-[13px] text-[#334155]"
-          >
-            {ip}
-            <CircleX 
-              size={14}
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                removeIP(ip);
-              }}
-              className="h-3.5 w-3.5 text-neutral-light-400 transition-colors hover:text-[#334155] cursor-pointer"
-            />
-          </span>
-        ))}
-        <input
-          ref={inputRef}
-          type="text"
-          value={draft}
-          placeholder={ips.length === 0 ? "Add IP address... e.g. 192.168.1.1" : "Add IP address"}
-          onChange={(e) => {
-            setDraft(e.target.value);
-            if (error) setError(null);
-          }}
-          onKeyDown={handleKeyDown}
-          onBlur={commitDraft}
-          className="min-w-40 flex-1 border-none bg-transparent p-1 text-[13px] font-normal text-[#334155] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-0"
-        />
-      </div>
-      {error && <p className="mt-1.5 text-sm text-red-500">{error}</p>}
     </div>
   )
 }
@@ -241,11 +88,12 @@ const SecuritySettings = () => {
           label="Two-Factor Authentication (2FA)"
           description="Enforce 2FA for platform access"
         >
-          <SelectField2FA
+          <CheckboxSelect
             id="auth"
             checked={security.twoFactorAuthentication}
-            onChange={(v) => toggleCheck((v))}
-            options={['Required for Admin', 'Required for All Users']}
+            onToggle={toggleCheck}
+            options={["Required for Admin", "Required for All Users"]}
+            placeholder="Not required"
           />
         </FieldShell>
         <FieldShell
@@ -386,9 +234,16 @@ const SecuritySettings = () => {
             label="IP Whitelisting"
           />
         </FieldShell>
-        <WhitelistedIPsField
-          ips={security.whiteListedIPs}
+        <TagInput
+          id="whiteListedIPs"
+          label="Whitelisted IPs"
+          values={security.whiteListedIPs}
           onChange={(ips) => set("whiteListedIPs", ips)}
+          placeholder="Add IP address..."
+          noun="IP"
+          validate={(ip) =>
+            !IPV4.test(ip) ? "Enter a valid IP address" : security.whiteListedIPs.includes(ip) ? "That IP is already added" : null
+          }
         />
         <FieldShell
           label="Admin Role Permissions"
@@ -469,38 +324,7 @@ const SecuritySettings = () => {
           />
         </FieldShell>
       </Panel>
-      {/* Actions */}
-      <div className="flex items-center justify-end gap-3 pb-4">
-        {justSaved && (
-          <span className="mr-auto text-sm font-medium text-secondary-green-500">
-            Changes saved
-          </span>
-        )}
-        <button
-          type="button"
-          onClick={handleDiscard}
-          disabled={!isChangeDefault}
-          className={[
-            "rounded-lg border border-[#E6E5EA] bg-neutral-white px-4 py-2 text-sm font-semibold text-neutral-light-400",
-            "shadow-sm transition-colors hover:bg-slate-50",
-            "disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer",
-          ].join(" ")}
-        >
-          Discard
-        </button>
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={!isChangeDefault}
-          className={[
-            "rounded-lg bg-purple-light-600 px-4 py-2 text-sm font-semibold text-neutral-white",
-            "shadow-sm transition-colors hover:bg-purple-light-600/90",
-            "disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer",
-          ].join(" ")}
-        >
-          Save Changes
-        </button>
-      </div>
+      <SettingsActions isDirty={isChangeDefault} justSaved={justSaved} onDiscard={handleDiscard} onSave={handleSave} />
     </div>
   )
 }

@@ -21,15 +21,3 @@ interface CommunityRow {
   about: string,
 }
 
-interface CommunityTABSProps {
-  label: string,
-  status: CommunityStatus | "All",
-}
-
-interface CommunityDropdownProps {
-  label: string,
-  value: string,
-  options: readonly string[],
-  onChange: (v: string) => void,
-  icon?: React.ReactNode,
-}

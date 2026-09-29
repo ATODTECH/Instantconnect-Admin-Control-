@@ -1,7 +1,7 @@
 "use client"
+import { UserAvatar } from "@/components/shared/user-avatar"
 import { useState } from "react"
 import GridCard from "./gridcard"
-import Image from "next/image"
 import { AlertTriangle, ArrowLeft, ArrowLeftCircle, CheckCircleIcon, CircleCheck, CircleCheckBigIcon, Clock, MapPin } from "lucide-react"
 import GoogleMapIndex from "./google-maps"
 
@@ -134,14 +134,6 @@ const calcDistanceApart = (firstUser:UserCoordinates, secondUser: UserCoordinate
   return '0.2 km'
 }
 
-export const AVATAR_COLORS = [
-  "bg-violet-100 text-violet-700",
-  "bg-blue-100 text-blue-700",
-  "bg-pink-100 text-pink-700",
-  "bg-emerald-100 text-emerald-700",
-  "bg-orange-100 text-orange-700",
-]
-
 const LiveConnectionHomeIndex = () => {
   const [active, setActive] = useState<activeToggle>('ongoing')
   const [isSwitch, setSwitch] = useState<boolean>(false)
@@ -150,14 +142,6 @@ const LiveConnectionHomeIndex = () => {
   const pastConnectionUser = LiveConnectUsers.filter(val => val.status!=='active')
 
 
-  const initials = (name: string) => {
-    return name
-      .split(" ")
-      .map((part) => part[0])
-      .slice(0, 2)
-      .join("")
-      .toUpperCase();
-  }
   const intialsConnectionCard = (name: string) => {
     const val = name.split(" ")[1][0]
     return name
@@ -171,26 +155,8 @@ const LiveConnectionHomeIndex = () => {
         <div className="flex flex-col justify-between items-center gap-3 border-[.5px] border-[#F1F5F9] bg-neutral-white shadow-[0px_0px_10px_0px_#0000000F] p-4 rounded-xl">
           <div className="flex items-center justify-between w-full">
             <div className="relative">
-              {(user.firstRecipient.image.length>0)?
-                <Image
-                  src={user.firstRecipient.image}
-                  alt={user.firstRecipient.image}
-                  className="w-8 h-8 rounded-full border-2 border-neutral-white object-cover"
-                /> :
-                <span className={`inline-flex items-center justify-center text-xs shrink-0 w-8 h-8 border-2 border-neutral-white rounded-full ${
-                  AVATAR_COLORS[user.firstRecipient.id % AVATAR_COLORS.length]
-                }`}>{initials(user.firstRecipient.name)}</span>
-              }
-              {(user.secondRecipient.image.length>0)?
-                <Image
-                  src={user.secondRecipient.image}
-                  alt={user.secondRecipient.image}
-                  className="absolute -right-5 flex w-8 h-8 rounded-full border-2 border-neutral-white object-cover"
-                /> :
-                <span className={`absolute text-xs -right-5 inline-flex items-center justify-center shrink-0 w-8 h-8 border-2 border-neutral-white rounded-full ${
-                  AVATAR_COLORS[user.secondRecipient.id % AVATAR_COLORS.length]
-                }`}>{initials(user.secondRecipient.name)}</span>
-              }
+              <UserAvatar name={user.firstRecipient.name} src={user.firstRecipient.image || null} className="size-8 text-xs border-2 border-neutral-white" />
+              <UserAvatar name={user.secondRecipient.name} src={user.secondRecipient.image || null} className="size-8 absolute text-xs -right-5 border-2 border-neutral-white" />
             </div>
             <div className={`flex items-center gap-1 text-[11px] font-semibold ${active==='ongoing'? 'text-secondary-green-500': 'text-neutral-light-300'}`}>
               <span className={`inline-flex shrink-0 h-1.5 w-1.5 rounded-full ${active==='ongoing'? 'bg-secondary-green-500': 'bg-neutral-light-300'}`} />
@@ -229,16 +195,7 @@ const LiveConnectionHomeIndex = () => {
       <>
         <div className="grid grid-cols-3 gap-1 border border-[#F4F3F5] bg-[#F1F5F8] p-4 rounded-xl">
           <div className="flex flex-col gap-2 items-center justify-center">
-            {(user.firstRecipient.image.length>0)?
-              <Image
-                src={user.firstRecipient.image}
-                alt={user.firstRecipient.image}
-                className="w-12 h-12 rounded-full object-cover"
-              /> :
-              <span className={`inline-flex items-center justify-center text-lg shrink-0 w-12 h-12 rounded-full ${
-                AVATAR_COLORS[user.firstRecipient.id % AVATAR_COLORS.length]
-              }`}>{initials(user.firstRecipient.name)}</span>
-            }
+            <UserAvatar name={user.firstRecipient.name} src={user.firstRecipient.image || null} className="size-12 text-lg" />
             <span className=" font-semibold text-xs text-neutral-light-600 w-full truncate cursor-default" title={user.firstRecipient.name}>{user.firstRecipient.name}</span>
           </div>
           <div className="flex flex-col gap-1 items-center justify-center">
@@ -252,16 +209,7 @@ const LiveConnectionHomeIndex = () => {
             }
           </div>
           <div className="flex flex-col gap-2 items-center justify-center w-full">
-            {(user.secondRecipient.image.length>0)?
-              <Image
-                src={user.secondRecipient.image}
-                alt={user.secondRecipient.image}
-                className="w-12 h-12 rounded-full object-cover"
-              /> :
-              <span className={`inline-flex items-center justify-center text-lg shrink-0 w-12 h-12 rounded-full ${
-                AVATAR_COLORS[user.secondRecipient.id % AVATAR_COLORS.length]
-              }`}>{initials(user.secondRecipient.name)}</span>
-            }
+            <UserAvatar name={user.secondRecipient.name} src={user.secondRecipient.image || null} className="size-12 text-lg" />
             <span className=" font-semibold text-xs text-neutral-light-600 w-full truncate cursor-default" title={user.secondRecipient.name}>{user.secondRecipient.name}</span>
           </div>
         </div>

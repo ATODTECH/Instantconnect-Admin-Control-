@@ -4,4 +4,3 @@ interface SecurityProps {
   description: string,
 }
 
-

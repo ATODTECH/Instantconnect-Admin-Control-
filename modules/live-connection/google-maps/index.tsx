@@ -1,9 +1,8 @@
 "use client"
+import { UserAvatar } from "@/components/shared/user-avatar"
 
 import { APIProvider, Map, AdvancedMarker, ColorScheme, InfoWindow, Pin, MapControl, ControlPosition } from "@vis.gl/react-google-maps"
-import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
-import { AVATAR_COLORS } from ".."
 import { ArrowRight, Clock, MapPin } from "lucide-react"
 
 interface GoogleMapProps {
@@ -18,8 +17,8 @@ interface GoogleMapProps {
 const MapLegend = () => {
   return (
     <div className="border border-[#2D3548] p-3 rounded-lg">
-      <div className="flex flex-col gap-1.5 text-[11px] text-primary font-normal">
-        <span className="uppercase font-semibold text-secondary">Legend</span>
+      <div className="flex flex-col gap-1.5 text-[11px] text-ic-light font-normal">
+        <span className="uppercase font-semibold text-ic-muted">Legend</span>
         <div className="flex gap-2 items-center flex-nowrap">
           <span className="shrink-0 w-2 h-2 inline-flex rounded-full bg-secondary-green-500"></span>
           <span>Active</span>
@@ -39,8 +38,8 @@ const MapLegend = () => {
 const SingleMapLegend = () => {
   return (
     <div className="border border-[#2D3548] p-3 rounded-lg">
-      <div className="flex flex-col gap-1.5 text-[11px] text-primary font-normal">
-        <span className="uppercase font-semibold text-secondary">Live Tracking Legend</span>
+      <div className="flex flex-col gap-1.5 text-[11px] text-ic-light font-normal">
+        <span className="uppercase font-semibold text-ic-muted">Live Tracking Legend</span>
         <div className="flex gap-2 items-center flex-nowrap">
           <span className="shrink-0 w-2 h-2 inline-flex rounded-full bg-secondary-green-500"></span>
           <span>GPS Online (Active)</span>
@@ -73,14 +72,6 @@ const GoogleMapIndex = ({users, isSwitch, switchVal, setSwitch, setSwitchVal}: G
     return <div className="text-sm text-red-600">Error: Missing Google Maps API Key</div>
   }
 
-  const initials = (name: string) => {
-    return name
-      .split(" ")
-      .map((part) => part[0])
-      .slice(0, 2)
-      .join("")
-      .toUpperCase();
-  }
   const intialsConnectionCard = (name: string) => {
     const val = name.split(" ")[1][0]
     return name
@@ -124,18 +115,7 @@ const GoogleMapIndex = ({users, isSwitch, switchVal, setSwitch, setSwitchVal}: G
                 headerDisabled={true}
               >
                 <div className="flex items-center gap-1 w-full">
-                  {(connectUsers[switchVal!-1].firstRecipient.image.length>0)?
-                    <Image
-                      src={connectUsers[switchVal!-1].firstRecipient.image}
-                      alt={connectUsers[switchVal!-1].firstRecipient.name}
-                      className="w-5 h-5 rounded-full border-2 border-neutral-white object-cover"
-                    /> :
-                    <span className={`inline-flex items-center justify-center text-[8px] shrink-0 w-5 h-5 border-2 border-neutral-white rounded-full ${
-                      AVATAR_COLORS[connectUsers[switchVal!-1].firstRecipient.id % AVATAR_COLORS.length]
-                    }`}>
-                      {initials(connectUsers[switchVal!-1].firstRecipient.name)}
-                    </span>
-                  }
+                  <UserAvatar name={connectUsers[switchVal!-1].firstRecipient.name} src={connectUsers[switchVal!-1].firstRecipient.image || null} className="size-5 text-[8px] border-2 border-neutral-white" />
                   <div className=" w-full text-[11px] text-[#1E293B] font-semibold">{intialsConnectionCard(connectUsers[switchVal!-1].firstRecipient.name)}</div>
                 </div>
               </InfoWindow>
@@ -167,18 +147,7 @@ const GoogleMapIndex = ({users, isSwitch, switchVal, setSwitch, setSwitchVal}: G
                 headerDisabled={true}
               >
                 <div className="flex items-center gap-1 w-full">
-                  {(connectUsers[switchVal!-1].secondRecipient.image.length>0)?
-                    <Image
-                      src={connectUsers[switchVal!-1].secondRecipient.image}
-                      alt={connectUsers[switchVal!-1].secondRecipient.name}
-                      className="w-5 h-5 rounded-full border-2 border-neutral-white object-cover"
-                    /> :
-                    <span className={`inline-flex items-center justify-center text-[8px] shrink-0 w-5 h-5 border-2 border-neutral-white rounded-full ${
-                      AVATAR_COLORS[connectUsers[switchVal!-1].secondRecipient.id % AVATAR_COLORS.length]
-                    }`}>
-                      {initials(connectUsers[switchVal!-1].secondRecipient.name)}
-                    </span>
-                  }
+                  <UserAvatar name={connectUsers[switchVal!-1].secondRecipient.name} src={connectUsers[switchVal!-1].secondRecipient.image || null} className="size-5 text-[8px] border-2 border-neutral-white" />
                   <div className=" w-full text-[11px] text-[#1E293B] font-semibold">{intialsConnectionCard(connectUsers[switchVal!-1].secondRecipient.name)}</div>
                 </div>
               </InfoWindow>
@@ -231,26 +200,8 @@ const GoogleMapIndex = ({users, isSwitch, switchVal, setSwitch, setSwitchVal}: G
 
                       {/* image */}
                       <div className="relative w-fit pb-2">
-                        {(connectUser.firstRecipient.image.length>0)?
-                          <Image
-                            src={connectUser.firstRecipient.image}
-                            alt={connectUser.firstRecipient.name}
-                            className="w-8 h-8 rounded-full border-2 border-neutral-white object-cover"
-                          /> :
-                          <span className={`inline-flex items-center justify-center text-xs shrink-0 w-8 h-8 border-2 border-neutral-white rounded-full ${
-                            AVATAR_COLORS[connectUser.firstRecipient.id % AVATAR_COLORS.length]
-                          }`}>{initials(connectUser.firstRecipient.name)}</span>
-                        }
-                        {(connectUser.secondRecipient.image.length>0)?
-                          <Image
-                            src={connectUser.secondRecipient.image}
-                            alt={connectUser.secondRecipient.name}
-                            className="absolute -right-5 flex w-8 h-8 rounded-full border-2 border-neutral-white object-cover"
-                          /> :
-                          <span className={`absolute text-xs -right-5 inline-flex items-center justify-center shrink-0 w-8 h-8 border-2 border-neutral-white rounded-full ${
-                            AVATAR_COLORS[connectUser.secondRecipient.id % AVATAR_COLORS.length]
-                          }`}>{initials(connectUser.secondRecipient.name)}</span>
-                        }
+                        <UserAvatar name={connectUser.firstRecipient.name} src={connectUser.firstRecipient.image || null} className="size-8 text-xs border-2 border-neutral-white" />
+                        <UserAvatar name={connectUser.secondRecipient.name} src={connectUser.secondRecipient.image || null} className="size-8 absolute text-xs -right-5 border-2 border-neutral-white" />
                         <span className="absolute -right-12 inline-flex self-center text-purple-light-600 font-semibold text-[10px] border border-[#F3E8FF] bg-bg-purple-light-200 rounded-sm py-0.5 px-1.5">{connectUser.status}</span>
                       </div>
 

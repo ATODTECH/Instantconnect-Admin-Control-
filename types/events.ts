@@ -31,15 +31,3 @@ interface AttendeeEventRow {
   status: 'VIP' | 'Regular',
 }
 
-interface TABSProps {
-  label: string,
-  status: EventStatus | "All Events",
-}
-
-interface DropdownProps {
-  label: string,
-  value: string,
-  options: readonly string[],
-  onChange: (v: string) => void,
-  icon?: React.ReactNode,
-}
