@@ -5,7 +5,7 @@ import type { JoinedWithin, KycStatus, UserPlan, UserStatus } from "@/types/admi
 export const STATUS_LABELS: Record<UserStatus, { label: string, tone: Tone }> = {
   active: { label: "Active", tone: "success" },
   pending_verification: { label: "Pending", tone: "warning" },
-  suspended: { label: "Suspended", tone: "danger" },
+  suspended: { label: "Disabled", tone: "danger" },
 }
 
 export const KYC_LABELS: Record<KycStatus, { label: string, tone: Tone }> = {
@@ -25,7 +25,7 @@ export const STATUS_FILTER: readonly FilterOption<UserStatus>[] = [
   { label: "All Statuses" },
   { label: "Active", value: "active" },
   { label: "Pending", value: "pending_verification" },
-  { label: "Suspended", value: "suspended" },
+  { label: "Disabled", value: "suspended" },
 ]
 
 export const KYC_FILTER: readonly FilterOption<KycStatus>[] = [

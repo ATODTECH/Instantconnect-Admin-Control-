@@ -122,7 +122,7 @@ const UsersHomeIndex = () => {
         title="User Profile Details"
         description={viewing ? `Profile of ${viewing.fullName}` : "Member profile"}
       >
-        {viewing && <UserProfile userId={viewing.id} />}
+        {viewing && <UserProfile userId={viewing.id} onDeleted={() => setViewing(null)} />}
       </DetailSheet>
     </div>
   )

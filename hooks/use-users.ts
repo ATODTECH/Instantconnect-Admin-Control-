@@ -1,7 +1,7 @@
-import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { exportUsers, getUser, getUsers, messageUser } from "@/api/users"
-import type { AdminUserFilters } from "@/types/admin-users"
+import { deleteUser, disableUser, enableUser, exportUsers, getUser, getUsers, messageUser } from "@/api/users"
+import type { AdminUserDetail, AdminUserFilters } from "@/types/admin-users"
 
 export const USERS_PAGE_SIZE = 10
 
@@ -35,6 +35,39 @@ export const useMessageUser = () =>
       toast.error(error.message)
     },
   })
+
+/** Disabling or enabling hands back the fresh profile; the table refetches for the new status. */
+export const useSetUserEnabled = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ id, enabled }: { id: string, enabled: boolean }) => (enabled ? enableUser(id) : disableUser(id)),
+    onSuccess: (person: AdminUserDetail, { enabled }) => {
+      queryClient.setQueryData(userKeys.detail(person.id), person)
+      queryClient.invalidateQueries({ queryKey: [...userKeys.all, "list"] })
+      toast.success(enabled ? `${person.fullName} can sign in again` : `${person.fullName} is disabled and signed out`)
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useDeleteUser = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ id }: { id: string, fullName: string }) => deleteUser(id),
+    onSuccess: (_, { id, fullName }) => {
+      queryClient.removeQueries({ queryKey: userKeys.detail(id) })
+      queryClient.invalidateQueries({ queryKey: [...userKeys.all, "list"] })
+      toast.success(`${fullName}'s account was deleted`)
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+}
 
 export const useExportUsers = () =>
   useMutation({
