@@ -10,7 +10,7 @@ import { useState } from "react"
 import ModalIndex from "@/components/modal"
 
 
-const Template = ({ children }: { children: React.ReactNode }) => {
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const [isModal, setModal] = useState<boolean>(false)
   const [modalContent, setModalContent] = useState<React.ReactNode>([])
 
@@ -36,4 +36,4 @@ const Template = ({ children }: { children: React.ReactNode }) => {
   )
 }
 
-export default Template
+export default DashboardLayout
