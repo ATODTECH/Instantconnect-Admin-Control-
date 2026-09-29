@@ -2,6 +2,7 @@
 import { LucideIcon } from "lucide-react"
 import LiveConnections from "@/icons/live-users.icon"
 import Link from "next/link"
+import { ROUTES } from "@/lib/routes"
 import { usePathname } from "next/navigation"
 
 interface HeaderProps {
@@ -11,14 +12,14 @@ interface HeaderProps {
 const HeaderIndex = ({icons}: HeaderProps) => {
   const [LayoutDashboard,Users,FileText,Calendar,MessageCircle,Wallet,Settings] = icons
   const route = [
-    {name:"Dashboard", route:"/", icon:LayoutDashboard},
-    {name:"User", route:"/users", icon:Users},
-    {name:"KYC Verifications", route:"/kyc-verification", icon:FileText},
-    {name:"Live Connections", route:"/live-connection", icon:LiveConnections},
-    {name:"Events", route:"/events", icon:Calendar},
-    {name:"Communities", route:"/communities", icon:MessageCircle},
-    {name:"Subscriptions", route:"/subscriptions", icon:Wallet},
-    {name:"Platform Settings", route:"/settings", icon:Settings},
+    {name:"Dashboard", route:ROUTES.overview, icon:LayoutDashboard},
+    {name:"User", route:ROUTES.users, icon:Users},
+    {name:"KYC Verifications", route:ROUTES.kycVerification, icon:FileText},
+    {name:"Live Connections", route:ROUTES.liveConnection, icon:LiveConnections},
+    {name:"Events", route:ROUTES.events, icon:Calendar},
+    {name:"Communities", route:ROUTES.communities, icon:MessageCircle},
+    {name:"Subscriptions", route:ROUTES.subscriptions, icon:Wallet},
+    {name:"Platform Settings", route:ROUTES.settings, icon:Settings},
   ]
   const pathname = usePathname()
 

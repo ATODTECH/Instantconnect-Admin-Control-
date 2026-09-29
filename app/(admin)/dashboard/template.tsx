@@ -7,7 +7,7 @@ import { Calendar, FileText, LayoutDashboard, LogOutIcon, MessageCircle, Setting
 
 import profile from "@/assets/images/profile.jpg"
 import { useState } from "react"
-import ModalIndex from "../_lib/ui/modal"
+import ModalIndex from "@/components/modal"
 
 
 const Template = ({ children }: { children: React.ReactNode }) => {

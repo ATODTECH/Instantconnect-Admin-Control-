@@ -1,4 +1,6 @@
 import { Inter } from "next/font/google";
+import { Toaster } from "sonner";
+import { QueryProvider } from "@/providers/query-provider";
 import "./globals.css";
 
 const interSans = Inter({
@@ -14,8 +16,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex flex-col h-screen overflow-hidden">
         <div className="scrollbar-thin scrollbar-thumb-gray-200 h-screen overflow-auto bg-neutral-white">
-          {children}
+          <QueryProvider>{children}</QueryProvider>
         </div>
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );

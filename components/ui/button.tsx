@@ -12,7 +12,7 @@ const buttonVariants = cva(
         default:
           "bg-bg-primary text-neutral-white hover:bg-slate-700 focus-visible:ring-slate-700/40",
         brand:
-          "bg-purple-light-600 text-neutral-white hover:bg-violet-700 focus-visible:ring-purple-light-600/40",
+          "bg-brand text-neutral-white hover:bg-brand-deep focus-visible:ring-brand/40",
         outline:
           "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
         secondary:
