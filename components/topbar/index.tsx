@@ -3,6 +3,7 @@
 import { Bell, Search } from "lucide-react"
 import Image, { StaticImageData } from "next/image"
 import { usePathname } from "next/navigation"
+import { ROUTES } from "@/lib/routes"
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 interface TopBarProps {
@@ -99,7 +100,7 @@ const TopBarIndex = ({image, setModal, contentModal, children}: TopBarProps) => 
 
   const content= () => {
     switch (pathname) {
-      case "/":        
+      case ROUTES.overview:        
         return (
           <div className="flex flex-1 gap-x-5 justify-between items-center">
             <div className="flex flex-col">
@@ -112,7 +113,7 @@ const TopBarIndex = ({image, setModal, contentModal, children}: TopBarProps) => 
             </form>
           </div>
         )    
-      case "/users":        
+      case ROUTES.users:        
         return (
           <div className="flex flex-1 gap-x-5 justify-between items-center">
             <div className="flex flex-col">
@@ -125,7 +126,7 @@ const TopBarIndex = ({image, setModal, contentModal, children}: TopBarProps) => 
             </form>
           </div>
         )    
-      case "/kyc-verification":        
+      case ROUTES.kycVerification:        
         return (
           <div className="flex flex-1 gap-x-5 justify-between items-center">
             <div className="flex flex-col">
@@ -138,7 +139,7 @@ const TopBarIndex = ({image, setModal, contentModal, children}: TopBarProps) => 
             </form>
           </div>
         )    
-      case "/live-connection":        
+      case ROUTES.liveConnection:        
         return (
           <div className="flex flex-1 gap-x-5 justify-between items-center">
             <div className="flex flex-col">
@@ -151,7 +152,7 @@ const TopBarIndex = ({image, setModal, contentModal, children}: TopBarProps) => 
             </form>
           </div>
         )    
-      case "/events":
+      case ROUTES.events:
         return (
           <div className="flex flex-1 gap-x-5 justify-between items-center">
             <div className="flex flex-col">
@@ -164,7 +165,7 @@ const TopBarIndex = ({image, setModal, contentModal, children}: TopBarProps) => 
             </form>
           </div>
         )
-      case "/communities":
+      case ROUTES.communities:
         return (
           <div className="flex flex-1 gap-x-5 justify-between items-center">
             <div className="flex flex-col">
@@ -177,7 +178,7 @@ const TopBarIndex = ({image, setModal, contentModal, children}: TopBarProps) => 
             </form>
           </div>
         )
-      case "/subscriptions":
+      case ROUTES.subscriptions:
         return (
           <div className="flex flex-1 gap-x-5 justify-between items-center">
             <div className="flex flex-col">
@@ -190,7 +191,7 @@ const TopBarIndex = ({image, setModal, contentModal, children}: TopBarProps) => 
             </form>
           </div>
         )
-      case "/settings":
+      case ROUTES.settings:
         return (
           <div className="flex flex-1 gap-x-5 justify-between items-center">
             <div className="flex flex-col">
