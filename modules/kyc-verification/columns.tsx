@@ -2,35 +2,25 @@ import { cn } from "cn"
 import { createDataTableColumns } from "@/components/data-table/columns"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { UserAvatar } from "@/components/shared/user-avatar"
-import type { Tone } from "@/lib/tones"
-import type { Priority } from "@/types/kyc-verification"
-import type { UserRecord } from "./mock-users"
+import type { KycSubmission } from "@/types/admin-kyc"
+import { ADDITIONAL_ID_LABELS, KYC_STATUS_LABELS, PRIORITY_TONE, formatDay, priorityOf } from "./constants"
 
-export const KYC_TONE: Record<KycStatus, Tone> = {
-  Verified: "success",
-  Pending: "warning",
-  Rejected: "neutral",
-}
+const column = createDataTableColumns<KycSubmission>()
 
-const PRIORITY_TONE: Record<Priority, Tone> = {
-  High: "danger",
-  Medium: "brand",
-  Low: "neutral",
-}
+export const documentsOf = (submission: KycSubmission) =>
+  `National ID Card, ${ADDITIONAL_ID_LABELS[submission.additionalIdKind]}`
 
-const column = createDataTableColumns<UserRecord>()
-
-export const kycColumns = (onOpen: (person: UserRecord) => void) =>
+export const kycColumns = (onOpen: (submission: KycSubmission) => void) =>
   column.columns([
     column.display({
       id: "user",
       header: "User",
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
-          <UserAvatar name={row.original.name} src={row.original.avatar || null} />
+          <UserAvatar name={row.original.applicant.fullName} src={row.original.applicant.avatarUrl} />
           <div>
-            <div className="text-sm font-semibold text-neutral-light-600">{row.original.name}</div>
-            <div className="text-xs text-neutral-light-300">{row.original.email}</div>
+            <div className="text-sm font-semibold text-neutral-light-600">{row.original.applicant.fullName}</div>
+            <div className="text-xs text-neutral-light-300">{row.original.applicant.email}</div>
           </div>
         </div>
       ),
@@ -40,38 +30,48 @@ export const kycColumns = (onOpen: (person: UserRecord) => void) =>
       header: "Document Type",
       meta: { cellClassName: "max-w-50" },
       cell: ({ row }) => (
-        <span title={`${row.original.docType.nin}, ${row.original.docType.otherKYCType}`} className="block truncate font-medium text-neutral-light-500">
-          {row.original.docType.nin}, {row.original.docType.otherKYCType}
+        <span title={documentsOf(row.original)} className="block truncate font-medium text-neutral-light-500">
+          {documentsOf(row.original)}
         </span>
       ),
     }),
-    column.accessor("kycDateSubmitted", {
+    column.accessor("submittedAt", {
       header: "Submitted Date",
       meta: { cellClassName: "text-neutral-light-400" },
+      cell: ({ getValue }) => formatDay(getValue()),
     }),
-    column.accessor("kyc", {
+    column.accessor("status", {
       header: "Status",
-      cell: ({ getValue }) => <StatusBadge tone={KYC_TONE[getValue()]}>{getValue()}</StatusBadge>,
+      cell: ({ getValue }) => <StatusBadge tone={KYC_STATUS_LABELS[getValue()].tone}>{KYC_STATUS_LABELS[getValue()].label}</StatusBadge>,
     }),
-    column.accessor("priority", {
+    column.display({
+      id: "priority",
       header: "Priority",
-      cell: ({ getValue }) => <StatusBadge tone={PRIORITY_TONE[getValue()]}>{getValue()}</StatusBadge>,
+      cell: ({ row }) => {
+        if (row.original.status !== "pending") return <span className="text-neutral-light-300">—</span>
+        const priority = priorityOf(row.original.submittedAt)
+        return <StatusBadge tone={PRIORITY_TONE[priority]}>{priority}</StatusBadge>
+      },
     }),
-    column.accessor("action", {
+    column.display({
+      id: "action",
       header: "Action",
       meta: { headerClassName: "text-right", cellClassName: "text-right" },
-      cell: ({ row, getValue }) => (
-        <button
-          type="button"
-          onClick={() => onOpen(row.original)}
-          aria-label={`${getValue()} ${row.original.name}'s documents`}
-          className={cn(
-            "rounded-md px-2.5 py-1 text-xs font-semibold",
-            getValue() === "Review" ? "bg-primary text-primary-foreground hover:bg-brand-deep" : "border border-brand-tint bg-secondary text-primary hover:bg-brand-surface",
-          )}
-        >
-          {getValue()}
-        </button>
-      ),
+      cell: ({ row }) => {
+        const isPending = row.original.status === "pending"
+        return (
+          <button
+            type="button"
+            onClick={() => onOpen(row.original)}
+            aria-label={`${isPending ? "Review" : "View"} ${row.original.applicant.fullName}'s documents`}
+            className={cn(
+              "rounded-md px-2.5 py-1 text-xs font-semibold",
+              isPending ? "bg-primary text-primary-foreground hover:bg-brand-deep" : "border border-brand-tint bg-secondary text-primary hover:bg-brand-surface",
+            )}
+          >
+            {isPending ? "Review" : "View"}
+          </button>
+        )
+      },
     }),
   ])
