@@ -13,8 +13,11 @@
   /* colors */
   --color-bg-primary: #0F172A;
   --color-bg-secondary: #F8F9FC;
-  --color-primary: #F8FAFC;
-  --color-secondary: #94A3B8;
+  /* The app's own light and muted slate, used on the dark sidebar and panels. */
+  --color-ic-light: #F8FAFC;
+  --color-ic-muted: #94A3B8;
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
   --color-secondary-green-500: #22C55E;
   --color-neutral-white: #FFFFFF;
   --color-neutral-light-300: #83818E;
@@ -83,18 +86,18 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+  --primary: #9333EA;
+  --primary-foreground: #FFFFFF;
+  --secondary: #FAF5FF;
+  --secondary-foreground: #7E22CE;
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --accent: #FAF5FF;
+  --accent-foreground: #7E22CE;
+  --destructive: #D94949;
+  --border: #E2E8F0;
+  --input: #E6E5EA;
+  --ring: #9333EA;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);

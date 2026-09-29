@@ -1,7 +1,10 @@
 "use client"
-import { useState, KeyboardEvent } from "react"
-import { Panel, FieldShell, Toggle } from "../general"
-import { Check, CheckCheck, ChevronDown, CircleX, Copy, Eye, EyeClosed, Plus } from "lucide-react";
+import { useState } from "react"
+import { CopyField, FieldShell, NumberField, Panel, SecretField, SelectField, SettingsActions, StackedField, TagInput, Toggle } from "@/components/form/settings-fields"
+import { Check, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 interface BillingState {
   paymentGateway: PaymentGatewayState;
@@ -75,223 +78,6 @@ const initialState: BillingState = {
   },
 }
 
-export const FieldPayment = ({
-  label,
-  description,
-  htmlFor,
-  children,
-}: FieldShellProps) => {
-  return (
-    <div>
-      <label htmlFor={htmlFor} className="block text-sm font-semibold text-neutral-light-500">
-        {label}
-      </label>
-      <div className="mt-1.5">{children}</div>
-      {description && <p className="mt-1.5 text-xs font-normal text-neutral-light-400">{description}</p>}
-    </div>
-  )
-}
-
-const baseInputClasses = [
-  "w-full rounded-lg border border-slate-200 bg-neutral-white px-3 py-2 text-sm text-neutral-light-600",
-  "shadow-sm transition-colors",
-  "focus:outline-none focus:ring-1 focus:ring-purple-light-600 focus:border-purple-light-600",
-].join(" ")
-
-export const SelectFieldPayment = ({
-  id,
-  value,
-  onChange,
-  options,
-}: SelectFieldProps) => {
-  return (
-    <div className="relative">
-      <select
-        id={id}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={[baseInputClasses, "appearance-none pr-9"].join(" ")}
-      >
-        {options.map((opt) => (
-          <option key={opt} value={opt}>
-            {opt}
-          </option>
-        ))}
-      </select>
-      <ChevronDown size={16} className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 " />
-    </div>
-  )
-}
-
-/** A numeric input with a fixed, non-editable prefix badge, e.g. "NGN 500" or "% 85". */
-export const PrefixedNumberField = ({
-  id,
-  prefix,
-  value,
-  onChange,
-}: PrefixedNumberFieldProps) => {
-  return (
-    <div
-      className={[
-        "flex items-center rounded-lg border border-slate-200 bg-white shadow-sm transition-colors",
-        "focus-within:ring-1 focus-within:ring-purple-light-600 focus-within:border-purple-light-600",
-      ].join(" ")}
-    >
-      <span className="select-none border-r border-slate-100 px-3 py-2 text-sm text-neutral-light-400">
-        {prefix}
-      </span>
-      <input
-        id={id}
-        type="number"
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full rounded-r-lg bg-transparent px-3 py-2 text-sm font-normal text-neutral-light-600 focus:outline-none"
-      />
-    </div>
-  )
-}
-
-/** Masked API-key field with a show/hide eye toggle. */
-const SecretField = ({
-  id,
-  value,
-  onChange,
-}: TextFieldProps) => {
-  const [visible, setVisible] = useState(false);
-  return (
-    <div className="relative">
-      <input
-        id={id}
-        type={visible ? "text" : "password"}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={[baseInputClasses, "pr-10 font-mono"].join(" ")}
-      />
-      <button
-        type="button"
-        onClick={() => setVisible((v) => !v)}
-        aria-label={visible ? "Hide key" : "Show key"}
-        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-neutral-light-400 cursor-pointer"
-      >
-        {visible ? (
-          <EyeClosed size={16} className="h-4 w-4" />
-        ) : (
-          <Eye size={16} className="h-4 w-4" />
-        )}
-      </button>
-    </div>
-  );
-}
-
-const CopyField = ({ id, value }: CopyFieldProps) => {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(value);
-    } catch {
-      // clipboard API unavailable — fail silently, button still gives feedback
-    } finally {
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1500)
-    }
-  }
-
-  return (
-    <div className="relative">
-      <input
-        id={id}
-        type="text"
-        value={value}
-        readOnly
-        className={[baseInputClasses, "pr-10 bg-slate-50 text-slate-500 font-normal text-sm"].join(" ")}
-      />
-      <button
-        type="button"
-        onClick={handleCopy}
-        aria-label="Copy webhook URL"
-        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-violet-500 transition-colors hover:text-purple-light-600 cursor-pointer"
-      >
-        {copied ? (
-          <CheckCheck size={20} className="h-4.5 w-4.5" />
-        ) : (
-          <Copy size={20} className="h-4.5 w-4.5" />
-        )}
-      </button>
-    </div>
-  )
-}
-
-export const CurrencyChips = ({
-  currencies,
-  onChange,
-}: CurrencyChipsProps) => {
-  const [adding, setAdding] = useState(false);
-  const [draft, setDraft] = useState("");
-
-  const commit = () => {
-    const code = draft.trim().toUpperCase();
-    if (code && !currencies.includes(code)) {
-      onChange([...currencies, code]);
-    }
-    setDraft("");
-    setAdding(false);
-  }
-
-  const remove = (code: string) => onChange(currencies.filter((c) => c !== code));
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      commit();
-    } else if (e.key === "Escape") {
-      setDraft("");
-      setAdding(false);
-    }
-  }
-
-  return (
-    <div className="flex flex-wrap items-center gap-2">
-      {currencies.map((code) => (
-        <span
-          key={code}
-          className="inline-flex items-center gap-1.5 rounded-full bg-[#F1F5F9] px-3 py-1.5 text-xs font-semibold text-[#334155]"
-        >
-          {code}
-          <CircleX 
-            size={12}
-            type="button"
-            onClick={() => remove(code)}
-            aria-label={`Remove ${code}`}
-            className="h-3 w-3 text-neutral-light-400 transition-colors hover:text-[#334155] cursor-pointer"
-          />
-        </span>
-      ))}
-
-      {adding ? (
-        <input
-          autoFocus
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onBlur={commit}
-          placeholder="USD"
-          maxLength={3}
-          className="w-16 rounded-md border border-violet-300 px-2 py-1 text-xs uppercase text-slate-700 focus:outline-none focus:ring-1 focus:ring-purple-light-600"
-        />
-      ) : (
-        <button
-          type="button"
-          onClick={() => setAdding(true)}
-          className="flex gap-1 items-center text-xs font-semibold px-3 py-1.5 rounded-full bg-bg-purple-light-200 text-purple-light-600 transition-colors hover:text-purple-500 cursor-pointer "
-        >
-          <Plus size={12} className="h-3 w-3" /> Add
-        </button>
-      )}
-    </div>
-  )
-}
-
 //............. Subscription Plan ................
 const formatNaira = (amount: number) => {
   return `NGN ${amount.toLocaleString("en-NG")}`;
@@ -328,55 +114,40 @@ const PlanCard = ({
     return (
       <div className={containerClasses}>
         <div className="space-y-3">
-          <input
+          <Input
+            aria-label="Plan name"
             value={draft.name}
             onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-            className="w-full rounded-md border border-slate-200 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-neutral-light-400 focus:outline-none focus:ring-1 focus:ring-purple-light-600"
+            className="h-8 text-xs font-semibold uppercase tracking-wide text-neutral-light-400"
             placeholder="PLAN NAME"
           />
           <div className="flex items-center gap-1">
             <span className="text-sm text-neutral-light-300">NGN</span>
-            <input
+            <Input
+              aria-label="Monthly price in naira"
               type="number"
               value={draft.price}
               onChange={(e) => setDraft({ ...draft, price: Number(e.target.value) })}
-              className="w-full rounded-md border border-slate-200 px-2 py-1 text-lg font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-purple-light-600"
+              className="h-9 text-lg font-bold text-slate-900"
             />
             <span className="text-sm text-neutral-light-300">/month</span>
           </div>
-          <textarea
+          <Textarea
+            aria-label="Plan features, one per line"
             value={draft.features.join("\n")}
-            onChange={(e) =>
-              setDraft({ ...draft, features: e.target.value.split("\n").filter(Boolean) })
-            }
+            onChange={(e) => setDraft({ ...draft, features: e.target.value.split("\n").filter(Boolean) })}
             rows={5}
             placeholder="One feature per line"
-            className="w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm text-neutral-light-500 focus:outline-none focus:ring-1 focus:ring-purple-light-600"
+            className="text-sm text-neutral-light-500"
           />
         </div>
         <div className="mt-4 flex gap-2">
-          <button
-            type="button"
-            onClick={cancel}
-            className="flex-1 rounded-lg border border-slate-200 bg-white py-2 text-sm font-medium text-neutral-light-400 transition-colors hover:bg-slate-50 cursor-pointer"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={save}
-            className="flex-1 rounded-lg bg-purple-light-600 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-light-600/90 cursor-pointer"
-          >
-            Save
-          </button>
+          <Button variant="outline" size="lg" className="flex-1" onClick={cancel}>Cancel</Button>
+          <Button variant="brand" size="lg" className="flex-1" onClick={save}>Save</Button>
         </div>
-        <button
-          type="button"
-          onClick={onRemove}
-          className="mt-2 text-xs font-medium text-red-400 transition-colors hover:text-red-500 cursor-pointer"
-        >
+        <Button variant="link" size="sm" onClick={onRemove} className="mt-2 text-red-400 hover:text-red-500">
           Delete plan
-        </button>
+        </Button>
       </div>
     );
   }
@@ -468,18 +239,18 @@ const PaymentSettings = () => {
     <div className="space-y-6">
       <Panel title="Payment Gateway">
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <FieldPayment 
+          <StackedField 
             label="Primary Gateway"
             description="Main payment processor for all transactions" 
             htmlFor="primaryGateway"
           >
-            <SelectFieldPayment
+            <SelectField className="w-full"
               id="primaryGateway"
               value={state.paymentGateway.primaryGateway}
               onChange={(v) => setGateway("primaryGateway", v)}
               options={["Paystack", "Flutterwave", "Stripe", "Interswitch"]}
             />
-          </FieldPayment>
+          </StackedField>
 
           <FieldShell
             label="Test Mode"
@@ -492,7 +263,7 @@ const PaymentSettings = () => {
             />
           </FieldShell>
 
-          <FieldPayment 
+          <StackedField 
             label="Paystack Public Key" 
             description="Your Paystack public API key" 
             htmlFor="paystackPublicKey"
@@ -502,9 +273,9 @@ const PaymentSettings = () => {
               value={state.paymentGateway.paystackPublicKey}
               onChange={(v) => setGateway("paystackPublicKey", v)}
             />
-          </FieldPayment>
+          </StackedField>
 
-          <FieldPayment 
+          <StackedField 
             label="Paystack Secret Key" 
             description="Your Paystack secret API key" 
             htmlFor="paystackSecretKey"
@@ -514,16 +285,16 @@ const PaymentSettings = () => {
               value={state.paymentGateway.paystackSecretKey}
               onChange={(v) => setGateway("paystackSecretKey", v)}
             />
-          </FieldPayment>
+          </StackedField>
 
           <div className="sm:col-span-2">
-            <FieldPayment 
+            <StackedField 
               label="Webhook URL" 
               description="Configure this URL in your Paystack dashboard" 
               htmlFor="webhookUrl"
             >
-              <CopyField id="webhookUrl" value={state.paymentGateway.webhookUrl} />
-            </FieldPayment>
+              <CopyField id="webhookUrl" value={state.paymentGateway.webhookUrl} label="Copy webhook URL" />
+            </StackedField>
           </div>
         </div>
       </Panel>
@@ -531,54 +302,59 @@ const PaymentSettings = () => {
       {/* Currency & Pricing */}
       <Panel title="Currency & Pricing">
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <FieldPayment 
+          <StackedField 
             label="Default Currency" 
             description="Primary currency for all transactions" 
             htmlFor="defaultCurrency"
           >
-            <SelectFieldPayment
+            <SelectField className="w-full"
               id="defaultCurrency"
               value={state.currencyPricing.defaultCurrency}
               onChange={(v) => setCurrency("defaultCurrency", v)}
               options={["NGN - Nigerian Naira", "USD - US Dollar", "GBP - British Pound", "GHS - Ghanaian Cedi"]}
             />
-          </FieldPayment>
+          </StackedField>
 
-          <FieldPayment 
+          <TagInput
+            id="supportedCurrencies"
             label="Supported Currencies"
             description="Currencies accepted on the platform"
-          >
-            <CurrencyChips
-              currencies={state.currencyPricing.supportedCurrencies}
-              onChange={(v) => setCurrency("supportedCurrencies", v)}
-            />
-          </FieldPayment>
+            values={state.currencyPricing.supportedCurrencies}
+            onChange={(v) => setCurrency("supportedCurrencies", v)}
+            normalise={(code) => code.toUpperCase()}
+            validate={(code) =>
+              !/^[A-Z]{3}$/.test(code) ? "Use a three-letter currency code, e.g. USD" : state.currencyPricing.supportedCurrencies.includes(code) ? "That currency is already added" : null
+            }
+            placeholder="USD"
+            noun="currency"
+            className="mt-0"
+          />
 
-          <FieldPayment
+          <StackedField
             label="Minimum Transaction Amount"
             description="Lowest amount allowed per transaction"
             htmlFor="minTx"
           >
-            <PrefixedNumberField
+            <NumberField
               id="minTx"
               prefix="NGN"
               value={state.currencyPricing.minimumTransactionAmount}
               onChange={(v) => setCurrency("minimumTransactionAmount", v)}
             />
-          </FieldPayment>
+          </StackedField>
 
-          <FieldPayment
+          <StackedField
             label="Maximum Transaction Amount"
             description="Highest amount allowed per transaction"
             htmlFor="maxTx"
           >
-            <PrefixedNumberField
+            <NumberField
               id="maxTx"
               prefix="NGN"
               value={state.currencyPricing.maximumTransactionAmount}
               onChange={(v) => setCurrency("maximumTransactionAmount", v)}
             />
-          </FieldPayment>
+          </StackedField>
         </div>
       </Panel>
 
@@ -608,53 +384,53 @@ const PaymentSettings = () => {
       {/* Payout Settings */}
       <Panel title="Payout Settings">
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <FieldPayment
+          <StackedField
             label="Event Creator Payout"
             description="Percentage of ticket sales paid to event creators"
             htmlFor="creatorPayout"
           >
-            <PrefixedNumberField
+            <NumberField
               id="creatorPayout"
               prefix="%"
               value={state.payout.eventCreatorPayoutPct}
               onChange={(v) => setPayout("eventCreatorPayoutPct", v)}
             />
-          </FieldPayment>
+          </StackedField>
 
-          <FieldPayment
+          <StackedField
             label="Platform Commission"
             description="Platform fee on paid events"
             htmlFor="platformCommission"
           >
-            <PrefixedNumberField
+            <NumberField
               id="platformCommission"
               prefix="%"
               value={state.payout.platformCommissionPct}
               onChange={(v) => setPayout("platformCommissionPct", v)}
             />
-          </FieldPayment>
+          </StackedField>
 
-          <FieldPayment label="Payout Schedule" description="How often payouts are processed" htmlFor="payoutSchedule">
-            <SelectFieldPayment
+          <StackedField label="Payout Schedule" description="How often payouts are processed" htmlFor="payoutSchedule">
+            <SelectField className="w-full"
               id="payoutSchedule"
               value={state.payout.payoutSchedule}
               onChange={(v) => setPayout("payoutSchedule", v)}
               options={["Daily", "Weekly", "Bi-weekly", "Monthly"]}
             />
-          </FieldPayment>
+          </StackedField>
 
-          <FieldPayment
+          <StackedField
             label="Minimum Payout Amount"
             description="Minimum balance before payout is triggered"
             htmlFor="minPayout"
           >
-            <PrefixedNumberField
+            <NumberField
               id="minPayout"
               prefix="NGN"
               value={state.payout.minimumPayoutAmount}
               onChange={(v) => setPayout("minimumPayoutAmount", v)}
             />
-          </FieldPayment>
+          </StackedField>
 
           <div className="col-span-2">
             <FieldShell
@@ -687,31 +463,31 @@ const PaymentSettings = () => {
             </FieldShell>
           </div>
 
-          <FieldPayment
+          <StackedField
             label="Refund Window"
             description="Time after payment within which refunds are allowed"
             htmlFor="refundWindow"
           >
-            <PrefixedNumberField
+            <NumberField
               id="refundWindow"
               prefix="Hours"
               value={state.refund.refundWindowHours}
               onChange={(v) => setRefund("refundWindowHours", v)}
             />
-          </FieldPayment>
+          </StackedField>
 
-          <FieldPayment
+          <StackedField
             label="Auto-approve Refunds Under"
             description="Automatically approve refund requests below this amount"
             htmlFor="autoApproveUnder"
           >
-            <PrefixedNumberField
+            <NumberField
               id="autoApproveUnder"
               prefix="NGN"
               value={state.refund.autoApproveRefundsUnder}
               onChange={(v) => setRefund("autoApproveRefundsUnder", v)}
             />
-          </FieldPayment>
+          </StackedField>
 
           <div className="col-span-2">
             <FieldShell
@@ -728,38 +504,7 @@ const PaymentSettings = () => {
         </div>
       </Panel>
 
-      {/* Actions */}
-      <div className="flex items-center justify-end gap-3 pb-4">
-        {justSaved && (
-          <span className="mr-auto text-sm font-medium text-secondary-green-500">
-            Changes saved
-          </span>
-        )}
-        <button
-          type="button"
-          onClick={handleDiscard}
-          disabled={!isChangeDefault}
-          className={[
-            "rounded-lg border border-[#E6E5EA] bg-neutral-white px-4 py-2 text-sm font-semibold text-neutral-light-400",
-            "shadow-sm transition-colors hover:bg-slate-50",
-            "disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer",
-          ].join(" ")}
-        >
-          Discard
-        </button>
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={!isChangeDefault}
-          className={[
-            "rounded-lg bg-purple-light-600 px-4 py-2 text-sm font-semibold text-neutral-white",
-            "shadow-sm transition-colors hover:bg-purple-light-600/90",
-            "disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer",
-          ].join(" ")}
-        >
-          Save Changes
-        </button>
-      </div>
+      <SettingsActions isDirty={isChangeDefault} justSaved={justSaved} onDiscard={handleDiscard} onSave={handleSave} />
     </div>
   )
 }

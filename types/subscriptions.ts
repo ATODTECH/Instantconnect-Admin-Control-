@@ -22,19 +22,6 @@ interface SubscriptionRow {
   status: SubscriptionStatus,
 }
 
-interface SubscriptionTABSProps {
-  label: string,
-  status: SubscriptionStatus | "All",
-}
-
-interface SubscriptionDropdownProps {
-  label: string,
-  value: string,
-  options: readonly string[],
-  onChange: (v: string) => void,
-  icon?: React.ReactNode,
-}
-
 interface PaymentHistoryItem {
   date: string;
   amount: string;

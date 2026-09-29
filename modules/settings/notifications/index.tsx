@@ -1,8 +1,9 @@
 "use client"
 
-import { KeyboardEvent, useRef, useState } from "react";
-import { FieldShell, Panel, Toggle } from "../general";
-import { CircleX } from "lucide-react";
+import { useState } from "react";
+import { FieldShell, Panel, SettingsActions, TagInput, Toggle } from "@/components/form/settings-fields";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 
 const initialNotification: NotificationState = {
@@ -26,99 +27,6 @@ const initialNotification: NotificationState = {
   highTrafficWarning: false,
   adminEmailRecipients: ["admin@instantconnect.com", "support@instantconnect.com"],
 }
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-const EmailRecipientsField = ({
-  emails,
-  onChange,
-}: EmailRecipientProps) => {
-  const [draft, setDraft] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const commitDraft = () => {
-    const value = draft.trim().replace(/,$/, "");
-    if (!value) return;
-
-    if (!EMAIL_REGEX.test(value)) {
-      setError("Enter a valid email address");
-      return;
-    }
-    if (emails.includes(value)) {
-      setError("That email is already added");
-      return;
-    }
-
-    onChange([...emails, value]);
-    setDraft("");
-    setError(null);
-  }
-
-  const removeEmail = (email: string) => {
-    onChange(emails.filter((e) => e !== email))
-  }
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" || e.key === ",") {
-      e.preventDefault()
-      commitDraft()
-    } else if (e.key === "Backspace" && draft === "" && emails.length > 0) {
-      onChange(emails.slice(0, -1))
-    }
-  }
-
-  return (
-    <div className="mt-6">
-      <label className="block text-sm font-semibold text-[#334155]">
-        Admin Email Recipients
-      </label>
-      <div
-        onClick={() => inputRef.current?.focus()}
-        className={[
-          "mt-2 flex flex-wrap items-center gap-2 rounded-lg border border-[#D1D5DB] bg-neutral-white px-3 py-2",
-          "transition-colors cursor-text",
-          error
-            ? "border-red-300 ring-1 ring-red-200"
-            : "border-slate-200 focus-within:ring-1 focus-within:ring-purple-light-600 ring-purple-light-600",
-        ].join(" ")}
-      >
-        {emails.map((email) => (
-          <span
-            key={email}
-            className="inline-flex items-center gap-1.5 rounded-md bg-[#F1F5F9] border border-primary-border px-2.5 py-1 font-medium text-[13px] text-[#334155]"
-          >
-            {email}
-            <CircleX 
-              size={14}
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                removeEmail(email);
-              }}
-              className="h-3.5 w-3.5 text-neutral-light-400 transition-colors hover:text-[#334155] cursor-pointer"
-            />
-          </span>
-        ))}
-        <input
-          ref={inputRef}
-          type="text"
-          value={draft}
-          placeholder={emails.length === 0 ? "Add email..." : "Add email..."}
-          onChange={(e) => {
-            setDraft(e.target.value);
-            if (error) setError(null);
-          }}
-          onKeyDown={handleKeyDown}
-          onBlur={commitDraft}
-          className="min-w-40 flex-1 border-none bg-transparent p-1 text-[13px] font-normal text-[#334155] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-0"
-        />
-      </div>
-      {error && <p className="mt-1.5 text-sm text-red-500">{error}</p>}
-    </div>
-  )
-}
-
 
 const NotificationSettings = () => {
   const [settings, setSettings] = useState<NotificationState>(initialNotification)
@@ -307,43 +215,20 @@ const NotificationSettings = () => {
           />
         </FieldShell>
         {/* Email Field */}
-        <EmailRecipientsField
-          emails={settings.adminEmailRecipients}
+        <TagInput
+          id="adminEmailRecipients"
+          label="Admin Email Recipients"
+          values={settings.adminEmailRecipients}
           onChange={(emails) => set("adminEmailRecipients", emails)}
+          placeholder="Add email..."
+          noun="email"
+          validate={(email) =>
+            !EMAIL_REGEX.test(email) ? "Enter a valid email address" : settings.adminEmailRecipients.includes(email) ? "That email is already added" : null
+          }
+          className="mt-6"
         />
       </Panel>
-      {/* Actions */}
-      <div className="flex items-center justify-end gap-3 pb-4">
-        {justSaved && (
-          <span className="mr-auto text-sm font-medium text-secondary-green-500">
-            Changes saved
-          </span>
-        )}
-        <button
-          type="button"
-          onClick={handleDiscard}
-          disabled={!isChangeDefault}
-          className={[
-            "rounded-lg border border-[#E6E5EA] bg-neutral-white px-4 py-2 text-sm font-semibold text-neutral-light-400",
-            "shadow-sm transition-colors hover:bg-slate-50",
-            "disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer",
-          ].join(" ")}
-        >
-          Discard
-        </button>
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={!isChangeDefault}
-          className={[
-            "rounded-lg bg-purple-light-600 px-4 py-2 text-sm font-semibold text-neutral-white",
-            "shadow-sm transition-colors hover:bg-purple-light-600/90",
-            "disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer",
-          ].join(" ")}
-        >
-          Save Changes
-        </button>
-      </div>
+      <SettingsActions isDirty={isChangeDefault} justSaved={justSaved} onDiscard={handleDiscard} onSave={handleSave} />
     </div>
   )
 }

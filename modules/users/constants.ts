@@ -1,24 +1,18 @@
+import type { Tone } from "@/lib/tones"
+import type { FilterOption } from "@/components/shared/filter-select"
 import type { JoinedWithin, KycStatus, UserPlan, UserStatus } from "@/types/admin-users"
 
-export const AVATAR_COLORS = [
-  "bg-violet-100 text-violet-700",
-  "bg-blue-100 text-blue-700",
-  "bg-pink-100 text-pink-700",
-  "bg-emerald-100 text-emerald-700",
-  "bg-orange-100 text-orange-700",
-]
-
-export const STATUS_LABELS: Record<UserStatus, { label: string, style: string }> = {
-  active: { label: "Active", style: "bg-[#DCFCE7] text-[#22C55E]" },
-  pending_verification: { label: "Pending", style: "bg-[#FFF7ED] text-[#FB923C]" },
-  suspended: { label: "Suspended", style: "bg-[#F9E3E3] text-[#991B1B]" },
+export const STATUS_LABELS: Record<UserStatus, { label: string, tone: Tone }> = {
+  active: { label: "Active", tone: "success" },
+  pending_verification: { label: "Pending", tone: "warning" },
+  suspended: { label: "Suspended", tone: "danger" },
 }
 
-export const KYC_LABELS: Record<KycStatus, { label: string, style: string }> = {
-  verified: { label: "Verified", style: "bg-[#FAF5FF] text-[#9333EA]" },
-  pending: { label: "Pending", style: "bg-[#FFF7ED] text-[#FB923C]" },
-  rejected: { label: "Rejected", style: "bg-[#F4F3F5] text-[#4F4E59]" },
-  none: { label: "Not submitted", style: "bg-[#F8FAFC] text-[#83818E]" },
+export const KYC_LABELS: Record<KycStatus, { label: string, tone: Tone }> = {
+  verified: { label: "Verified", tone: "brand" },
+  pending: { label: "Pending", tone: "warning" },
+  rejected: { label: "Rejected", tone: "neutral" },
+  none: { label: "Not submitted", tone: "neutral" },
 }
 
 export const PLAN_LABELS: Record<UserPlan, string> = {
@@ -27,32 +21,31 @@ export const PLAN_LABELS: Record<UserPlan, string> = {
   business: "Business",
 }
 
-/** Each dropdown's first option means "no filter". */
-export const STATUS_FILTER = [
-  { label: "All Statuses", value: undefined },
+export const STATUS_FILTER: readonly FilterOption<UserStatus>[] = [
+  { label: "All Statuses" },
   { label: "Active", value: "active" },
   { label: "Pending", value: "pending_verification" },
   { label: "Suspended", value: "suspended" },
-] as const satisfies readonly { label: string, value?: UserStatus }[]
+]
 
-export const KYC_FILTER = [
-  { label: "All KYC", value: undefined },
+export const KYC_FILTER: readonly FilterOption<KycStatus>[] = [
+  { label: "All KYC" },
   { label: "Verified", value: "verified" },
   { label: "Pending", value: "pending" },
   { label: "Rejected", value: "rejected" },
   { label: "Not submitted", value: "none" },
-] as const satisfies readonly { label: string, value?: KycStatus }[]
+]
 
-export const PLAN_FILTER = [
-  { label: "All Plans", value: undefined },
+export const PLAN_FILTER: readonly FilterOption<UserPlan>[] = [
+  { label: "All Plans" },
   { label: "Free", value: "free" },
   { label: "Premium", value: "premium" },
   { label: "Business", value: "business" },
-] as const satisfies readonly { label: string, value?: UserPlan }[]
+]
 
-export const JOINED_FILTER = [
-  { label: "All Time", value: undefined },
+export const JOINED_FILTER: readonly FilterOption<JoinedWithin>[] = [
+  { label: "All Time" },
   { label: "Last 30 Days", value: "30d" },
   { label: "Last 90 Days", value: "90d" },
   { label: "Last 6 Months", value: "6m" },
-] as const satisfies readonly { label: string, value?: JoinedWithin }[]
+]

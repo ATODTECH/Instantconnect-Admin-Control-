@@ -22,7 +22,7 @@ const FooterIndex = ({icons, image}: FooterProps) => {
        className="h-10 w-10 rounded-full object-cover overflow-hidden"
       />
       <div className="flex flex-col flex-1">
-        <span className=" font-semibold text-sm text-primary">Kola Adebayo</span>
+        <span className=" font-semibold text-sm text-ic-light">Kola Adebayo</span>
         <span className=" font-normal text-xs text-[#64748B]">Super Admin</span>
       </div>
       <button

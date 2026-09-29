@@ -19,6 +19,10 @@ const buttonVariants = cva(
           "bg-slate-100 text-slate-900 hover:bg-slate-200 aria-expanded:bg-slate-100",
         ghost:
           "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+        success:
+          "bg-secondary-green-500 text-neutral-white hover:bg-[#16A34A] focus-visible:ring-secondary-green-500/40",
+        danger:
+          "bg-[#EF4444] text-neutral-white hover:bg-[#DC2626] focus-visible:ring-[#EF4444]/40",
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
         link: "text-purple-light-600 underline-offset-4 hover:underline",

@@ -1,7 +1,7 @@
 "use client"
 
-import { ChevronDown } from "lucide-react"
 import { useState } from "react"
+import { FieldShell, NumberField, Panel, SelectField, SettingsActions, TextField, Toggle } from "@/components/form/settings-fields"
 
 const initialSettings: SettingsState = {
   platformName: "Instantconnect",
@@ -27,157 +27,6 @@ const initialSettings: SettingsState = {
   requireAdminApproval: false,
   maxMembersPerCommunity: 10000,
 }
-
-export const Toggle = ({
-  checked,
-  onChange,
-  label,
-}: ToggleProps) => {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      aria-label={label}
-      onClick={() => onChange(!checked)}
-      className={[
-        "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full",
-        "transition-colors duration-200 ease-in-out",
-        "focus:outline-none focus-visible:ring-1 focus-visible:ring-purple-light-600 focus-visible:ring-offset-2 cursor-pointer",
-        checked ? "bg-purple-light-600" : "bg-[#CBD5E1]",
-      ].join(" ")}
-    >
-      <span
-        className={[
-          "inline-block h-4 w-4 transform rounded-full bg-neutral-white shadow",
-          "transition-transform duration-200 ease-in-out",
-          checked ? "translate-x-6" : "translate-x-1",
-        ].join(" ")}
-      />
-    </button>
-  )
-}
-
-export const FieldShell = ({
-  label,
-  description,
-  htmlFor,
-  children,
-}: FieldShellProps) => {
-  return (
-    <div className="flex items-center justify-between gap-6 py-4 first:pt-0 last:pb-0">
-      <div className="max-w-md">
-        <label
-          htmlFor={htmlFor}
-          className="block text-sm font-semibold text-neutral-light-500"
-        >
-          {label}
-        </label>
-        <p className="mt-0.5 text-xs font-normal text-neutral-light-400">{description}</p>
-      </div>
-      <div className="shrink-0">{children}</div>
-    </div>
-  )
-}
-
-export const TextField = ({
-  id,
-  value,
-  onChange,
-  placeholder,
-  className = "w-72",
-}: TextFieldProps) => {
-  return (
-    <input
-      id={id}
-      type="text"
-      value={value}
-      placeholder={placeholder}
-      onChange={(e) => onChange(e.target.value)}
-      className={[
-        className,
-        "rounded-lg border border-slate-200 bg-neutral-white px-3 py-2 text-sm font-normal text-neutral-light-500 truncate",
-        "shadow-sm transition-colors",
-        "focus:outline-none focus:ring-1 focus:ring-purple-light-600 focus:border-purple-light-600",
-      ].join(" ")}
-    />
-  )
-}
-
-export const NumberField = ({
-  id,
-  value,
-  onChange,
-  suffix,
-  className = "w-24",
-}: NumberFieldProps) => {
-  return (
-    <div className="relative">
-      <input
-        id={id}
-        type="number"
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className={[
-          className,
-          suffix ? "pr-7" : "",
-          "rounded-lg border border-slate-200 bg-neutral-white px-3 py-2 text-sm font-normal text-neutral-light-500",
-          "shadow-sm transition-colors",
-          "focus:outline-none focus:ring-1 focus:ring-purple-light-600 focus:border-purple-light-600",
-        ].join(" ")}
-      />
-      {suffix && (
-        <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center font-medium text-sm text-neutral-light-400">
-          {suffix}
-        </span>
-      )}
-    </div>
-  );
-}
-
-export const SelectField = ({
-  id,
-  value,
-  onChange,
-  options,
-  className = "w-56",
-}: SelectFieldProps) => {
-  return (
-    <div className="relative">
-      <select
-        id={id}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={[
-          className,
-          "appearance-none rounded-lg border border-slate-200 bg-neutral-white px-3 py-2 pr-9 text-sm font-normal text-neutral-light-500",
-          "shadow-sm transition-colors",
-          "focus:outline-none focus:ring-1 focus:ring-purple-light-600 focus:border-purple-light-600",
-        ].join(" ")}
-      >
-        {options.map((opt) => (
-          <option key={opt} value={opt}>
-            {opt}
-          </option>
-        ))}
-      </select>
-      <ChevronDown size={16} className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748BEB]" />
-    </div>
-  )
-}
-
-export const Panel = ({
-  title,
-  children,
-}: PanelProps) => {
-  return (
-    <div className="rounded-xl bg-neutral-white p-6 shadow-[0px_0px_10px_0px_#0000000] space-y-4 border border-primary-border">
-      <h2 className="text-base font-bold text-neutral-light-600">{title}</h2>
-      <div className="divide-y divide-slate-100">{children}</div>
-    </div>
-  )
-}
-
 
 const GeneralSettings = () => {
   const [settings, setSettings] = useState<SettingsState>(initialSettings)
@@ -440,38 +289,7 @@ const GeneralSettings = () => {
         </FieldShell>
       </Panel>
 
-      {/* Actions */}
-      <div className="flex items-center justify-end gap-3 pb-4">
-        {justSaved && (
-          <span className="mr-auto text-sm font-medium text-secondary-green-500">
-            Changes saved
-          </span>
-        )}
-        <button
-          type="button"
-          onClick={handleDiscard}
-          disabled={!isChangeDefault}
-          className={[
-            "rounded-lg border border-[#E6E5EA] bg-neutral-white px-4 py-2 text-sm font-semibold text-neutral-light-400",
-            "shadow-sm transition-colors hover:bg-slate-50",
-            "disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer",
-          ].join(" ")}
-        >
-          Discard
-        </button>
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={!isChangeDefault}
-          className={[
-            "rounded-lg bg-purple-light-600 px-4 py-2 text-sm font-semibold text-neutral-white",
-            "shadow-sm transition-colors hover:bg-purple-light-600/90",
-            "disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer",
-          ].join(" ")}
-        >
-          Save Changes
-        </button>
-      </div>
+      <SettingsActions isDirty={isChangeDefault} justSaved={justSaved} onDiscard={handleDiscard} onSave={handleSave} />
     </div>
   )
 }
