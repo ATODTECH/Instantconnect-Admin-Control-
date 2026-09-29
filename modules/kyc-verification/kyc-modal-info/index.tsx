@@ -1,7 +1,7 @@
 "use client"
 
 import { AVATAR_COLORS } from "@/modules/live-connection"
-import { UserRecord } from "@/modules/users"
+import { UserRecord } from "@/modules/kyc-verification/mock-users"
 import { CheckboxRowProps, ChecklistItem, SubmitStatus } from "@/types/kyc-verification"
 import { CircleXIcon, Image, Loader2Icon } from "lucide-react"
 import { useState } from "react"

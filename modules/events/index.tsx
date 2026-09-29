@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react"
 import GridCard from "./gridcard"
 import { ArrowLeft, ArrowRight, ChevronDown, Download, Ellipsis, X } from "lucide-react"
-import { UserRecord } from "../users"
+import { UserRecord } from "../kyc-verification/mock-users"
 import { AVATAR_COLORS } from "../live-connection"
 import { useQuery } from "@/components/topbar"
 import EventModalIndex from "./events-modal-info"

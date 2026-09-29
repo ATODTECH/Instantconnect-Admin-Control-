@@ -12,3 +12,11 @@ export const loginValidationSchema = yup.object({
 })
 
 export type LoginValues = yup.InferType<typeof loginValidationSchema>
+
+// Mirrors the API's support message limits.
+export const messageUserValidationSchema = yup.object({
+  subject: yup.string().trim().max(120, "Keep the subject under 120 characters.").required("Add a subject."),
+  body: yup.string().trim().max(2000, "Keep the message under 2,000 characters.").required("Write a message."),
+})
+
+export type MessageUserValues = yup.InferType<typeof messageUserValidationSchema>

@@ -2,7 +2,7 @@
 import GridCard from "./gridcard"
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@/components/topbar";
-import { USERS } from "@/modules/users";
+import { USERS } from "@/modules/kyc-verification/mock-users";
 import { ArrowLeft, ArrowRight, Download, MoreHorizontal, RefreshCw } from "lucide-react";
 import { Action, Priority } from "@/types/kyc-verification";
 import KYCModalInfo from "./kyc-modal-info";

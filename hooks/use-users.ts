@@ -1,0 +1,45 @@
+import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
+import { toast } from "sonner"
+import { exportUsers, getUser, getUsers, messageUser } from "@/api/users"
+import type { AdminUserFilters } from "@/types/admin-users"
+
+export const USERS_PAGE_SIZE = 10
+
+export const userKeys = {
+  all: ["users"] as const,
+  list: (filters: AdminUserFilters, page: number) => [...userKeys.all, "list", filters, page] as const,
+  detail: (id: string) => [...userKeys.all, "detail", id] as const,
+}
+
+export const useUsers = (filters: AdminUserFilters, page: number) =>
+  useQuery({
+    queryKey: userKeys.list(filters, page),
+    queryFn: () => getUsers(filters, (page - 1) * USERS_PAGE_SIZE, USERS_PAGE_SIZE),
+    // Keeps the current rows on screen while the next page or filter loads.
+    placeholderData: keepPreviousData,
+  })
+
+export const useUser = (id: string) =>
+  useQuery({
+    queryKey: userKeys.detail(id),
+    queryFn: () => getUser(id),
+  })
+
+export const useMessageUser = () =>
+  useMutation({
+    mutationFn: messageUser,
+    onSuccess: () => {
+      toast.success("Message sent to their Help & Support chat")
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+
+export const useExportUsers = () =>
+  useMutation({
+    mutationFn: ({ filters, ids }: { filters: AdminUserFilters, ids: string[] }) => exportUsers(filters, ids),
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })

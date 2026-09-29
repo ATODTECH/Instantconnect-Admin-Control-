@@ -1,7 +1,7 @@
 "use client"
 import { useQuery } from "@/components/topbar"
 import GridCard from "./gridcard"
-import { UserRecord } from "../users"
+import { UserRecord } from "../kyc-verification/mock-users"
 import { useMemo, useState } from "react"
 import { ArrowLeft, ArrowRight, ChevronDown, Download, Ellipsis, X } from "lucide-react"
 import Image from "next/image"

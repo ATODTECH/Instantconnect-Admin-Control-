@@ -1,6 +1,6 @@
 "use client"
 import { ArrowLeft, ArrowRight, ChevronDown, Download, Ellipsis, X } from "lucide-react";
-import { USERS } from "../users";
+import { USERS } from "../kyc-verification/mock-users";
 import GridCard from "./gridcard"
 import { useMemo, useState } from "react";
 import { useQuery } from "@/components/topbar";
