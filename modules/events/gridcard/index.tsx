@@ -1,14 +1,26 @@
-import { StatCard } from "@/components/shared/stat-card"
+"use client"
+
+import { StatCard, StatCardSkeleton } from "@/components/shared/stat-card"
+import { WidgetError } from "@/components/widget-state"
+import { useEventStats } from "@/hooks/use-events"
 import { formatCount, formatNaira } from "@/lib/format"
 
-// Placeholder figures until the events admin API exists.
-const GridCard = () => (
-  <>
-    <StatCard title="Total Events" value={formatCount(486)} tone="brand" note={{ label: "Overall event created", tone: "brand" }} />
-    <StatCard title="Upcoming Events" value={formatCount(34)} tone="success" note={{ label: "Active or Upcoming", tone: "success" }} />
-    <StatCard title="Past Event" value={formatCount(452)} tone="neutral" note={{ label: "Successfully archived", tone: "neutral" }} />
-    <StatCard title="Total Revenue" value={formatNaira(8_600_000 * 100)} tone="warning" note={{ label: "Ticket transactions", tone: "warning" }} />
-  </>
-)
+const GridCard = () => {
+  const { data, isPending, isError, error, refetch, isRefetching } = useEventStats()
+
+  if (isPending) return Array.from({ length: 4 }, (_, index) => <StatCardSkeleton key={index} />)
+  if (isError) {
+    return <WidgetError message={error.message} onRetry={() => refetch()} isRetrying={isRefetching} className="sm:col-span-2 lg:col-span-4" />
+  }
+
+  return (
+    <>
+      <StatCard title="Total Events" value={formatCount(data.total)} tone="brand" note={{ label: "Overall events created", tone: "brand" }} />
+      <StatCard title="Upcoming Events" value={formatCount(data.upcoming)} tone="success" note={{ label: "Upcoming or ongoing", tone: "success" }} />
+      <StatCard title="Past Events" value={formatCount(data.past)} tone="neutral" note={{ label: "Already ended", tone: "neutral" }} />
+      <StatCard title="Total Revenue" value={formatNaira(data.revenueMinor)} tone="warning" note={{ label: "No ticket sales yet", tone: "warning" }} />
+    </>
+  )
+}
 
 export default GridCard

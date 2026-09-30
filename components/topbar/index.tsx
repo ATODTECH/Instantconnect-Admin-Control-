@@ -1,7 +1,6 @@
 "use client"
 
 import { createContext, useContext, useState } from "react"
-import Image, { type StaticImageData } from "next/image"
 import { usePathname } from "next/navigation"
 import { Bell, Search } from "lucide-react"
 import { cn } from "cn"
@@ -13,11 +12,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+// Kept for the top-right avatar, hidden for now: the sidebar already shows the admin.
+// import { UserAvatar } from "@/components/shared/user-avatar"
 import { Input } from "@/components/ui/input"
+// import { useCurrentAdmin } from "@/hooks/use-auth"
 import { PAGE_HEADINGS } from "@/lib/routes"
 
 interface TopBarProps {
-  image: StaticImageData
   children: React.ReactNode
 }
 
@@ -38,7 +39,8 @@ interface Notification {
 // Placeholder until admin notifications have an API.
 const INITIAL_NOTIFICATIONS: Notification[] = []
 
-const TopBarIndex = ({ image, children }: TopBarProps) => {
+const TopBarIndex = ({ children }: TopBarProps) => {
+  // const { data: admin } = useCurrentAdmin()
   const [query, setQuery] = useState("")
   const [notifications, setNotifications] = useState<Notification[]>(INITIAL_NOTIFICATIONS)
   const pathname = usePathname()
@@ -116,7 +118,8 @@ const TopBarIndex = ({ image, children }: TopBarProps) => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Image src={image} alt="Your profile" height={36} width={36} className="h-10 w-10 rounded-full object-cover overflow-hidden" />
+          {/* Hidden for now: the sidebar already shows the signed-in admin. */}
+          {/* {admin && <UserAvatar name={admin.fullName} size="md" className="ring-1 ring-primary-border" />} */}
         </div>
       </div>
       <QueryContext.Provider value={{ query }}>{children}</QueryContext.Provider>

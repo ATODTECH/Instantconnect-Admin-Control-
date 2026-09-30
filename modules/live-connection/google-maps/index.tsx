@@ -1,243 +1,165 @@
 "use client"
-import { UserAvatar } from "@/components/shared/user-avatar"
 
-import { APIProvider, Map, AdvancedMarker, ColorScheme, InfoWindow, Pin, MapControl, ControlPosition } from "@vis.gl/react-google-maps"
-import { useEffect, useRef, useState } from "react"
+import { useState } from "react"
+import { AdvancedMarker, AdvancedMarkerAnchorPoint, APIProvider, ColorScheme, ControlPosition, InfoWindow, Map, MapControl, Pin } from "@vis.gl/react-google-maps"
 import { ArrowRight, Clock, MapPin } from "lucide-react"
+import { UserAvatar } from "@/components/shared/user-avatar"
+import { useMeetup } from "@/hooks/use-meetups"
+import type { AdminMeetupRow } from "@/types/admin-meetups"
+import { DEFAULT_CENTER, PIN_COLOURS, formatWhen, pairName, pinFor, shortName, toneOf } from "../helpers"
 
-interface GoogleMapProps {
-  users: LiveConnectUsersProps[],
-  isSwitch: boolean,
-  switchVal: number,
-  setSwitch: (val: boolean)=> void,
-  setSwitchVal: (id: number)=> void,
-}
+const LegendDot = ({ colour, label }: { colour: string, label: string }) => (
+  <div className="flex gap-2 items-center flex-nowrap">
+    <span className="shrink-0 w-2 h-2 inline-flex rounded-full" style={{ backgroundColor: colour }} />
+    <span>{label}</span>
+  </div>
+)
 
-
-const MapLegend = () => {
-  return (
-    <div className="border border-[#2D3548] p-3 rounded-lg">
-      <div className="flex flex-col gap-1.5 text-[11px] text-ic-light font-normal">
-        <span className="uppercase font-semibold text-ic-muted">Legend</span>
-        <div className="flex gap-2 items-center flex-nowrap">
-          <span className="shrink-0 w-2 h-2 inline-flex rounded-full bg-secondary-green-500"></span>
-          <span>Active</span>
-        </div>
-        <div className="flex gap-2 items-center flex-nowrap">
-          <span className="shrink-0 w-2 h-2 inline-flex rounded-full bg-neutral-light-300"></span>
-          <span>Completed</span>
-        </div>
-        <div className="flex gap-2 items-center flex-nowrap">
-          <span className="shrink-0 w-2 h-2 inline-flex rounded-full bg-[#C92B2B]"></span>
-          <span>Flagged</span>
-        </div>
-      </div>
+const Legend = ({ title, children }: { title: string, children: React.ReactNode }) => (
+  <div className="m-3 border border-[#2D3548] bg-[#1E293B]/90 p-3 rounded-lg">
+    <div className="flex flex-col gap-1.5 text-[11px] text-ic-light font-normal">
+      <span className="uppercase font-semibold text-ic-muted">{title}</span>
+      {children}
     </div>
-  )
-}
-const SingleMapLegend = () => {
-  return (
-    <div className="border border-[#2D3548] p-3 rounded-lg">
-      <div className="flex flex-col gap-1.5 text-[11px] text-ic-light font-normal">
-        <span className="uppercase font-semibold text-ic-muted">Live Tracking Legend</span>
-        <div className="flex gap-2 items-center flex-nowrap">
-          <span className="shrink-0 w-2 h-2 inline-flex rounded-full bg-secondary-green-500"></span>
-          <span>GPS Online (Active)</span>
-        </div>
-        <div className="flex gap-2 items-center flex-nowrap">
-          <span className="shrink-0 w-2 h-2 inline-flex rounded-full bg-purple-light-600"></span>
-          <span>Meeting Destination</span>
-        </div>
-        <div className="flex gap-2 items-center flex-nowrap">
-          <span className="shrink-0 w-2 border border-dashed border-purple-light-600 inline-flex" />
-          <span>Assigned Path</span>
-        </div>
-      </div>
-    </div>
-  )
-}
+  </div>
+)
 
+const VENUE_COLOUR = "#9333EA"
+const LIVE_COLOUR = "#22C55E"
 
-const DEFAULT_CENTER = {lat: 6.42816, lng:  3.41897}
+/** One meetup: the venue and each person's live position while they share it. */
+const TrackingLayer = ({ meetupId }: { meetupId: string }) => {
+  const { data: meetup } = useMeetup(meetupId)
+  if (!meetup) return null
 
-const GoogleMapIndex = ({users, isSwitch, switchVal, setSwitch, setSwitchVal}: GoogleMapProps) => {
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string
-  const [connectUsers, setConnectUsers] = useState(users)
-  const [selectedUserId, setSelectedUserId] = useState<number>()
-  const [isInfoWindow, setIsInfoWindow] = useState<boolean>(false)
-  const containerRef = useRef<HTMLDivElement>(null)
-  
-
-  if (!apiKey) {
-    return <div className="text-sm text-red-600">Error: Missing Google Maps API Key</div>
-  }
-
-  const intialsConnectionCard = (name: string) => {
-    const val = name.split(" ")[1][0]
-    return name
-      .split(" ")[0]
-      .concat(" ", val, ".")
-  }
-
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsInfoWindow(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [])
-
-  if (isSwitch) {
-    console.log(switchVal)
-    return (
-      <>
-        <APIProvider apiKey={apiKey}>
-          <Map
-            defaultCenter={connectUsers[switchVal!-1].coordinates}
-            defaultZoom={12}
-            gestureHandling={'greedy'}
-            disableDefaultUI={false}
-            mapId={"DEMO_MAP_ID"}
-            colorScheme={ColorScheme.DARK}
-          >
-            {/* first person */}
-            <AdvancedMarker
-              position={connectUsers[switchVal!-1].firstRecipient.coordinates}
-              clickable={true}
-              draggable={false}
-            >
-              <Pin background={'#EA4335'} borderColor={'#000'} glyphColor={'#FFF'} />
-              <InfoWindow
-                position={connectUsers[switchVal!-1].firstRecipient.coordinates}
-                headerDisabled={true}
-              >
-                <div className="flex items-center gap-1 w-full">
-                  <UserAvatar name={connectUsers[switchVal!-1].firstRecipient.name} src={connectUsers[switchVal!-1].firstRecipient.image || null} className="size-5 text-[8px] border-2 border-neutral-white" />
-                  <div className=" w-full text-[11px] text-[#1E293B] font-semibold">{intialsConnectionCard(connectUsers[switchVal!-1].firstRecipient.name)}</div>
-                </div>
-              </InfoWindow>
-            </AdvancedMarker>
-
-            {/* location pin */}
-            <AdvancedMarker
-              position={connectUsers[switchVal!-1].coordinates}
-              clickable={true}
-              draggable={false}
-            >
-              <Pin background={'#EA4335'} borderColor={'#000'} 
-                glyphColor={`
-                  ${connectUsers[switchVal!-1].status==="active"? '#22C55E':''}
-                  ${connectUsers[switchVal!-1].status==="completed"? '#83818E':''}
-                  ${connectUsers[switchVal!-1].status==="flagged"? '#C92B2B':''}`} 
-                />
-            </AdvancedMarker>
-            
-            {/* second person */}
-            <AdvancedMarker
-              position={connectUsers[switchVal!-1].secondRecipient.coordinates}
-              clickable={true}
-              draggable={false}
-            >
-              <Pin background={'#EA4335'} borderColor={'#000'} glyphColor={'#FFF'} />
-              <InfoWindow
-                position={connectUsers[switchVal!-1].secondRecipient.coordinates}
-                headerDisabled={true}
-              >
-                <div className="flex items-center gap-1 w-full">
-                  <UserAvatar name={connectUsers[switchVal!-1].secondRecipient.name} src={connectUsers[switchVal!-1].secondRecipient.image || null} className="size-5 text-[8px] border-2 border-neutral-white" />
-                  <div className=" w-full text-[11px] text-[#1E293B] font-semibold">{intialsConnectionCard(connectUsers[switchVal!-1].secondRecipient.name)}</div>
-                </div>
-              </InfoWindow>
-            </AdvancedMarker>
-
-
-            <MapControl position={ControlPosition.LEFT_BOTTOM}>
-              <SingleMapLegend />
-            </MapControl>
-          </Map>
-        </APIProvider>
-      </>
-    )
-  }
-  
   return (
     <>
-      <APIProvider apiKey={apiKey}>
-        <Map
-          defaultCenter={DEFAULT_CENTER}
-          defaultZoom={12}
-          gestureHandling={'greedy'}
-          disableDefaultUI={false}
-          mapId={"DEMO_MAP_ID"}
-          colorScheme={ColorScheme.DARK}
-        >
-          {
-            connectUsers.map((connectUser, index) => (
-              <AdvancedMarker
-                key={connectUser.id}
-                position={connectUser.coordinates}
-                clickable={true}
-                draggable={false}
-                onClick={()=> {setIsInfoWindow(true); setSelectedUserId(connectUser.id)}}
-              >
-                <Pin background={'#EA4335'} borderColor={'#000'} 
-                glyphColor={`
-                  ${connectUser.status==="active"? '#22C55E':''}
-                  ${connectUser.status==="completed"? '#83818E':''}
-                  ${connectUser.status==="flagged"? '#C92B2B':''}`} 
-                />
-                {((selectedUserId===connectUser.id)&& isInfoWindow===true) && (
-                  <InfoWindow
-                    position={connectUser.coordinates}
-                    onCloseClick={()=> setIsInfoWindow(false)}
-                    minWidth={220}
-                    headerDisabled={true}
-                  >
-                    <div className="flex flex-col w-full" onClick={()=> setIsInfoWindow(isInfoWindow === true ? true: false)} ref={containerRef}>
-
-                      {/* image */}
-                      <div className="relative w-fit pb-2">
-                        <UserAvatar name={connectUser.firstRecipient.name} src={connectUser.firstRecipient.image || null} className="size-8 text-xs border-2 border-neutral-white" />
-                        <UserAvatar name={connectUser.secondRecipient.name} src={connectUser.secondRecipient.image || null} className="size-8 absolute text-xs -right-5 border-2 border-neutral-white" />
-                        <span className="absolute -right-12 inline-flex self-center text-purple-light-600 font-semibold text-[10px] border border-[#F3E8FF] bg-bg-purple-light-200 rounded-sm py-0.5 px-1.5">{connectUser.status}</span>
-                      </div>
-
-                      {/* firstName + initials */}
-                      <div className="flex flex-col gap-1 pb-2 border-b border-b-[#F1F5F9]">
-                        <div className=" w-full text-sm text-neutral-light-600 font-semibold">{intialsConnectionCard(connectUser.firstRecipient.name)} & {intialsConnectionCard(connectUser.secondRecipient.name)}</div>
-                        <div className="flex flex-col items-start gap-1 pl-1 text-neutral-light-300 w-full">
-                          <div className="flex items-center gap-1">
-                            <MapPin size={11} className="h-2.75 w-2.75" />
-                            <span className=" font-normal text-xs">{connectUser.location}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Clock size={11} className="h-2.75 w-2.75" />
-                            <span className=" font-normal text-xs">{connectUser.meetingStartTime}</span>
-                          </div>
-                        </div>
-                      </div>
-                      {/* footer view details */}
-                      <button className="flex items-center gap-4 justify-between text-purple-light-600 text-xs font-semibold outline-none pt-2 cursor-pointer"
-                      onClick={()=> {setSwitch(true); setSwitchVal(connectUser.id)}}>
-                        <span>View Details</span>
-                        <ArrowRight size={12} className="h-3 w-3" />
-                      </button>
-                    </div>
-                  </InfoWindow>
-                )}
-              </AdvancedMarker>
-            ))
-          }
-          <MapControl position={ControlPosition.LEFT_BOTTOM}>
-            <MapLegend />
-          </MapControl>
-        </Map>
-      </APIProvider>
+      {meetup.venue && (
+        <AdvancedMarker position={meetup.venue} title={meetup.venueName ?? "Meeting point"}>
+          <Pin background={VENUE_COLOUR} borderColor="#000" glyphColor="#FFF" />
+        </AdvancedMarker>
+      )}
+      {meetup.parties.map((party) =>
+        party.location ? (
+          // Anchored on its left edge so a person standing at the venue sits beside the pin, not under it.
+          <AdvancedMarker key={party.userId} position={party.location} title={party.fullName} anchorPoint={AdvancedMarkerAnchorPoint.LEFT_CENTER}>
+            <div className="flex items-center gap-1 rounded-full bg-neutral-white py-0.5 pl-0.5 pr-2 shadow-md ring-2" style={{ ["--tw-ring-color" as string]: LIVE_COLOUR }}>
+              <UserAvatar name={party.fullName} src={party.avatarUrl} size="xs" />
+              <span className="text-[11px] font-semibold text-[#1E293B]">{shortName(party.fullName)}</span>
+            </div>
+          </AdvancedMarker>
+        ) : null,
+      )}
+      <MapControl position={ControlPosition.LEFT_BOTTOM}>
+        <Legend title="Live Tracking Legend">
+          <LegendDot colour={LIVE_COLOUR} label="Live position (sharing)" />
+          <LegendDot colour={VENUE_COLOUR} label="Meeting point" />
+        </Legend>
+      </MapControl>
     </>
   )
 }
 
-export default GoogleMapIndex
+/** Every meetup in the current tab, coloured by state. */
+const OverviewLayer = ({ meetups, onSelect }: { meetups: AdminMeetupRow[], onSelect: (id: string) => void }) => {
+  const [openId, setOpenId] = useState<string | null>(null)
+
+  return (
+    <>
+      {meetups.map((meetup) => {
+        const position = pinFor(meetup)
+        if (!position) return null
+        const when = meetup.startedAt ?? meetup.scheduledAt
+
+        return (
+          <AdvancedMarker key={meetup.id} position={position} title={pairName(meetup)} onClick={() => setOpenId(meetup.id)}>
+            <Pin background="#EA4335" borderColor="#000" glyphColor={PIN_COLOURS[toneOf(meetup)]} />
+            {openId === meetup.id && (
+              <InfoWindow position={position} onCloseClick={() => setOpenId(null)} minWidth={220} headerDisabled>
+                <div className="flex flex-col w-full">
+                  <div className="flex items-center gap-2 pb-2">
+                    <div className="flex -space-x-1.5">
+                      {meetup.parties.map((party) => (
+                        <UserAvatar key={party.userId} name={party.fullName} src={party.avatarUrl} className="ring-2 ring-neutral-white" />
+                      ))}
+                    </div>
+                    <span className="inline-flex text-purple-light-600 font-semibold text-[10px] border border-[#F3E8FF] bg-bg-purple-light-200 rounded-sm py-0.5 px-1.5 capitalize">
+                      {meetup.flag ? "Flagged" : meetup.status}
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-1 pb-2 border-b border-b-[#F1F5F9]">
+                    <div className="w-full text-sm text-neutral-light-600 font-semibold">{pairName(meetup)}</div>
+                    <div className="flex flex-col items-start gap-1 pl-1 text-neutral-light-300 w-full">
+                      <div className="flex items-center gap-1">
+                        <MapPin size={11} className="h-2.75 w-2.75" aria-hidden />
+                        <span className="font-normal text-xs">{meetup.venueName ?? "No venue set"}</span>
+                      </div>
+                      {when && (
+                        <div className="flex items-center gap-1">
+                          <Clock size={11} className="h-2.75 w-2.75" aria-hidden />
+                          <span className="font-normal text-xs">{formatWhen(when)}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className="flex items-center gap-4 justify-between text-purple-light-600 text-xs font-semibold pt-2 cursor-pointer"
+                    onClick={() => onSelect(meetup.id)}
+                  >
+                    <span>View Details</span>
+                    <ArrowRight size={12} className="h-3 w-3" aria-hidden />
+                  </button>
+                </div>
+              </InfoWindow>
+            )}
+          </AdvancedMarker>
+        )
+      })}
+      <MapControl position={ControlPosition.LEFT_BOTTOM}>
+        <Legend title="Legend">
+          <LegendDot colour={PIN_COLOURS.active} label="Active" />
+          <LegendDot colour={PIN_COLOURS.completed} label="Completed" />
+          <LegendDot colour={PIN_COLOURS.flagged} label="Flagged" />
+        </Legend>
+      </MapControl>
+    </>
+  )
+}
+
+interface LiveMapProps {
+  meetups: AdminMeetupRow[]
+  selectedId: string | null
+  onSelect: (id: string) => void
+}
+
+const LiveMap = ({ meetups, selectedId, onSelect }: LiveMapProps) => {
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+  const { data: selected } = useMeetup(selectedId ?? "", { enabled: selectedId !== null })
+
+  if (!apiKey) {
+    return <div className="p-4 text-sm text-red-600">The map needs NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in .env.local.</div>
+  }
+
+  const center = selectedId
+    ? (selected && pinFor(selected)) ?? DEFAULT_CENTER
+    : meetups.map(pinFor).find((point) => point !== null) ?? DEFAULT_CENTER
+
+  return (
+    <APIProvider apiKey={apiKey}>
+      {/* Remounted per selection, and once its data arrives, so the map recentres on what is being tracked. */}
+      <Map
+        key={selectedId ? `${selectedId}-${selected ? "ready" : "loading"}` : "overview"}
+        defaultCenter={center}
+        defaultZoom={selectedId ? 14 : 12}
+        gestureHandling="greedy"
+        mapId="DEMO_MAP_ID"
+        colorScheme={ColorScheme.DARK}
+      >
+        {selectedId ? <TrackingLayer meetupId={selectedId} /> : <OverviewLayer meetups={meetups} onSelect={onSelect} />}
+      </Map>
+    </APIProvider>
+  )
+}
+
+export default LiveMap

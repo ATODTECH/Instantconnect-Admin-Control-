@@ -1,4 +1,5 @@
 import api from "@/lib/axios"
+import { saveBlobResponse } from "@/lib/download"
 import type { AdminUserDetail, AdminUserFilters, AdminUserPage, MessageUserInput } from "@/types/admin-users"
 
 export const getUsers = async (filters: AdminUserFilters, offset: number, limit: number): Promise<AdminUserPage> => {
@@ -29,9 +30,6 @@ export const deleteUser = async (id: string): Promise<void> => {
   await api.delete(`/admin/users/${id}`)
 }
 
-const filenameFrom = (disposition?: string) =>
-  disposition?.match(/filename="([^"]+)"/)?.[1] ?? "instantconnect-users.csv"
-
 /** Every row matching the filters, or only `ids` when some are ticked. */
 export const exportUsers = async (filters: AdminUserFilters, ids: string[]): Promise<void> => {
   const response = await api.get<Blob>("/admin/users/export", {
@@ -39,12 +37,5 @@ export const exportUsers = async (filters: AdminUserFilters, ids: string[]): Pro
     responseType: "blob",
   })
 
-  const url = URL.createObjectURL(response.data)
-  const link = document.createElement("a")
-  link.href = url
-  link.download = filenameFrom(response.headers["content-disposition"])
-  document.body.appendChild(link)
-  link.click()
-  link.remove()
-  URL.revokeObjectURL(url)
+  saveBlobResponse(response, "instantconnect-users.csv")
 }
