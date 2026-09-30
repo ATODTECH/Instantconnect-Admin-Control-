@@ -2,65 +2,90 @@
 
 import { useMemo, useState } from "react"
 import { Download, RefreshCw } from "lucide-react"
+import { cn } from "cn"
+import { useQueryClient } from "@tanstack/react-query"
 import { DataTable } from "@/components/data-table/data-table"
 import { DataTablePagination } from "@/components/data-table/data-table-pagination"
 import { DetailSheet } from "@/components/shared/detail-sheet"
-import { FilterTabs, type FilterTab } from "@/components/shared/filter-tabs"
+import { FilterTabs } from "@/components/shared/filter-tabs"
 import { useQuery } from "@/components/topbar"
-import { useClientPagination } from "@/hooks/use-client-pagination"
+import { useDebounce } from "@/hooks/use-debounce"
+import { KYC_PAGE_SIZE, kycKeys, useKycSubmissions } from "@/hooks/use-kyc"
 import { downloadCsv } from "@/lib/csv"
-import { kycColumns } from "./columns"
+import { formatCount } from "@/lib/format"
+import type { KycSubmission, KycSubmissionFilters } from "@/types/admin-kyc"
+import { documentsOf, kycColumns } from "./columns"
+import { KIN_LABELS, KYC_STATUS_LABELS, formatDay, kycTabs, type KycTab } from "./constants"
 import GridCard from "./gridcard"
 import KycReview from "./kyc-review"
-import { USERS, type UserRecord } from "./mock-users"
 
-const PAGE_SIZE = 8
-
-type KycTab = KycStatus | "All Submissions"
-
-const TABS: readonly FilterTab<KycTab>[] = (["All Submissions", "Pending", "Verified", "Rejected"] as const).map((value) => ({
-  label: value,
-  value,
-  count: value === "All Submissions" ? USERS.length : USERS.filter((user) => user.kyc === value).length,
-}))
+const NO_SUBMISSIONS: KycSubmission[] = []
 
 const KYCHomeIndex = () => {
+  const queryClient = useQueryClient()
   const { query } = useQuery()
-  const [tab, setTab] = useState<KycTab>("All Submissions")
-  const [selected, setSelected] = useState<Set<string>>(() => new Set())
-  const [reviewing, setReviewing] = useState<UserRecord | null>(null)
+  const search = useDebounce(query.trim(), 300)
+  const [tab, setTab] = useState<KycTab>("pending")
+  // Ticks survive paging, so each ticked row is kept whole for the export.
+  const [picked, setPicked] = useState<Map<string, KycSubmission>>(() => new Map())
+  const [reviewing, setReviewing] = useState<KycSubmission | null>(null)
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    return USERS.filter((u) => {
-      if (q && !u.name.toLowerCase().includes(q) && !u.email.toLowerCase().includes(q)) return false
-      if (tab !== "All Submissions" && u.kyc !== tab) return false
-      return true
-    })
-  }, [query, tab])
+  const filters = useMemo<KycSubmissionFilters>(
+    () => ({ status: tab === "all" ? undefined : tab, search: search || undefined }),
+    [tab, search],
+  )
 
-  const { page, pageRows, setPage } = useClientPagination(filtered, PAGE_SIZE, JSON.stringify([query, tab]))
+  // A new tab or search starts again at page 1, reset during render so the
+  // stale page is never requested.
+  const filterKey = JSON.stringify(filters)
+  const [pageState, setPageState] = useState({ filterKey, page: 1 })
+  if (pageState.filterKey !== filterKey) setPageState({ filterKey, page: 1 })
+  const page = pageState.filterKey === filterKey ? pageState.page : 1
+
+  const { data, isPending, isError, error, refetch, isRefetching, isPlaceholderData, isFetching } = useKycSubmissions(filters, page)
+
+  const rows = data?.items ?? NO_SUBMISSIONS
+  const total = data?.page.total ?? 0
   const columns = useMemo(() => kycColumns(setReviewing), [])
-  const namesById = useMemo(() => new Map(USERS.map((user) => [user.id, user.name])), [])
+
+  const rowsById = useMemo(() => new Map(rows.map((row) => [row.id, row])), [rows])
+  const selected = useMemo(() => new Set(picked.keys()), [picked])
+
+  const setSelected = (ids: Set<string>) =>
+    setPicked((prev) => {
+      const next = new Map<string, KycSubmission>()
+      for (const id of ids) {
+        const row = prev.get(id) ?? rowsById.get(id)
+        if (row) next.set(id, row)
+      }
+      return next
+    })
 
   const exportSelected = () =>
     downloadCsv(
-      "InstantConnect-KYC-Users.csv",
-      ["User ID", "Name", "Email", "Phone Number", "Gender", "DOB", "Location", "Doc Type", "Submitted Date", "KYC Status", "KYC Action"],
-      USERS.filter((user) => selected.has(user.id)).map((user) => [
-        user.userID,
-        user.name,
-        user.email,
-        user.phoneNumber,
-        user.gender,
-        user.dob,
-        user.location,
-        `${user.docType.nin}, ${user.docType.otherKYCType}`,
-        user.kycDateSubmitted,
-        user.kyc,
-        user.action,
-      ]),
+      "InstantConnect-KYC-Submissions.csv",
+      ["Submission ID", "User ID", "Name", "Email", "Phone", "Date of Birth", "Documents", "Address", "Next of Kin", "Kin Relationship", "Kin Phone", "Submitted", "Status", "Reviewed", "Reviewed By", "Rejection Reason"],
+      [...picked.values()].map((row) => [
+          row.id,
+          row.applicant.id,
+          row.applicant.fullName,
+          row.applicant.email,
+          row.applicant.phone,
+          row.applicant.dateOfBirth ?? "",
+          documentsOf(row),
+          [row.addressLine, row.city, row.state, row.country].join(", "),
+          row.kinName,
+          KIN_LABELS[row.kinRelationship],
+          row.kinPhone,
+          formatDay(row.submittedAt),
+          KYC_STATUS_LABELS[row.status].label,
+          row.reviewedAt ? formatDay(row.reviewedAt) : "",
+          row.reviewedByName ?? "",
+          row.rejectionReason ?? "",
+        ]),
     )
+
+  const refreshQueue = () => queryClient.invalidateQueries({ queryKey: kycKeys.all })
 
   return (
     <div className="flex-1 flex flex-col gap-y-6 overflow-y-auto scrollbar-thin pr-8">
@@ -69,26 +94,49 @@ const KYCHomeIndex = () => {
       </div>
       <div className="flex flex-col gap-y-6 mb-8">
         <div className="flex shrink-0 bg-neutral-white items-center justify-between gap-3 p-5 py-6 rounded-2xl border-[.5px] border-primary-border flex-wrap shadow-[0px_0px_10px_0px_#00000005]">
-          <FilterTabs label="KYC status" tabs={TABS} value={tab} onChange={setTab} variant="pill" />
-          <button
-            type="button"
-            onClick={() => (selected.size > 0 ? exportSelected() : alert("coming soon!"))}
-            className="flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-primary-border bg-neutral-white px-3 py-2 text-sm font-semibold text-neutral-light-400 hover:bg-slate-50"
-          >
-            {selected.size > 0 ? <Download className="h-3.5 w-3.5" /> : <RefreshCw className="h-3.5 w-3.5" />}
-            {selected.size > 0 ? `Export ${selected.size} selected` : "Refresh Queue"}
-          </button>
+          <FilterTabs label="KYC status" tabs={kycTabs(data?.counts)} value={tab} onChange={setTab} variant="pill" />
+          <div className="flex items-center gap-3">
+            {selected.size > 0 && (
+              <button type="button" onClick={() => setSelected(new Set())} className="text-sm text-slate-400 hover:text-slate-600 transition-colors">
+                Clear selection
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => (selected.size > 0 ? exportSelected() : refreshQueue())}
+              disabled={selected.size === 0 && isFetching}
+              className="flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-primary-border bg-neutral-white px-3 py-2 text-sm font-semibold text-neutral-light-400 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {selected.size > 0
+                ? <Download className="h-3.5 w-3.5" />
+                : <RefreshCw className={cn("h-3.5 w-3.5", isFetching && "animate-spin")} />}
+              {selected.size > 0 ? `Export ${formatCount(selected.size)} selected` : "Refresh Queue"}
+            </button>
+          </div>
         </div>
 
         <DataTable
           label="KYC submissions"
           columns={columns}
-          data={pageRows}
+          data={rows}
           getRowId={(row) => row.id}
-          emptyMessage="No users match the current search and filters."
-          selection={{ selectedIds: selected, onChange: setSelected, rowLabel: (id) => namesById.get(id) ?? "user" }}
+          isLoading={isPending}
+          isRefreshing={isPlaceholderData && isFetching}
+          skeletonRows={KYC_PAGE_SIZE}
+          error={isError ? error : null}
+          onRetry={() => refetch()}
+          isRetrying={isRefetching}
+          emptyMessage={search ? "No submissions match the current search." : tab === "pending" ? "The queue is clear." : "No submissions yet."}
+          selection={{ selectedIds: selected, onChange: setSelected, rowLabel: (id) => (picked.get(id) ?? rowsById.get(id))?.applicant.fullName ?? "submission" }}
           footer={
-            <DataTablePagination page={page} pageSize={PAGE_SIZE} total={filtered.length} onPageChange={setPage} noun={{ one: "submission", other: "submissions" }} />
+            <DataTablePagination
+              page={page}
+              pageSize={KYC_PAGE_SIZE}
+              total={total}
+              onPageChange={(next) => setPageState({ filterKey, page: next })}
+              noun={{ one: "submission", other: "submissions" }}
+              isLoading={isPending}
+            />
           }
         />
       </div>
@@ -97,9 +145,9 @@ const KYCHomeIndex = () => {
         open={reviewing !== null}
         onOpenChange={(open) => !open && setReviewing(null)}
         title="Document Review"
-        description={reviewing ? `KYC documents submitted by ${reviewing.name}` : "KYC document review"}
+        description={reviewing ? `KYC documents submitted by ${reviewing.applicant.fullName}` : "KYC document review"}
       >
-        {reviewing && <KycReview key={reviewing.id} person={reviewing} />}
+        {reviewing && <KycReview key={reviewing.id} submissionId={reviewing.id} />}
       </DetailSheet>
     </div>
   )

@@ -1,15 +1,29 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { signIn, signOut } from "@/api/auth"
+import { getCurrentAdmin, signIn, signOut } from "@/api/auth"
 import { ROUTES } from "@/lib/routes"
+
+export const authKeys = {
+  me: ["auth", "me"] as const,
+}
+
+/** Who is signed in, for the sidebar. Fetched once per session. */
+export const useCurrentAdmin = () =>
+  useQuery({
+    queryKey: authKeys.me,
+    queryFn: getCurrentAdmin,
+    staleTime: Infinity,
+  })
 
 export const useSignIn = () => {
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: signIn,
     onSuccess: ({ user }) => {
+      queryClient.setQueryData(authKeys.me, user)
       toast.success(`Welcome back, ${user.firstName}!`)
       router.replace(ROUTES.overview)
     },

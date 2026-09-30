@@ -1,4 +1,5 @@
 import api from "@/lib/axios"
+import { saveBlobResponse } from "@/lib/download"
 import type { AdminUserDetail, AdminUserFilters, AdminUserPage, MessageUserInput } from "@/types/admin-users"
 
 export const getUsers = async (filters: AdminUserFilters, offset: number, limit: number): Promise<AdminUserPage> => {
@@ -15,8 +16,19 @@ export const messageUser = async ({ id, ...message }: MessageUserInput & { id: s
   await api.post(`/admin/users/${id}/messages`, message)
 }
 
-const filenameFrom = (disposition?: string) =>
-  disposition?.match(/filename="([^"]+)"/)?.[1] ?? "instantconnect-users.csv"
+export const disableUser = async (id: string): Promise<AdminUserDetail> => {
+  const { data } = await api.post<AdminUserDetail>(`/admin/users/${id}/disable`)
+  return data
+}
+
+export const enableUser = async (id: string): Promise<AdminUserDetail> => {
+  const { data } = await api.post<AdminUserDetail>(`/admin/users/${id}/enable`)
+  return data
+}
+
+export const deleteUser = async (id: string): Promise<void> => {
+  await api.delete(`/admin/users/${id}`)
+}
 
 /** Every row matching the filters, or only `ids` when some are ticked. */
 export const exportUsers = async (filters: AdminUserFilters, ids: string[]): Promise<void> => {
@@ -25,12 +37,5 @@ export const exportUsers = async (filters: AdminUserFilters, ids: string[]): Pro
     responseType: "blob",
   })
 
-  const url = URL.createObjectURL(response.data)
-  const link = document.createElement("a")
-  link.href = url
-  link.download = filenameFrom(response.headers["content-disposition"])
-  document.body.appendChild(link)
-  link.click()
-  link.remove()
-  URL.revokeObjectURL(url)
+  saveBlobResponse(response, "instantconnect-users.csv")
 }

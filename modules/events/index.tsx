@@ -2,78 +2,63 @@
 
 import { useMemo, useState } from "react"
 import { Download, X } from "lucide-react"
+import { cn } from "cn"
 import { DataTable } from "@/components/data-table/data-table"
 import { DataTablePagination } from "@/components/data-table/data-table-pagination"
 import { DetailSheet } from "@/components/shared/detail-sheet"
-import { FilterSelect } from "@/components/shared/filter-select"
+import { FilterSelect, type FilterOption } from "@/components/shared/filter-select"
 import { FilterTabs } from "@/components/shared/filter-tabs"
 import { useQuery } from "@/components/topbar"
-import { useClientPagination } from "@/hooks/use-client-pagination"
-import { downloadCsv } from "@/lib/csv"
+import { useDebounce } from "@/hooks/use-debounce"
+import { EVENTS_PAGE_SIZE, useCategories, useEvents, useExportEvents } from "@/hooks/use-events"
+import type { AdminEventFilters, AdminEventRow } from "@/types/admin-events"
 import { eventColumns } from "./columns"
-import {
-  CATEGORY_FILTER,
-  DATE_FILTER,
-  DATE_WINDOW,
-  type DateRange,
-  type EventTab,
-  PAGE_SIZE,
-  TABS,
-  TYPE_FILTER,
-} from "./constants"
+import { TYPE_FILTER, WINDOW_FILTER, eventTabs, type EventTab } from "./constants"
 import EventDetails from "./event-details"
 import GridCard from "./gridcard"
-import { ALL_EVENTS } from "./mock-data"
 
-// The mock data is generated relative to this date.
-const TODAY = new Date(2026, 8, 15)
-const DAY_MS = 86_400_000
+const NO_EVENTS: AdminEventRow[] = []
 
 const EventsHomeIndex = () => {
   const { query } = useQuery()
-  const [activeTab, setActiveTab] = useState<EventTab>("All Events")
-  const [type, setType] = useState<EventType>()
-  const [category, setCategory] = useState<EventCategory>()
-  const [dateRange, setDateRange] = useState<DateRange>()
-  const [viewing, setViewing] = useState<EventRow | null>(null)
+  const search = useDebounce(query.trim(), 300)
+  const [tab, setTab] = useState<EventTab>("all")
+  const [type, setType] = useState<AdminEventFilters["type"]>()
+  const [categoryId, setCategoryId] = useState<string>()
+  const [dateWindow, setDateWindow] = useState<AdminEventFilters["window"]>()
+  const [viewing, setViewing] = useState<AdminEventRow | null>(null)
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
+  const { data: categories } = useCategories()
+  const categoryFilter = useMemo<FilterOption<string>[]>(
+    () => [{ label: "All Categories" }, ...(categories ?? []).map((category) => ({ label: category.label, value: category.id }))],
+    [categories],
+  )
 
-    return ALL_EVENTS.filter((ev) => {
-      if (q && !ev.createdBy.toLowerCase().includes(q) && !ev.name.toLowerCase().includes(q)) return false
-      if (activeTab !== "All Events" && ev.status !== activeTab) return false
-      if (type && ev.type !== type) return false
-      if (category && ev.category !== category) return false
-      if (dateRange) {
-        const [from, to] = DATE_WINDOW[dateRange]
-        const diffDays = Math.round(((ev.eventDate ?? ev.dateCreated).getTime() - TODAY.getTime()) / DAY_MS)
-        if (diffDays < from || diffDays > to) return false
-      }
-      return true
-    })
-  }, [query, activeTab, type, category, dateRange])
+  const filters = useMemo<AdminEventFilters>(
+    () => ({ search: search || undefined, status: tab === "all" ? undefined : tab, type, categoryId, window: dateWindow }),
+    [search, tab, type, categoryId, dateWindow],
+  )
 
-  const { page, pageRows, setPage } = useClientPagination(filtered, PAGE_SIZE, JSON.stringify([query, activeTab, type, category, dateRange]))
+  // Any change to the search or filters starts again at page 1, reset during
+  // render so the stale page is never requested.
+  const filterKey = JSON.stringify(filters)
+  const [pageState, setPageState] = useState({ filterKey, page: 1 })
+  if (pageState.filterKey !== filterKey) setPageState({ filterKey, page: 1 })
+  const page = pageState.filterKey === filterKey ? pageState.page : 1
+
+  const { data, isPending, isError, error, refetch, isRefetching, isPlaceholderData, isFetching } = useEvents(filters, page)
+  const { mutate: runExport, isPending: isExporting } = useExportEvents()
+
+  const rows = data?.items ?? NO_EVENTS
+  const total = data?.page.total ?? 0
   const columns = useMemo(() => eventColumns(setViewing), [])
-  const hasFilters = type !== undefined || category !== undefined || dateRange !== undefined
+  const hasFilters = type !== undefined || categoryId !== undefined || dateWindow !== undefined
 
-  const handleExportCSV = () =>
-    downloadCsv(
-      "InstantConnect-Events.csv",
-      ["Event Name", "Created By", "Date Created", "Event Date", "Type", "Category", "Attendees", "Status", "Revenue"],
-      filtered.map((ev) => [
-        ev.name,
-        ev.createdBy,
-        ev.dateCreated.toISOString().slice(0, 10),
-        ev.eventDate ? ev.eventDate.toISOString().slice(0, 10) : "Ongoing",
-        ev.type,
-        ev.category,
-        ev.attendees,
-        ev.status,
-        ev.type === "Free" ? "Free" : ev.revenue,
-      ]),
-    )
+  const clearFilters = () => {
+    setType(undefined)
+    setCategoryId(undefined)
+    setDateWindow(undefined)
+  }
 
   return (
     <div className="flex-1 flex flex-col gap-y-6 overflow-y-auto scrollbar-thin pr-8">
@@ -83,30 +68,24 @@ const EventsHomeIndex = () => {
       <div className="flex flex-col gap-y-6 mb-8">
         <div className="w-full shrink-0 rounded-2xl border border-gray-200 bg-neutral-white shadow-[0px_0px_10px_0px_#0000000A]">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-5 py-4">
-            <FilterTabs label="Event status" tabs={TABS} value={activeTab} onChange={setActiveTab} />
+            <FilterTabs label="Event status" tabs={eventTabs(data?.counts)} value={tab} onChange={setTab} />
             <button
               type="button"
-              onClick={handleExportCSV}
-              className="flex items-center gap-2 rounded-lg border border-[#F4F3F5] px-3.5 py-2 text-[13px] font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+              onClick={() => runExport(filters)}
+              disabled={isExporting || total === 0}
+              title="Exports every event matching the tab, search and filters"
+              className="flex items-center gap-2 rounded-lg border border-[#F4F3F5] px-3.5 py-2 text-[13px] font-semibold text-gray-700 hover:bg-gray-50 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <Download className="h-4 w-4" />
-              Export CSV
+              <Download className={cn("h-4 w-4", isExporting && "animate-bounce")} />
+              {isExporting ? "Preparing CSV" : "Export CSV"}
             </button>
           </div>
           <div className="flex flex-wrap items-center gap-3 px-5 py-4">
             <FilterSelect label="Event type" options={TYPE_FILTER} value={type} onChange={setType} />
-            <FilterSelect label="Category" options={CATEGORY_FILTER} value={category} onChange={setCategory} />
-            <FilterSelect label="Date range" options={DATE_FILTER} value={dateRange} onChange={setDateRange} />
+            <FilterSelect label="Category" options={categoryFilter} value={categoryId} onChange={setCategoryId} />
+            <FilterSelect label="Date range" options={WINDOW_FILTER} value={dateWindow} onChange={setDateWindow} />
             {hasFilters && (
-              <button
-                type="button"
-                onClick={() => {
-                  setType(undefined)
-                  setCategory(undefined)
-                  setDateRange(undefined)
-                }}
-                className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600"
-              >
+              <button type="button" onClick={clearFilters} className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600">
                 <X className="h-3.5 w-3.5" />
                 Clear filters
               </button>
@@ -117,11 +96,24 @@ const EventsHomeIndex = () => {
         <DataTable
           label="Events"
           columns={columns}
-          data={pageRows}
+          data={rows}
           getRowId={(row) => row.id}
-          emptyMessage="No events match the selected filters."
+          isLoading={isPending}
+          isRefreshing={isPlaceholderData && isFetching}
+          skeletonRows={EVENTS_PAGE_SIZE}
+          error={isError ? error : null}
+          onRetry={() => refetch()}
+          isRetrying={isRefetching}
+          emptyMessage={search || hasFilters || tab !== "all" ? "No events match the current search and filters." : "No events yet."}
           footer={
-            <DataTablePagination page={page} pageSize={PAGE_SIZE} total={filtered.length} onPageChange={setPage} noun={{ one: "event", other: "events" }} />
+            <DataTablePagination
+              page={page}
+              pageSize={EVENTS_PAGE_SIZE}
+              total={total}
+              onPageChange={(next) => setPageState({ filterKey, page: next })}
+              noun={{ one: "event", other: "events" }}
+              isLoading={isPending}
+            />
           }
         />
       </div>
@@ -130,9 +122,9 @@ const EventsHomeIndex = () => {
         open={viewing !== null}
         onOpenChange={(open) => !open && setViewing(null)}
         title="Event Details"
-        description={viewing ? `Details of ${viewing.name}` : "Event details"}
+        description={viewing ? `Details of ${viewing.title}` : "Event details"}
       >
-        {viewing && <EventDetails event={viewing} />}
+        {viewing && <EventDetails key={viewing.id} eventId={viewing.id} />}
       </DetailSheet>
     </div>
   )

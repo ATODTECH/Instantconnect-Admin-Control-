@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react"
 import { useFormik } from "formik"
-import { Ban, MessageSquare, ShieldAlert } from "lucide-react"
+import { Ban, CircleCheck, MessageSquare, Trash2 } from "lucide-react"
 import { FormButton, FormInput } from "@/components/form"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { UserAvatar } from "@/components/shared/user-avatar"
@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Textarea } from "@/components/ui/textarea"
 import { WidgetError } from "@/components/widget-state"
-import { useMessageUser, useUser } from "@/hooks/use-users"
+import { useDeleteUser, useMessageUser, useSetUserEnabled, useUser } from "@/hooks/use-users"
 import { formatActivityDate, formatCount } from "@/lib/format"
 import { messageUserValidationSchema, type MessageUserValues } from "@/schemas/validation-schema"
 import { KYC_LABELS, PLAN_LABELS, STATUS_LABELS } from "../constants"
@@ -76,6 +76,50 @@ const MessageForm = ({ userId, firstName, onDone }: { userId: string, firstName:
   )
 }
 
+type Confirming = "disable" | "delete"
+
+const CONFIRM_COPY: Record<Confirming, { title: string, body: (firstName: string) => string, action: string, pending: string }> = {
+  disable: {
+    title: "Disable this account?",
+    body: (firstName) => `${firstName} is signed out everywhere and cannot sign in until you enable the account again.`,
+    action: "Disable",
+    pending: "Disabling",
+  },
+  delete: {
+    title: "Delete this account?",
+    body: (firstName) => `${firstName} disappears from discovery, chat and this list, and their email and phone can register again. This cannot be undone here.`,
+    action: "Delete account",
+    pending: "Deleting",
+  },
+}
+
+const ConfirmAction = ({ kind, firstName, isPending, onConfirm, onCancel }: {
+  kind: Confirming
+  firstName: string
+  isPending: boolean
+  onConfirm: () => void
+  onCancel: () => void
+}) => {
+  const copy = CONFIRM_COPY[kind]
+
+  return (
+    <div role="alertdialog" aria-labelledby="confirm-title" aria-describedby="confirm-body" className="flex flex-col gap-3 rounded-xl border border-[#EB8C8C] bg-[#FCF2F2] p-4">
+      <p id="confirm-title" className="text-sm font-semibold text-[#C92B2B]">{copy.title}</p>
+      <p id="confirm-body" className="text-xs text-ink-muted">{copy.body(firstName)}</p>
+      <div className="flex gap-2">
+        <FormButton btnType="button" variant="outline" btnText="Cancel" btnStyles="flex-1 h-9" handleClick={onCancel} disabled={isPending} />
+        <FormButton
+          btnType="button"
+          btnText={isPending ? copy.pending : copy.action}
+          btnStyles="flex-1 h-9 bg-[#C92B2B] hover:bg-[#B02525]"
+          handleClick={onConfirm}
+          isLoading={isPending}
+        />
+      </div>
+    </div>
+  )
+}
+
 const ProfileSkeleton = () => (
   <div role="status" className="flex flex-col gap-y-7">
     <span className="sr-only">Loading profile</span>
@@ -97,13 +141,33 @@ const ProfileSkeleton = () => (
   </div>
 )
 
-const UserProfile = ({ userId }: { userId: string }) => {
+const UserProfile = ({ userId, onDeleted }: { userId: string, onDeleted: () => void }) => {
   const { data: person, isPending, isError, error, refetch, isRefetching } = useUser(userId)
+  const { mutate: setEnabled, isPending: isToggling } = useSetUserEnabled()
+  const { mutate: remove, isPending: isDeleting } = useDeleteUser()
   const [isComposing, setComposing] = useState(false)
+  const [confirming, setConfirming] = useState<Confirming | null>(null)
 
   if (isPending) return <ProfileSkeleton />
   if (isError) {
     return <WidgetError message={error.message} onRetry={() => refetch()} isRetrying={isRefetching} className="py-16" />
+  }
+
+  const firstName = person.fullName.split(" ")[0]
+  const isDisabled = person.status === "suspended"
+  const isBusy = isToggling || isDeleting
+
+  const confirm = () => {
+    if (confirming === "disable") {
+      setEnabled({ id: person.id, enabled: false }, { onSuccess: () => setConfirming(null) })
+    } else if (confirming === "delete") {
+      remove({ id: person.id, fullName: person.fullName }, { onSuccess: onDeleted })
+    }
+  }
+
+  const open = (next: Confirming) => {
+    setComposing(false)
+    setConfirming(next)
   }
 
   return (
@@ -118,27 +182,59 @@ const UserProfile = ({ userId }: { userId: string }) => {
       </div>
 
       <div className="flex gap-2">
-        <button className="inline-flex items-center justify-center gap-2 w-full py-2 text-xs font-semibold border border-[#FED7AA] bg-[#FFF7ED] text-[#FB923C] rounded-lg cursor-pointer" onClick={() => alert("coming soon!")}>
-          <ShieldAlert size={14} className="h-3.5 w-3.5" />
-          Suspend
-        </button>
+        {isDisabled ? (
+          <button
+            className="inline-flex items-center justify-center gap-2 w-full py-2 text-xs font-semibold border border-[#BBF7D0] bg-[#F0FDF4] text-[#16A34A] rounded-lg cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={() => setEnabled({ id: person.id, enabled: true })}
+            disabled={isBusy}
+          >
+            <CircleCheck size={14} className="h-3.5 w-3.5" />
+            {isToggling ? "Enabling" : "Enable"}
+          </button>
+        ) : (
+          <button
+            className="inline-flex items-center justify-center gap-2 w-full py-2 text-xs font-semibold border border-[#FED7AA] bg-[#FFF7ED] text-[#FB923C] rounded-lg cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={() => open("disable")}
+            disabled={isBusy || confirming === "disable"}
+          >
+            <Ban size={14} className="h-3.5 w-3.5" />
+            Disable
+          </button>
+        )}
         <button
           className="inline-flex items-center justify-center gap-2 w-full py-2 text-xs font-semibold border border-purple-light-600 bg-bg-purple-light-200 text-purple-light-600 rounded-lg cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-          onClick={() => setComposing(true)}
-          disabled={isComposing || person.status !== "active"}
+          onClick={() => {
+            setConfirming(null)
+            setComposing(true)
+          }}
+          disabled={isBusy || isComposing || person.status !== "active"}
           title={person.status !== "active" ? "Only active accounts can be messaged" : undefined}
         >
           <MessageSquare size={14} className="h-3.5 w-3.5" />
           Message
         </button>
-        <button className="inline-flex items-center justify-center gap-2 w-full py-2 text-xs font-semibold border border-[#EB8C8C] bg-[#FCF2F2] text-[#C92B2B] rounded-lg cursor-pointer" onClick={() => alert("coming soon!")}>
-          <Ban size={14} className="h-3.5 w-3.5" />
-          Disabled
+        <button
+          className="inline-flex items-center justify-center gap-2 w-full py-2 text-xs font-semibold border border-[#EB8C8C] bg-[#FCF2F2] text-[#C92B2B] rounded-lg cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+          onClick={() => open("delete")}
+          disabled={isBusy || confirming === "delete"}
+        >
+          <Trash2 size={14} className="h-3.5 w-3.5" />
+          Delete
         </button>
       </div>
 
+      {confirming && (
+        <ConfirmAction
+          kind={confirming}
+          firstName={firstName}
+          isPending={isBusy}
+          onConfirm={confirm}
+          onCancel={() => setConfirming(null)}
+        />
+      )}
+
       {isComposing && (
-        <MessageForm userId={person.id} firstName={person.fullName.split(" ")[0]} onDone={() => setComposing(false)} />
+        <MessageForm userId={person.id} firstName={firstName} onDone={() => setComposing(false)} />
       )}
 
       <div>
