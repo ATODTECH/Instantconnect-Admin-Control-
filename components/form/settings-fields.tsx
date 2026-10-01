@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useState, type KeyboardEvent } from "react"
-import { CheckCheck, ChevronDown, CircleX, Copy, Eye, EyeClosed } from "lucide-react"
+import { CheckCheck, ChevronDown, CircleX, Copy, Eye, EyeClosed, Lock } from "lucide-react"
 import { cn } from "cn"
 import {
   DropdownMenu,
@@ -302,19 +302,38 @@ interface SettingsActionsProps {
   justSaved: boolean
   onDiscard: () => void
   onSave: () => void
+  isSaving?: boolean
 }
 
 /** The Discard / Save Changes bar at the foot of every settings tab. */
-export const SettingsActions = ({ isDirty, justSaved, onDiscard, onSave }: SettingsActionsProps) => (
+export const SettingsActions = ({ isDirty, justSaved, onDiscard, onSave, isSaving = false }: SettingsActionsProps) => (
   <div className="flex items-center justify-end gap-3 pb-4">
     {justSaved && (
       <span role="status" className="mr-auto text-sm font-medium text-secondary-green-500">Changes saved</span>
     )}
-    <Button variant="outline" size="lg" onClick={onDiscard} disabled={!isDirty} className="font-semibold text-neutral-light-400">
+    <Button variant="outline" size="lg" onClick={onDiscard} disabled={!isDirty || isSaving} className="font-semibold text-neutral-light-400">
       Discard
     </Button>
-    <Button variant="brand" size="lg" onClick={onSave} disabled={!isDirty} className="font-semibold">
+    <Button variant="brand" size="lg" onClick={onSave} disabled={!isDirty} loading={isSaving} className="font-semibold">
       Save Changes
     </Button>
+  </div>
+)
+
+/**
+ * Settings the server does not act on yet. They stay visible so the plan is
+ * clear, but locked: a switch that changes nothing would mislead whoever flips it.
+ */
+export const UnavailableSettings = ({ children }: { children: React.ReactNode }) => (
+  <div className="space-y-4">
+    <div role="note" className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+      <Lock className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" aria-hidden />
+      <p className="text-sm text-amber-900">
+        <span className="font-semibold">Not available yet.</span> These settings are not connected to the platform, so they can&apos;t be changed.
+      </p>
+    </div>
+    <fieldset disabled aria-label="Not available yet" className="space-y-6 opacity-60">
+      {children}
+    </fieldset>
   </div>
 )

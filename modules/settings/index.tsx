@@ -1,5 +1,6 @@
 "use client"
 import { useState } from "react"
+import { UnavailableSettings } from "@/components/form/settings-fields"
 import { FilterTabs, type FilterTab } from "@/components/shared/filter-tabs"
 import GeneralSettings from "./general";
 import NotificationSettings from "./notifications";
@@ -30,13 +31,13 @@ const SettingsHomeIndex = () => {
           {(activeTab==="general") && 
           (<GeneralSettings />)}
           {(activeTab==="notifications") && 
-          (<NotificationSettings />)}
+          (<UnavailableSettings><NotificationSettings /></UnavailableSettings>)}
           {(activeTab==="security") && 
-          (<SecuritySettings />)}
+          (<UnavailableSettings><SecuritySettings /></UnavailableSettings>)}
           {(activeTab==="payment") && 
-          (<PaymentSettings />)}
+          (<UnavailableSettings><PaymentSettings /></UnavailableSettings>)}
           {(activeTab==="content-moderation") && 
-          (<ContentModerationSettings />)}
+          (<UnavailableSettings><ContentModerationSettings /></UnavailableSettings>)}
         </div>
       </div>
     </div>

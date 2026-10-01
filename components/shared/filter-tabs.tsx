@@ -27,7 +27,8 @@ export function FilterTabs<T extends string>({ label, tabs, value, onChange, var
       <TabsList
         aria-label={label}
         className={cn(
-          "h-auto flex-wrap",
+          // Scoped like shadcn's own h-8, or that more specific rule wins and the tabs overflow the track.
+          "h-auto group-data-horizontal/tabs:h-auto flex-wrap",
           variant === "segmented" ? "gap-1 rounded-lg bg-[#F4F3F5] p-1" : "gap-3 bg-transparent p-0",
         )}
       >

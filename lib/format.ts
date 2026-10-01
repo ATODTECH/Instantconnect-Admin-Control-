@@ -34,3 +34,24 @@ export const initials = (name: string) =>
     .slice(0, 2)
     .join("")
     .toUpperCase()
+
+const RELATIVE = new Intl.RelativeTimeFormat("en-NG", { numeric: "auto" })
+const RELATIVE_STEPS: [Intl.RelativeTimeFormatUnit, number][] = [
+  ["minute", 60],
+  ["hour", 24],
+  ["day", 7],
+  ["week", Infinity],
+]
+
+/** "just now", "5 minutes ago", "yesterday", "2 weeks ago". */
+export function formatTimeAgo(iso: string, now = new Date()) {
+  let value = (new Date(iso).getTime() - now.getTime()) / 1000
+  if (value > -60) return "just now"
+
+  value /= 60
+  for (const [unit, size] of RELATIVE_STEPS) {
+    if (Math.abs(value) < size) return RELATIVE.format(Math.round(value), unit)
+    value /= size
+  }
+  return DAY.format(new Date(iso))
+}
