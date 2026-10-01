@@ -1,6 +1,18 @@
 "use client"
 import { LogOutIcon } from "lucide-react"
 import { UserAvatar } from "@/components/shared/user-avatar"
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useCurrentAdmin, useSignOut } from "@/hooks/use-auth"
 
@@ -28,15 +40,35 @@ const FooterIndex = () => {
           </div>
         </div>
       )}
-      <button
-        type="button"
-        onClick={() => signOut()}
-        disabled={isPending}
-        aria-label="Sign out"
-        className="flex text-[#64748B] hover:text-red-600 cursor-pointer disabled:opacity-50"
-      >
-        <LogOutIcon size={18} aria-hidden />
-      </button>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <button
+            type="button"
+            aria-label="Sign out"
+            className="flex text-[#64748B] hover:text-red-600 cursor-pointer"
+          >
+            <LogOutIcon size={18} aria-hidden />
+          </button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogMedia className="bg-red-50 text-[#EF4444]">
+              <LogOutIcon aria-hidden />
+            </AlertDialogMedia>
+            <AlertDialogTitle>Sign out?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You&apos;ll need to sign in again to get back to the dashboard.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+            {/* A plain Button, not AlertDialogAction, so the dialog stays open with the spinner until the redirect. */}
+            <Button variant="danger" loading={isPending} onClick={() => signOut()}>
+              Sign out
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </footer>
   )
 }

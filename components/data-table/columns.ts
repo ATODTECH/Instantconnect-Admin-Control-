@@ -7,7 +7,7 @@ export interface DataTableColumnMeta {
 
 /**
  * Tables here render and select rows; sorting, filtering and paging happen on
- * the server (or in the page for mock data), so no row-model features are on.
+ * the server, so no row-model features are on.
  */
 export const dataTableFeatures = tableFeatures({
   columnMeta: metaHelper<DataTableColumnMeta>(),
