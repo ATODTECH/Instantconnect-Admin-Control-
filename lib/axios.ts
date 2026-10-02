@@ -2,7 +2,8 @@ import axios, { type InternalAxiosRequestConfig } from "axios"
 import { ROUTES } from "@/lib/routes"
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  // Same origin: next.config.ts rewrites /api/v1 to the API.
+  baseURL: "/api/v1",
   headers: { "Content-Type": "application/json" },
   // The session is a pair of httpOnly cookies the API sets; they only travel with this on.
   withCredentials: true,
