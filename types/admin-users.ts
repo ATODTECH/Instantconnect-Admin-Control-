@@ -1,6 +1,6 @@
 export type UserStatus = "pending_verification" | "active" | "suspended"
 export type KycStatus = "none" | "pending" | "verified" | "rejected"
-export type UserPlan = "free" | "premium" | "business"
+export type UserPlan = "free" | "premium" | "pro"
 export type JoinedWithin = "30d" | "90d" | "6m"
 
 export interface AdminUserFilters {

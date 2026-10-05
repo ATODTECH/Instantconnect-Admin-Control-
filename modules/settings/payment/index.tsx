@@ -1,511 +1,301 @@
 "use client"
+
 import { useState } from "react"
-import { CopyField, FieldShell, NumberField, Panel, SecretField, SelectField, SettingsActions, StackedField, TagInput, Toggle } from "@/components/form/settings-fields"
-import { Check, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Check, Plus } from "lucide-react"
+import { cn } from "cn"
+import { CopyField, FieldShell, NumberField, Panel, SelectField, StackedField, TextField, Toggle } from "@/components/form/settings-fields"
+import { StatusBadge } from "@/components/shared/status-badge"
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { Textarea } from "@/components/ui/textarea"
+import { usePaymentSettings, usePlans, useUpdatePlan } from "@/hooks/use-subscriptions"
+import { formatCount } from "@/lib/format"
+import type { AdminPlan } from "@/types/admin-subscriptions"
+import { SettingsError, SettingsSkeleton } from "../settings-state"
 
-interface BillingState {
-  paymentGateway: PaymentGatewayState;
-  currencyPricing: CurrencyPricingState;
-  plans: SubscriptionPlan[];
-  payout: PayoutSettingsState;
-  refund: RefundPolicyState;
-}
+const noop = () => {}
 
-// to-be fmt => API DATA
-const initialState: BillingState = {
-  paymentGateway: {
-    primaryGateway: "Paystack",
-    testMode: false,
-    paystackPublicKey: "pk_live_51Hn8x92kLm0pQwErTyUiOp",
-    paystackSecretKey: "sk_live_9fG7hJ3kLpQwErTyUiOpAsD",
-    webhookUrl: "https://api.instantconnect.com/webhooks/paystack",
-  },
-  currencyPricing: {
-    defaultCurrency: "NGN - Nigerian Naira",
-    supportedCurrencies: ["NGN", "USD", "GBP"],
-    minimumTransactionAmount: 500,
-    maximumTransactionAmount: 5000000,
-  },
-  plans: [
-    {
-      id: "basic",
-      name: "BASIC",
-      price: 5000,
-      features: ["5 events/month", "3 communities", "Basic support", "Standard matching"],
-    },
-    {
-      id: "premium",
-      name: "PREMIUM",
-      price: 15000,
-      badge: "POPULAR",
-      featured: true,
-      features: [
-        "Unlimited events",
-        "10 communities",
-        "Priority support",
-        "Advanced matching",
-        "Analytics",
-      ],
-    },
-    {
-      id: "business",
-      name: "Business",
-      price: 35000,
-      features: [
-        "Everything in Premium",
-        "Unlimited communities",
-        "Dedicated manager",
-        "Custom branding",
-        "API access",
-      ],
-    },
-  ],
-  payout: {
-    eventCreatorPayoutPct: 85,
-    platformCommissionPct: 15,
-    payoutSchedule: "Weekly",
-    minimumPayoutAmount: 10000,
-    autoPayout: true,
-  },
-  refund: {
-    allowRefunds: true,
-    refundWindowHours: 48,
-    autoApproveRefundsUnder: 5000,
-    requireAdminApproval: true,
-  },
-}
+const naira = (minor: number) => (minor / 100).toLocaleString("en-NG", { maximumFractionDigits: 2 })
 
-//............. Subscription Plan ................
-const formatNaira = (amount: number) => {
-  return `NGN ${amount.toLocaleString("en-NG")}`;
-}
-
-const PlanCard = ({
-  plan,
-  onSave,
-  onRemove,
-}: PlanCardProps) => {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState<SubscriptionPlan>(plan);
-
-  const startEdit = () => {
-    setDraft(plan);
-    setEditing(true);
-  };
-
-  const save = () => {
-    onSave(draft);
-    setEditing(false);
-  };
-
-  const cancel = () => setEditing(false);
-
-  const containerClasses = [
-    "relative flex flex-col rounded-xl border p-5",
-    plan.featured
-      ? "border-violet-300 bg-[#FAF5FF] ring-2 ring-violet-200"
-      : "border-slate-200 bg-neutral-white",
-  ].join(" ");
-
-  if (editing) {
-    return (
-      <div className={containerClasses}>
-        <div className="space-y-3">
-          <Input
-            aria-label="Plan name"
-            value={draft.name}
-            onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-            className="h-8 text-xs font-semibold uppercase tracking-wide text-neutral-light-400"
-            placeholder="PLAN NAME"
-          />
-          <div className="flex items-center gap-1">
-            <span className="text-sm text-neutral-light-300">NGN</span>
-            <Input
-              aria-label="Monthly price in naira"
-              type="number"
-              value={draft.price}
-              onChange={(e) => setDraft({ ...draft, price: Number(e.target.value) })}
-              className="h-9 text-lg font-bold text-slate-900"
-            />
-            <span className="text-sm text-neutral-light-300">/month</span>
-          </div>
-          <Textarea
-            aria-label="Plan features, one per line"
-            value={draft.features.join("\n")}
-            onChange={(e) => setDraft({ ...draft, features: e.target.value.split("\n").filter(Boolean) })}
-            rows={5}
-            placeholder="One feature per line"
-            className="text-sm text-neutral-light-500"
-          />
-        </div>
-        <div className="mt-4 flex gap-2">
-          <Button variant="outline" size="lg" className="flex-1" onClick={cancel}>Cancel</Button>
-          <Button variant="brand" size="lg" className="flex-1" onClick={save}>Save</Button>
-        </div>
-        <Button variant="link" size="sm" onClick={onRemove} className="mt-2 text-red-400 hover:text-red-500">
-          Delete plan
-        </Button>
-      </div>
-    );
-  }
-
-  return (
-    <div className={containerClasses}>
-      {plan.badge && (
-        <span className="absolute right-4 top-4 rounded-full bg-purple-light-600 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-neutral-white">
-          {plan.badge}
-        </span>
-      )}
-      <p className="text-sm font-bold uppercase tracking-wide text-neutral-light-400">{plan.name}</p>
-      <p className="mt-2 text-xl font-extrabold text-neutral-light-600">
-        {formatNaira(plan.price)}
-        <span className="text-sm font-medium text-neutral-light-400">/month</span>
-      </p>
-      <ul className="mt-4 flex-1 space-y-2">
-        {plan.features.map((feature) => (
-          <li key={feature} className="flex items-start gap-2 text-[13px] text-[#4B5563] font-medium">
-            <Check size={16} className=" h-4 w-4 text-secondary-green-500" />
-            {feature}
-          </li>
-        ))}
-      </ul>
-      <button
-        type="button"
-        onClick={startEdit}
-        className={[
-          "mt-5 w-full rounded-lg py-2 text-[13px] font-semibold transition-colors cursor-pointer",
-          plan.featured
-            ? "bg-violet-600 text-white hover:bg-violet-700"
-            : "bg-slate-100 text-slate-600 hover:bg-slate-200",
-        ].join(" ")}
-      >
-        Edit Plan
-      </button>
-    </div>
-  )
-}
-
-
+/**
+ * Paystack keys stay in the server's environment, never in this dashboard:
+ * a key typed into a web form is a key that can leak from it. Plans are the
+ * one live part, and a new price only reaches new subscribers.
+ */
 const PaymentSettings = () => {
-  const [state, setState] = useState<BillingState>(initialState)
-  const [saved, setSaved] = useState<BillingState>(initialState)
-  const [justSaved, setJustSaved] = useState(false)
+  const settings = usePaymentSettings()
+  const plans = usePlans()
+  const [editing, setEditing] = useState<AdminPlan | null>(null)
 
-  const isChangeDefault = JSON.stringify(state) !== JSON.stringify(saved)
-
-  const setGateway = <K extends keyof PaymentGatewayState>(key: K, value: PaymentGatewayState[K]) =>
-    setState((s) => ({ ...s, paymentGateway: { ...s.paymentGateway, [key]: value } }))
-
-  const setCurrency = <K extends keyof CurrencyPricingState>(key: K, value: CurrencyPricingState[K]) =>
-    setState((s) => ({ ...s, currencyPricing: { ...s.currencyPricing, [key]: value } }))
-
-  const setPayout = <K extends keyof PayoutSettingsState>(key: K, value: PayoutSettingsState[K]) =>
-    setState((s) => ({ ...s, payout: { ...s.payout, [key]: value } }))
-
-  const setRefund = <K extends keyof RefundPolicyState>(key: K, value: RefundPolicyState[K]) =>
-    setState((s) => ({ ...s, refund: { ...s.refund, [key]: value } }))
-
-  const savePlan = (plan: SubscriptionPlan) =>
-    setState((s) => ({
-      ...s,
-      plans: s.plans.some((p) => p.id === plan.id)
-        ? s.plans.map((p) => (p.id === plan.id ? plan : p))
-        : [...s.plans, plan],
-    }))
-
-  const removePlan = (id: string) =>
-    setState((s) => ({ ...s, plans: s.plans.filter((p) => p.id !== id) }))
-
-  const addPlan = () => {
-    const id = `plan-${Date.now()}`;
-    setState((s) => ({
-      ...s,
-      plans: [...s.plans, { id, name: "NEW PLAN", price: 0, features: [] }],
-    }))
+  if (settings.isPending || plans.isPending) return <SettingsSkeleton panels={[4, 3, 3]} />
+  if (settings.isError || plans.isError) {
+    return (
+      <SettingsError
+        onRetry={() => {
+          void settings.refetch()
+          void plans.refetch()
+        }}
+        isRetrying={settings.isRefetching || plans.isRefetching}
+      />
+    )
   }
 
-  const handleDiscard = () => setState(saved)
-  const handleSave = () => {
-    setSaved(state)
-    setJustSaved(true)
-    window.setTimeout(() => setJustSaved(false), 2000)
-  }
-
+  const gateway = settings.data
+  const popularId = [...plans.data].sort((a, b) => b.subscriberCount - a.subscriberCount)[0]?.id
 
   return (
     <div className="space-y-6">
       <Panel title="Payment Gateway">
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <StackedField 
-            label="Primary Gateway"
-            description="Main payment processor for all transactions" 
-            htmlFor="primaryGateway"
-          >
-            <SelectField className="w-full"
-              id="primaryGateway"
-              value={state.paymentGateway.primaryGateway}
-              onChange={(v) => setGateway("primaryGateway", v)}
-              options={["Paystack", "Flutterwave", "Stripe", "Interswitch"]}
-            />
+        <div className="grid gap-5 py-4 first:pt-0 sm:grid-cols-2">
+          <StackedField label="Primary Gateway" description="Main payment processor for all transactions" htmlFor="gateway" locked>
+            <SelectField id="gateway" value="Paystack" onChange={noop} options={["Paystack"]} className="w-full" />
           </StackedField>
-
-          <FieldShell
-            label="Test Mode"
-            description="Enable test mode to simulate payments without real charges"
-          >
-            <Toggle
-              checked={state.paymentGateway.testMode}
-              onChange={(v) => setGateway("testMode", v)}
-              label="Auto Data Backup"
-            />
-          </FieldShell>
-
-          <StackedField 
-            label="Paystack Public Key" 
-            description="Your Paystack public API key" 
-            htmlFor="paystackPublicKey"
-          >
-            <SecretField
-              id="paystackPublicKey"
-              value={state.paymentGateway.paystackPublicKey}
-              onChange={(v) => setGateway("paystackPublicKey", v)}
-            />
-          </StackedField>
-
-          <StackedField 
-            label="Paystack Secret Key" 
-            description="Your Paystack secret API key" 
-            htmlFor="paystackSecretKey"
-          >
-            <SecretField
-              id="paystackSecretKey"
-              value={state.paymentGateway.paystackSecretKey}
-              onChange={(v) => setGateway("paystackSecretKey", v)}
-            />
-          </StackedField>
-
-          <div className="sm:col-span-2">
-            <StackedField 
-              label="Webhook URL" 
-              description="Configure this URL in your Paystack dashboard" 
-              htmlFor="webhookUrl"
-            >
-              <CopyField id="webhookUrl" value={state.paymentGateway.webhookUrl} label="Copy webhook URL" />
-            </StackedField>
+          <div>
+            <Label className="text-sm font-semibold text-neutral-light-500">Mode</Label>
+            <div className="mt-1.5 flex h-9 items-center gap-2">
+              {gateway.configured ? (
+                <StatusBadge tone={gateway.testMode ? "info" : "success"}>{gateway.testMode ? "Test mode" : "Live"}</StatusBadge>
+              ) : (
+                <StatusBadge tone="danger">Not configured</StatusBadge>
+              )}
+            </div>
+            <p className="mt-1.5 text-xs text-neutral-light-400">
+              {gateway.testMode ? "A test key is set: payments are simulated, nothing is charged." : "Follows the secret key: sk_test_ keys run in test mode."}
+            </p>
           </div>
+          <StackedField label="Paystack Public Key" description="Not needed: members pay on Paystack's hosted checkout page." htmlFor="publicKey" locked>
+            <TextField id="publicKey" value="" onChange={noop} placeholder="pk_..." className="w-full" />
+          </StackedField>
+          <div>
+            <Label className="text-sm font-semibold text-neutral-light-500">Paystack Secret Key</Label>
+            <div className="mt-1.5 flex h-9 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-neutral-light-400">
+              {gateway.configured ? (
+                <>
+                  <Check className="h-4 w-4 text-[#16A34A]" aria-hidden /> Set on the server
+                </>
+              ) : (
+                "Not set"
+              )}
+            </div>
+            <p className="mt-1.5 text-xs text-neutral-light-400">Kept in PAYSTACK_SECRET_KEY on the server, never shown here.</p>
+          </div>
+        </div>
+        <div className="py-4 last:pb-0">
+          <StackedField
+            label="Webhook URL"
+            htmlFor="webhookUrl"
+            description={gateway.webhookUrl ? "Configure this URL in your Paystack dashboard" : "Set PUBLIC_API_URL on the server to show the URL to paste into Paystack."}
+          >
+            <CopyField id="webhookUrl" value={gateway.webhookUrl ?? "Not available until PUBLIC_API_URL is set"} label="Copy webhook URL" />
+          </StackedField>
         </div>
       </Panel>
 
-      {/* Currency & Pricing */}
       <Panel title="Currency & Pricing">
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <StackedField 
-            label="Default Currency" 
-            description="Primary currency for all transactions" 
-            htmlFor="defaultCurrency"
-          >
-            <SelectField className="w-full"
-              id="defaultCurrency"
-              value={state.currencyPricing.defaultCurrency}
-              onChange={(v) => setCurrency("defaultCurrency", v)}
-              options={["NGN - Nigerian Naira", "USD - US Dollar", "GBP - British Pound", "GHS - Ghanaian Cedi"]}
-            />
+        <div className="grid gap-5 py-4 first:pt-0 sm:grid-cols-2">
+          <StackedField label="Default Currency" description="Primary currency for all transactions" htmlFor="currency" locked>
+            <SelectField id="currency" value="NGN - Nigerian Naira" onChange={noop} options={["NGN - Nigerian Naira"]} className="w-full" />
           </StackedField>
-
-          <TagInput
-            id="supportedCurrencies"
-            label="Supported Currencies"
-            description="Currencies accepted on the platform"
-            values={state.currencyPricing.supportedCurrencies}
-            onChange={(v) => setCurrency("supportedCurrencies", v)}
-            normalise={(code) => code.toUpperCase()}
-            validate={(code) =>
-              !/^[A-Z]{3}$/.test(code) ? "Use a three-letter currency code, e.g. USD" : state.currencyPricing.supportedCurrencies.includes(code) ? "That currency is already added" : null
-            }
-            placeholder="USD"
-            noun="currency"
-            className="mt-0"
-          />
-
-          <StackedField
-            label="Minimum Transaction Amount"
-            description="Lowest amount allowed per transaction"
-            htmlFor="minTx"
-          >
-            <NumberField
-              id="minTx"
-              prefix="NGN"
-              value={state.currencyPricing.minimumTransactionAmount}
-              onChange={(v) => setCurrency("minimumTransactionAmount", v)}
-            />
+          <StackedField label="Supported Currencies" description="Currencies accepted on the platform" htmlFor="currencies" locked>
+            <TextField id="currencies" value="NGN" onChange={noop} className="w-full" />
           </StackedField>
-
-          <StackedField
-            label="Maximum Transaction Amount"
-            description="Highest amount allowed per transaction"
-            htmlFor="maxTx"
-          >
-            <NumberField
-              id="maxTx"
-              prefix="NGN"
-              value={state.currencyPricing.maximumTransactionAmount}
-              onChange={(v) => setCurrency("maximumTransactionAmount", v)}
-            />
+          <StackedField label="Minimum Transaction Amount" description="Lowest amount allowed per transaction" htmlFor="minAmount" locked>
+            <NumberField id="minAmount" value={100} onChange={noop} prefix="NGN" />
+          </StackedField>
+          <StackedField label="Maximum Transaction Amount" description="Highest amount allowed per transaction" htmlFor="maxAmount" locked>
+            <NumberField id="maxAmount" value={1000000} onChange={noop} prefix="NGN" />
           </StackedField>
         </div>
       </Panel>
 
-      {/* Subscription Plans */}
       <Panel title="Subscription Plans">
-        <div className="w-full">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 select-none">
-            {state.plans.map((plan) => (
-              <PlanCard
+        <div className="grid gap-4 py-4 first:pt-0 md:grid-cols-2 xl:grid-cols-3">
+          {plans.data.map((plan) => {
+            const popular = plan.id === popularId && plan.subscriberCount > 0
+
+            return (
+              <article
                 key={plan.id}
-                plan={plan}
-                onSave={savePlan}
-                onRemove={() => removePlan(plan.id)}
-              />
-            ))}
-          </div>
-          <button
-            type="button"
-            onClick={addPlan}
-            className="flex items-center gap-1 mt-4 w-full rounded-xl border border-dashed border-violet-300 py-3 text-sm font-semibold text-violet-600 transition-colors hover:bg-violet-50 sm:w-auto sm:px-6 cursor-pointer"
-          >
-            <Plus size={15} className="h-3.5 w-3.5 cursor-pointer" /> Add New Plan
-          </button>
+                className={cn("flex flex-col gap-3 rounded-xl border p-4", popular ? "border-2 border-primary bg-[#FAF5FF]" : "border-primary-border")}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <p className={cn("text-xs font-semibold uppercase", popular ? "text-primary" : "text-neutral-light-500")}>{plan.name}</p>
+                  <div className="flex gap-1.5">
+                    {!plan.isActive && <StatusBadge tone="neutral">Hidden</StatusBadge>}
+                    {popular && <StatusBadge tone="brand">Popular</StatusBadge>}
+                  </div>
+                </div>
+                <p className="text-xl font-bold text-neutral-light-600">
+                  NGN {naira(plan.monthlyPriceMinor)}
+                  <span className="text-sm font-normal text-neutral-light-400">/month</span>
+                </p>
+                <p className="text-xs text-neutral-light-400">
+                  NGN {naira(plan.annualPriceMinor)}/year · {formatCount(plan.subscriberCount)} {plan.subscriberCount === 1 ? "subscriber" : "subscribers"}
+                </p>
+                <ul className="flex-1 space-y-1.5">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-2 text-xs text-neutral-light-500">
+                      <Check className={cn("mt-0.5 h-3.5 w-3.5 shrink-0", popular ? "text-primary" : "text-[#16A34A]")} aria-hidden />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <Button variant={popular ? "brand" : "secondary"} className="w-full" onClick={() => setEditing(plan)}>
+                  Edit Plan
+                </Button>
+              </article>
+            )
+          })}
+        </div>
+        <div className="pt-2">
+          <Button variant="outline" disabled title="New tiers need their benefits built in the app first.">
+            <Plus className="h-4 w-4" aria-hidden />
+            Add New Plan
+          </Button>
         </div>
       </Panel>
 
-      {/* Payout Settings */}
-      <Panel title="Payout Settings">
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <StackedField
-            label="Event Creator Payout"
-            description="Percentage of ticket sales paid to event creators"
-            htmlFor="creatorPayout"
-          >
-            <NumberField
-              id="creatorPayout"
-              prefix="%"
-              value={state.payout.eventCreatorPayoutPct}
-              onChange={(v) => setPayout("eventCreatorPayoutPct", v)}
-            />
+      <Panel title="Payout Settings" description="Event ticket sales are not live yet, so there is nothing to pay out.">
+        <div className="grid gap-5 py-4 first:pt-0 sm:grid-cols-2">
+          <StackedField label="Event Creator Payout" description="Percentage of ticket sales paid to event creators" htmlFor="creatorPayout" locked>
+            <NumberField id="creatorPayout" value={85} onChange={noop} prefix="%" />
           </StackedField>
-
-          <StackedField
-            label="Platform Commission"
-            description="Platform fee on paid events"
-            htmlFor="platformCommission"
-          >
-            <NumberField
-              id="platformCommission"
-              prefix="%"
-              value={state.payout.platformCommissionPct}
-              onChange={(v) => setPayout("platformCommissionPct", v)}
-            />
+          <StackedField label="Platform Commission" description="Platform fee on paid events" htmlFor="commission" locked>
+            <NumberField id="commission" value={15} onChange={noop} prefix="%" />
           </StackedField>
-
-          <StackedField label="Payout Schedule" description="How often payouts are processed" htmlFor="payoutSchedule">
-            <SelectField className="w-full"
-              id="payoutSchedule"
-              value={state.payout.payoutSchedule}
-              onChange={(v) => setPayout("payoutSchedule", v)}
-              options={["Daily", "Weekly", "Bi-weekly", "Monthly"]}
-            />
+          <StackedField label="Payout Schedule" description="How often payouts are processed" htmlFor="payoutSchedule" locked>
+            <SelectField id="payoutSchedule" value="Weekly" onChange={noop} options={["Weekly"]} className="w-full" />
           </StackedField>
-
-          <StackedField
-            label="Minimum Payout Amount"
-            description="Minimum balance before payout is triggered"
-            htmlFor="minPayout"
-          >
-            <NumberField
-              id="minPayout"
-              prefix="NGN"
-              value={state.payout.minimumPayoutAmount}
-              onChange={(v) => setPayout("minimumPayoutAmount", v)}
-            />
+          <StackedField label="Minimum Payout Amount" description="Minimum balance before payout is triggered" htmlFor="minPayout" locked>
+            <NumberField id="minPayout" value={10000} onChange={noop} prefix="NGN" />
           </StackedField>
-
-          <div className="col-span-2">
-            <FieldShell
-              label="Auto Payout"
-              description="Automatically process payouts on schedule"
-            >
-              <Toggle
-                checked={state.payout.autoPayout}
-                onChange={(v) => setPayout("autoPayout", v)}
-                label="Auto Payout"
-              />
-            </FieldShell>
-          </div>
         </div>
+        <FieldShell label="Auto Payout" description="Automatically process payouts on schedule" locked>
+          <Toggle checked={false} onChange={noop} label="Auto Payout" />
+        </FieldShell>
       </Panel>
 
-      {/* Refund Policy */}
-      <Panel title="Refund Policy">
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <div className="col-span-2">
-            <FieldShell
-              label="Allow Refunds"
-              description="Enable users to request refunds"
-            >
-              <Toggle
-                checked={state.refund.allowRefunds}
-                onChange={(v) => setRefund("allowRefunds", v)}
-                label="Allow Refunds"
-              />
-            </FieldShell>
-          </div>
-
-          <StackedField
-            label="Refund Window"
-            description="Time after payment within which refunds are allowed"
-            htmlFor="refundWindow"
-          >
-            <NumberField
-              id="refundWindow"
-              prefix="Hours"
-              value={state.refund.refundWindowHours}
-              onChange={(v) => setRefund("refundWindowHours", v)}
-            />
+      <Panel title="Refund Policy" description="Admins refund a subscriber's last payment from the Subscriptions page.">
+        <FieldShell label="Allow Refunds" description="Enable users to request refunds" locked>
+          <Toggle checked={false} onChange={noop} label="Allow Refunds" />
+        </FieldShell>
+        <div className="grid gap-5 py-4 sm:grid-cols-2">
+          <StackedField label="Refund Window" description="Time after payment within which refunds are allowed" htmlFor="refundWindow" locked>
+            <NumberField id="refundWindow" value={48} onChange={noop} prefix="Hours" />
           </StackedField>
-
-          <StackedField
-            label="Auto-approve Refunds Under"
-            description="Automatically approve refund requests below this amount"
-            htmlFor="autoApproveUnder"
-          >
-            <NumberField
-              id="autoApproveUnder"
-              prefix="NGN"
-              value={state.refund.autoApproveRefundsUnder}
-              onChange={(v) => setRefund("autoApproveRefundsUnder", v)}
-            />
+          <StackedField label="Auto-approve Refunds Under" description="Automatically approve refund requests below this amount" htmlFor="autoRefund" locked>
+            <NumberField id="autoRefund" value={5000} onChange={noop} prefix="NGN" />
           </StackedField>
-
-          <div className="col-span-2">
-            <FieldShell
-              label="Require Admin Approval"
-              description="Require manual admin approval for refund requests above auto-approve threshold"
-            >
-              <Toggle
-                checked={state.refund.requireAdminApproval}
-                onChange={(v) => setRefund("requireAdminApproval", v)}
-                label="Require Admin Approval"
-              />
-            </FieldShell>
-          </div>
         </div>
+        <FieldShell label="Require Admin Approval" description="Require manual admin approval for refund requests above the auto-approve threshold" locked>
+          <Toggle checked onChange={noop} label="Require Admin Approval" />
+        </FieldShell>
       </Panel>
 
-      <SettingsActions isDirty={isChangeDefault} justSaved={justSaved} onDiscard={handleDiscard} onSave={handleSave} />
+      {editing && <EditPlanDialog key={editing.id} plan={editing} onClose={() => setEditing(null)} />}
     </div>
+  )
+}
+
+const toMinor = (text: string) => Math.round(Number(text.replace(/,/g, "")) * 100)
+
+const EditPlanDialog = ({ plan, onClose }: { plan: AdminPlan, onClose: () => void }) => {
+  const update = useUpdatePlan()
+  const [name, setName] = useState(plan.name)
+  const [tagline, setTagline] = useState(plan.tagline)
+  const [monthly, setMonthly] = useState(String(plan.monthlyPriceMinor / 100))
+  const [annual, setAnnual] = useState(String(plan.annualPriceMinor / 100))
+  const [features, setFeatures] = useState(plan.features.join("\n"))
+  const [isActive, setIsActive] = useState(plan.isActive)
+
+  const monthlyMinor = toMinor(monthly)
+  const annualMinor = toMinor(annual)
+  const priceError =
+    !Number.isFinite(monthlyMinor) || !Number.isFinite(annualMinor) || monthlyMinor < 10000 || annualMinor < 10000
+      ? "Prices must be at least NGN 100."
+      : null
+  const priceChanged = monthlyMinor !== plan.monthlyPriceMinor || annualMinor !== plan.annualPriceMinor
+
+  const save = () => {
+    if (priceError || !name.trim()) return
+    update.mutate(
+      {
+        id: plan.id,
+        changes: {
+          name: name.trim(),
+          tagline: tagline.trim(),
+          monthlyPriceMinor: monthlyMinor,
+          annualPriceMinor: annualMinor,
+          features: features.split("\n").map((line) => line.trim()).filter(Boolean),
+          isActive,
+        },
+      },
+      { onSuccess: onClose },
+    )
+  }
+
+  return (
+    <AlertDialog open onOpenChange={(open) => !open && onClose()}>
+      <AlertDialogContent className="sm:max-w-lg">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Edit {plan.name}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {plan.subscriberCount > 0
+              ? `Its ${formatCount(plan.subscriberCount)} current subscribers keep the price they signed up at; a new price applies to new subscribers.`
+              : "Changes show in the app straight away."}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <div className="grid gap-4">
+          <div className="grid gap-1.5">
+            <Label htmlFor="planName">Name</Label>
+            <Input id="planName" value={name} maxLength={60} onChange={(event) => setName(event.target.value)} />
+          </div>
+          <div className="grid gap-1.5">
+            <Label htmlFor="planTagline">Tagline</Label>
+            <Input id="planTagline" value={tagline} maxLength={120} onChange={(event) => setTagline(event.target.value)} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="grid gap-1.5">
+              <Label htmlFor="planMonthly">Monthly price (NGN)</Label>
+              <Input id="planMonthly" inputMode="decimal" value={monthly} onChange={(event) => setMonthly(event.target.value)} />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="planAnnual">Annual price (NGN)</Label>
+              <Input id="planAnnual" inputMode="decimal" value={annual} onChange={(event) => setAnnual(event.target.value)} />
+            </div>
+          </div>
+          {priceError && <p role="alert" className="text-xs text-[#D94949]">{priceError}</p>}
+          <div className="grid gap-1.5">
+            <Label htmlFor="planFeatures">Features, one per line</Label>
+            <Textarea id="planFeatures" value={features} rows={5} onChange={(event) => setFeatures(event.target.value)} />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="planActive">Show in the app</Label>
+            <Switch id="planActive" checked={isActive} onCheckedChange={setIsActive} />
+          </div>
+          {priceChanged && plan.subscriberCount > 0 && (
+            <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900">New subscribers will pay the new price.</p>
+          )}
+        </div>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={update.isPending}>Cancel</AlertDialogCancel>
+          <Button variant="brand" loading={update.isPending} disabled={Boolean(priceError) || !name.trim()} onClick={save}>
+            Save Plan
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }
 

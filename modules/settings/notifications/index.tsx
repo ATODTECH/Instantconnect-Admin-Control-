@@ -1,234 +1,115 @@
 "use client"
 
-import { useState } from "react";
-import { FieldShell, Panel, SettingsActions, TagInput, Toggle } from "@/components/form/settings-fields";
+import { FieldShell, Panel, SettingsActions, TagInput, Toggle } from "@/components/form/settings-fields"
+import { useSettingsDraft } from "@/hooks/use-settings-draft"
+import { SettingsError, SettingsSkeleton } from "../settings-state"
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const KEYS = [
+  "pushMessages",
+  "pushConnections",
+  "pushEvents",
+  "pushMeetups",
+  "pushKyc",
+  "pushCommunities",
+  "kycSubmittedAlert",
+  "adminAlertEmails",
+] as const
 
+/** The design's email rows. The app sends none of these emails yet. */
+const EMAIL_ROWS = [
+  { label: "Welcome Email", description: "Send welcome email to new users upon registration" },
+  { label: "Subscription Confirmation", description: "Notify users when subscription is activated or renewed" },
+  { label: "Payment Receipt", description: "Send payment receipt after successful transactions" },
+  { label: "Payment Failed Alert", description: "Alert users when payment fails" },
+  { label: "Event Reminder", description: "Send reminder 24 hours before event starts" },
+  { label: "KYC Status Update", description: "Notify users when KYC verification status changes" },
+  { label: "Account Deactivation Warning", description: "Warn users before account deactivation" },
+] as const
 
-const initialNotification: NotificationState = {
-  welcomeEmail: true,
-  subscriptionConfirmation: true,
-  paymentReceipt: true,
-  paymentFailedAlert: true,
-  eventReminder: true,
-  kycStatusUpdate: true,
-  accountDeactivationWarning: true,
+const PUSH_SWITCHES = [
+  { key: "pushMessages", label: "New Message", description: "Notify when user receives a new message" },
+  { key: "pushConnections", label: "Connection Request", description: "Alert when someone sends a connection request, or accepts one" },
+  { key: "pushEvents", label: "Event Updates", description: "Notify about event invites and new attendees" },
+  { key: "pushCommunities", label: "Community Activity", description: "Notify about community invites, and comments and replies on members' posts" },
+  { key: "pushMeetups", label: "Meetup Updates", description: "Notify when a meetup is proposed, accepted, declined or cancelled" },
+  { key: "pushKyc", label: "KYC Decisions", description: "Notify when identity documents are approved or rejected" },
+] as const
 
-  newMessage: true,
-  connectionRequest: true,
-  eventUpdates: true,
-  communityActivity: false,
-  nearbyEvents: false,
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const MAX_RECIPIENTS = 10
 
-  failedPaymentAlerts: true,
-  newKycSubmission: true,
-  reportedContent: true,
-  highTrafficWarning: false,
-  adminEmailRecipients: ["admin@instantconnect.com", "support@instantconnect.com"],
-}
+const noop = () => {}
 
 const NotificationSettings = () => {
-  const [settings, setSettings] = useState<NotificationState>(initialNotification)
-  const [savedSettings, setSavedSettings] =
-    useState<NotificationState>(initialNotification)
-  const [justSaved, setJustSaved] = useState(false)
+  const { query, values, isDirty, isSaving, set, discard, save } = useSettingsDraft(KEYS)
 
-  const isChangeDefault = JSON.stringify(settings) !== JSON.stringify(savedSettings)
-  
-  const set = <K extends keyof NotificationState>(key: K, value: NotificationState[K]) =>
-    setSettings((prev) => ({ ...prev, [key]: value }))
+  if (query.isPending) return <SettingsSkeleton panels={[7, 6, 5]} />
+  if (query.isError || !values) return <SettingsError onRetry={() => query.refetch()} isRetrying={query.isRefetching} />
 
-  const handleDiscard = () => setSettings(savedSettings)
-
-  const handleSave = () => {
-    setSavedSettings(settings)
-    setJustSaved(true)
-    window.setTimeout(() => setJustSaved(false), 2000)
-  }
+  const alertWithoutRecipients = values.kycSubmittedAlert && values.adminAlertEmails.length === 0
 
   return (
     <div className="space-y-6">
       <Panel title="Email Notifications">
-        <FieldShell
-          label="Welcome Email"
-          description="Send welcome email to new users upon registration"
-        >
-          <Toggle
-            checked={settings.welcomeEmail}
-            onChange={(v) => set("welcomeEmail", v)}
-            label="Welcome Email"
-          />
-        </FieldShell>
-        <FieldShell
-          label="Subscription Confirmation"
-          description="Notify users when subscription is activated or renewed"
-        >
-          <Toggle
-            checked={settings.subscriptionConfirmation}
-            onChange={(v) => set("subscriptionConfirmation", v)}
-            label="Subscription Confirmation"
-          />
-        </FieldShell>
-        <FieldShell
-          label="Payment Receipt"
-          description="Send payment receipt after successful transactions"
-        >
-          <Toggle
-            checked={settings.paymentReceipt}
-            onChange={(v) => set("paymentReceipt", v)}
-            label="Payment Receipt"
-          />
-        </FieldShell>
-        <FieldShell
-          label="Payment Failed Alert"
-          description="Alert users when payment fails"
-        >
-          <Toggle
-            checked={settings.paymentFailedAlert}
-            onChange={(v) => set("paymentFailedAlert", v)}
-            label="Payment Failed Alert"
-          />
-        </FieldShell>
-        <FieldShell
-          label="Event Reminder"
-          description="Send reminder 24 hours before event starts"
-        >
-          <Toggle
-            checked={settings.eventReminder}
-            onChange={(v) => set("eventReminder", v)}
-            label="Event Reminder"
-          />
-        </FieldShell>
-        <FieldShell
-          label="KYC Status Update"
-          description="Notify users when KYC verification status changes"
-        >
-          <Toggle
-            checked={settings.eventReminder}
-            onChange={(v) => set("eventReminder", v)}
-            label="KYC Status Update"
-          />
-        </FieldShell>
-        <FieldShell
-          label="Account Deactivation Warning"
-          description="Warn users before account deactivation"
-        >
-          <Toggle
-            checked={settings.eventReminder}
-            onChange={(v) => set("eventReminder", v)}
-            label="Account Deactivation Warning"
-          />
+        {EMAIL_ROWS.map(({ label, description }) => (
+          <FieldShell key={label} label={label} description={description} locked>
+            <Toggle checked={false} onChange={noop} label={label} />
+          </FieldShell>
+        ))}
+      </Panel>
+
+      <Panel
+        title="Push Notifications"
+        description="Platform wide: switching one off stops its push for everyone, though the notification still appears in the app. Safety checks during a meetup always go out."
+      >
+        {PUSH_SWITCHES.map(({ key, label, description }) => (
+          <FieldShell key={key} label={label} description={description}>
+            <Toggle checked={values[key]} onChange={(v) => set(key, v)} label={label} />
+          </FieldShell>
+        ))}
+        <FieldShell label="Nearby Events" description="Alert users about events near their location" locked>
+          <Toggle checked={false} onChange={noop} label="Nearby Events" />
         </FieldShell>
       </Panel>
-      <Panel title="Push Notifications">
-        <FieldShell
-          label="New Message"
-          description="Notify when user receives a new message"
-        >
-          <Toggle
-            checked={settings.newMessage}
-            onChange={(v) => set("newMessage", v)}
-            label="New Message"
-          />
-        </FieldShell>
-        <FieldShell
-          label="Connection Request"
-          description="Alert when someone sends a connection request"
-        >
-          <Toggle
-            checked={settings.connectionRequest}
-            onChange={(v) => set("connectionRequest", v)}
-            label="Connection Request"
-          />
-        </FieldShell>
-        <FieldShell
-          label="Event Updates"
-          description="Notify about event changes or cancellations"
-        >
-          <Toggle
-            checked={settings.eventUpdates}
-            onChange={(v) => set("eventUpdates", v)}
-            label="Event Updates"
-          />
-        </FieldShell>
-        <FieldShell
-          label="Community Activity"
-          description="Notify about new posts in joined communities"
-        >
-          <Toggle
-            checked={settings.communityActivity}
-            onChange={(v) => set("communityActivity", v)}
-            label="Community Activity"
-          />
-        </FieldShell>
-        <FieldShell
-          label="Nearby Events"
-          description="Alert users about events near their location"
-        >
-          <Toggle
-            checked={settings.nearbyEvents}
-            onChange={(v) => set("nearbyEvents", v)}
-            label="Nearby Events"
-          />
-        </FieldShell>
-      </Panel>
+
       <Panel title="Admin Alerts">
-        <FieldShell
-          label="Failed Payment Alerts"
-          description="Notify admin team when payments fail"
-        >
-          <Toggle
-            checked={settings.failedPaymentAlerts}
-            onChange={(v) => set("failedPaymentAlerts", v)}
-            label="Failed Payment Alerts"
-          />
+        <FieldShell label="Failed Payment Alerts" description="Notify admin team when payments fail" locked>
+          <Toggle checked={false} onChange={noop} label="Failed Payment Alerts" />
         </FieldShell>
-        <FieldShell
-          label="New KYC Submission"
-          description="Alert when new KYC document is submitted"
-        >
-          <Toggle
-            checked={settings.newKycSubmission}
-            onChange={(v) => set("newKycSubmission", v)}
-            label="New KYC Submission"
-          />
+        <FieldShell label="New KYC Submission" description="Email the recipients below whenever a member submits identity documents.">
+          <Toggle checked={values.kycSubmittedAlert} onChange={(v) => set("kycSubmittedAlert", v)} label="New KYC Submission" />
         </FieldShell>
-        <FieldShell
-          label="Reported Content"
-          description="Notify when content or user is reported"
-        >
-          <Toggle
-            checked={settings.reportedContent}
-            onChange={(v) => set("reportedContent", v)}
-            label="Reported Content"
-          />
+        <FieldShell label="Reported Content" description="Notify when content or user is reported" locked>
+          <Toggle checked={false} onChange={noop} label="Reported Content" />
         </FieldShell>
-        <FieldShell
-          label="High Traffic Warning"
-          description="Alert when platform traffic exceeds threshold"
-        >
-          <Toggle
-            checked={settings.highTrafficWarning}
-            onChange={(v) => set("highTrafficWarning", v)}
-            label="High Traffic Warning"
-          />
+        <FieldShell label="High Traffic Warning" description="Alert when platform traffic exceeds threshold" locked>
+          <Toggle checked={false} onChange={noop} label="High Traffic Warning" />
         </FieldShell>
-        {/* Email Field */}
-        <TagInput
-          id="adminEmailRecipients"
-          label="Admin Email Recipients"
-          values={settings.adminEmailRecipients}
-          onChange={(emails) => set("adminEmailRecipients", emails)}
-          placeholder="Add email..."
-          noun="email"
-          validate={(email) =>
-            !EMAIL_REGEX.test(email) ? "Enter a valid email address" : settings.adminEmailRecipients.includes(email) ? "That email is already added" : null
-          }
-          className="mt-6"
-        />
+        <div className="pt-2">
+          <TagInput
+            id="adminAlertEmails"
+            label="Admin Email Recipients"
+            description={`Up to ${MAX_RECIPIENTS} addresses. Press Enter after each one.`}
+            values={values.adminAlertEmails}
+            onChange={(v) => set("adminAlertEmails", v)}
+            placeholder="Add email..."
+            normalise={(value) => value.toLowerCase()}
+            validate={(value) =>
+              !EMAIL.test(value)
+                ? "Enter a valid email address"
+                : values.adminAlertEmails.length >= MAX_RECIPIENTS
+                  ? `At most ${MAX_RECIPIENTS} recipients`
+                  : null
+            }
+            noun="email"
+          />
+          {alertWithoutRecipients && (
+            <p role="alert" className="mt-2 text-xs text-[#D94949]">Add at least one recipient, or no alert can be sent.</p>
+          )}
+        </div>
       </Panel>
-      <SettingsActions isDirty={isChangeDefault} justSaved={justSaved} onDiscard={handleDiscard} onSave={handleSave} />
+
+      <SettingsActions isDirty={isDirty && !alertWithoutRecipients} justSaved={false} isSaving={isSaving} onDiscard={discard} onSave={save} />
     </div>
   )
 }
