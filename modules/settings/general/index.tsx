@@ -10,7 +10,6 @@ import {
   SettingsActions,
   TextField,
   Toggle,
-  UnavailableSettings,
 } from "@/components/form/settings-fields"
 import {
   AlertDialog,
@@ -106,21 +105,37 @@ const GeneralSettings = () => {
         </div>
       )}
 
-      <Panel title="Platform Access">
+      <Panel title="General Settings">
+        <FieldShell label="Platform Name" description="The brand name displayed to users across the platform emails and client apps." htmlFor="platformName" locked>
+          <TextField id="platformName" value="Instant Connect" onChange={noop} />
+        </FieldShell>
+        <FieldShell label="Platform Description" description="Brief overview of the platform purpose used for metadata and SEO." htmlFor="platformDescription" locked>
+          <TextField id="platformDescription" value="A community and events platform for real-time local connection" onChange={noop} />
+        </FieldShell>
+        <FieldShell label="Default Language" description="Preferred localization setting for system notifications and default translation." htmlFor="defaultLanguage" locked>
+          <SelectField id="defaultLanguage" value="English (US)" onChange={noop} options={["English (US)"]} className="w-72" />
+        </FieldShell>
+        <FieldShell label="Timezone" description="Platform metrics and scheduled jobs already run on Lagos time." htmlFor="timezone" locked>
+          <SelectField id="timezone" value="Africa/Lagos (WAT)" onChange={noop} options={["Africa/Lagos (WAT)"]} className="w-72" />
+        </FieldShell>
         <FieldShell
           label="Maintenance Mode"
           description="Members get a 'down for maintenance' message on every request, signed in or not. Admins and this dashboard keep working."
         >
           <Toggle checked={values.maintenanceMode} onChange={(v) => set("maintenanceMode", v)} label="Maintenance Mode" />
         </FieldShell>
+      </Panel>
 
-        <FieldShell
-          label="Allow New Registrations"
-          description="When off, sign-up in the app is refused. Existing members can still sign in."
-        >
+      <Panel title="User Registration Settings">
+        <FieldShell label="Allow New Registrations" description="When off, sign-up in the app is refused. Existing members can still sign in.">
           <Toggle checked={values.allowNewRegistrations} onChange={(v) => set("allowNewRegistrations", v)} label="Allow New Registrations" />
         </FieldShell>
-
+        <FieldShell label="Require Email Verification" description="Members confirm their email with a code before they can use the app. Always on." locked>
+          <Toggle checked onChange={noop} label="Require Email Verification" />
+        </FieldShell>
+        <FieldShell label="Require Phone Verification" description="Require an SMS code at sign-up as well." locked>
+          <Toggle checked={false} onChange={noop} label="Require Phone Verification" />
+        </FieldShell>
         <FieldShell
           label="Minimum Age Requirement"
           description={`Checked against the date of birth at sign-up. It can be raised, but never below the legal floor of ${MINIMUM_AGE_FLOOR}. Existing members are not affected.`}
@@ -131,28 +146,41 @@ const GeneralSettings = () => {
             {ageError && <p role="alert" className="text-xs text-[#D94949]">{ageError}</p>}
           </div>
         </FieldShell>
+        <FieldShell label="KYC Required for Events" description="Members must have passed KYC before they can join an event.">
+          <Toggle checked={values.kycRequiredToJoinEvents} onChange={(v) => set("kycRequiredToJoinEvents", v)} label="KYC Required for Events" />
+        </FieldShell>
       </Panel>
 
-      <Panel title="Event Rules">
-        <FieldShell
-          label="KYC Required to Join Events"
-          description="Members must have passed KYC before they can join an event."
-        >
-          <Toggle checked={values.kycRequiredToJoinEvents} onChange={(v) => set("kycRequiredToJoinEvents", v)} label="KYC Required to Join Events" />
+      <Panel title="Event Settings">
+        <FieldShell label="Max Event Capacity" description="Events have no capacity limit yet." htmlFor="maxEventCapacity" locked>
+          <NumberField id="maxEventCapacity" value={500} onChange={noop} />
         </FieldShell>
-
-        <FieldShell
-          label="KYC Required to Create Events"
-          description="Members must have passed KYC before they can host an event."
-        >
-          <Toggle checked={values.kycRequiredToCreateEvents} onChange={(v) => set("kycRequiredToCreateEvents", v)} label="KYC Required to Create Events" />
-        </FieldShell>
-
-        <FieldShell
-          label="Allow Paid Events"
-          description="When off, new events must be free. Paid events that already exist stay as they are."
-        >
+        <FieldShell label="Allow Paid Events" description="When off, new events must be free. Paid events that already exist stay as they are.">
           <Toggle checked={values.allowPaidEvents} onChange={(v) => set("allowPaidEvents", v)} label="Allow Paid Events" />
+        </FieldShell>
+        <FieldShell label="Platform Commission" description="Waits on ticket checkout for events." htmlFor="platformCommission" locked>
+          <NumberField id="platformCommission" value={5} onChange={noop} suffix="%" />
+        </FieldShell>
+        <FieldShell label="Auto-approve Events" description="Events publish straight away; there is no review step yet." locked>
+          <Toggle checked onChange={noop} label="Auto-approve Events" />
+        </FieldShell>
+        <FieldShell label="Event Creation Requires KYC" description="Members must have passed KYC before they can host an event.">
+          <Toggle checked={values.kycRequiredToCreateEvents} onChange={(v) => set("kycRequiredToCreateEvents", v)} label="Event Creation Requires KYC" />
+        </FieldShell>
+      </Panel>
+
+      <Panel title="Community Settings">
+        <FieldShell label="Max Communities Per User" description="Members can create any number of communities today." htmlFor="maxCommunitiesPerUser" locked>
+          <NumberField id="maxCommunitiesPerUser" value={5} onChange={noop} />
+        </FieldShell>
+        <FieldShell label="Allow Private Communities" description="Members can make a community invite-only. Always on." locked>
+          <Toggle checked onChange={noop} label="Allow Private Communities" />
+        </FieldShell>
+        <FieldShell label="Require Admin Approval" description="New communities go live straight away; there is no review step yet." locked>
+          <Toggle checked={false} onChange={noop} label="Require Admin Approval" />
+        </FieldShell>
+        <FieldShell label="Max Members Per Community" description="Communities have no member cap yet." htmlFor="maxMembersPerCommunity" locked>
+          <NumberField id="maxMembersPerCommunity" value={10000} onChange={noop} className="w-28" />
         </FieldShell>
       </Panel>
 
@@ -169,45 +197,6 @@ const GeneralSettings = () => {
           onSave={handleSave}
         />
       </div>
-
-      <UnavailableSettings>
-        <Panel title="General Settings">
-          <FieldShell label="Platform Name" description="The brand name displayed to users across the platform emails and client apps." htmlFor="platformName">
-            <TextField id="platformName" value="Instant Connect" onChange={noop} />
-          </FieldShell>
-          <FieldShell label="Default Language" description="Preferred localization setting for system notifications." htmlFor="defaultLanguage">
-            <SelectField id="defaultLanguage" value="English (US)" onChange={noop} options={["English (US)"]} />
-          </FieldShell>
-          <FieldShell label="Timezone" description="Platform metrics already use Lagos time." htmlFor="timezone">
-            <SelectField id="timezone" value="Africa/Lagos (WAT)" onChange={noop} options={["Africa/Lagos (WAT)"]} />
-          </FieldShell>
-          <FieldShell label="Require Phone Verification" description="Require OTP-based SMS verification on sign-up. Email verification is always required.">
-            <Toggle checked={false} onChange={noop} label="Require Phone Verification" />
-          </FieldShell>
-        </Panel>
-
-        <Panel title="Event Settings">
-          <FieldShell label="Max Event Capacity" description="Events have no capacity yet." htmlFor="maxEventCapacity">
-            <NumberField id="maxEventCapacity" value={500} onChange={noop} />
-          </FieldShell>
-          <FieldShell label="Platform Commission" description="Waits on ticket checkout." htmlFor="platformCommission">
-            <NumberField id="platformCommission" value={5} onChange={noop} suffix="%" />
-          </FieldShell>
-          <FieldShell label="Auto-approve Events" description="Events publish straight away; there is no review step yet.">
-            <Toggle checked onChange={noop} label="Auto-approve Events" />
-          </FieldShell>
-        </Panel>
-
-        <Panel title="Community Settings">
-          <FieldShell label="Max Communities Per User" description="Waits on communities." htmlFor="maxCommunitiesPerUser">
-            <NumberField id="maxCommunitiesPerUser" value={5} onChange={noop} />
-          </FieldShell>
-          <FieldShell label="Allow Private Communities" description="Waits on communities.">
-            <Toggle checked onChange={noop} label="Allow Private Communities" />
-          </FieldShell>
-        </Panel>
-      </UnavailableSettings>
-
 
       <AlertDialog open={confirmingMaintenance} onOpenChange={setConfirmingMaintenance}>
         <AlertDialogContent>

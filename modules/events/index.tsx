@@ -16,6 +16,7 @@ import { eventColumns } from "./columns"
 import { TYPE_FILTER, WINDOW_FILTER, eventTabs, type EventTab } from "./constants"
 import EventDetails from "./event-details"
 import GridCard from "./gridcard"
+import EventbriteOrganizers from "./organizers"
 
 const NO_EVENTS: AdminEventRow[] = []
 
@@ -116,6 +117,8 @@ const EventsHomeIndex = () => {
             />
           }
         />
+
+        <EventbriteOrganizers />
       </div>
 
       <DetailSheet

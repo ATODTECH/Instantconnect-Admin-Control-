@@ -1,14 +1,8 @@
 "use client"
 
 import { useRef, useState, type KeyboardEvent } from "react"
-import { CheckCheck, ChevronDown, CircleX, Copy, Eye, EyeClosed, Lock } from "lucide-react"
+import { CheckCheck, CircleX, Copy, Lock } from "lucide-react"
 import { cn } from "cn"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -18,21 +12,47 @@ import { Switch } from "@/components/ui/switch"
 const FIELD = "h-9 rounded-lg border-slate-200 bg-neutral-white text-sm text-neutral-light-500 shadow-sm focus-visible:border-primary focus-visible:ring-primary/15"
 
 /** A settings card. Rows inside are separated by hairlines. */
-export const Panel = ({ title, children }: { title?: string, children: React.ReactNode }) => (
+export const Panel = ({ title, description, children }: { title?: string, description?: string, children: React.ReactNode }) => (
   <section className="space-y-4 rounded-xl border border-primary-border bg-neutral-white p-6">
-    {title && <h2 className="text-base font-bold text-neutral-light-600">{title}</h2>}
+    {title && (
+      <div>
+        <h2 className="text-base font-bold text-neutral-light-600">{title}</h2>
+        {description && <p className="mt-0.5 text-xs text-neutral-light-400">{description}</p>}
+      </div>
+    )}
     <div className="divide-y divide-slate-100">{children}</div>
   </section>
 )
 
-/** One setting: its name and explanation on the left, the control on the right. */
-export const FieldShell = ({ label, description, htmlFor, children }: FieldShellProps) => (
+/** Marks a setting the platform does not act on yet. */
+export const LockedTag = () => (
+  <span className="ml-2 inline-flex items-center gap-1 rounded bg-amber-50 px-1.5 py-0.5 align-middle text-[10px] font-semibold text-amber-700">
+    <Lock className="h-2.5 w-2.5" aria-hidden />
+    Not available yet
+  </span>
+)
+
+/**
+ * One setting: its name and explanation on the left, the control on the right.
+ * A locked row keeps its place in the design but cannot be changed, since a
+ * switch that does nothing would mislead whoever flips it.
+ */
+export const FieldShell = ({ label, description, htmlFor, children, locked = false }: FieldShellProps) => (
   <div className="flex items-center justify-between gap-6 py-4 first:pt-0 last:pb-0">
     <div className="max-w-md">
-      <Label htmlFor={htmlFor} className="text-sm font-semibold text-neutral-light-500">{label}</Label>
+      <Label htmlFor={htmlFor} className="text-sm font-semibold text-neutral-light-500">
+        {label}
+        {locked && <LockedTag />}
+      </Label>
       <p className="mt-0.5 text-xs text-neutral-light-400">{description}</p>
     </div>
-    <div className="shrink-0">{children}</div>
+    {locked ? (
+      <fieldset disabled aria-label={`${label}, not available yet`} className="shrink-0 opacity-60">
+        {children}
+      </fieldset>
+    ) : (
+      <div className="shrink-0">{children}</div>
+    )}
   </div>
 )
 
@@ -92,70 +112,8 @@ export const SelectField = ({ id, value, onChange, options, className = "w-56" }
   </Select>
 )
 
-interface CheckboxSelectProps {
-  id: string
-  options: readonly string[]
-  checked: readonly boolean[]
-  onToggle: (index: number) => void
-  placeholder?: string
-  className?: string
-}
-
 /** A dropdown of options where any number can be ticked. */
-export const CheckboxSelect = ({ id, options, checked, onToggle, placeholder = "None", className = "w-56" }: CheckboxSelectProps) => {
-  const chosen = options.filter((_, index) => checked[index])
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button
-          id={id}
-          type="button"
-          className={cn(
-            "flex items-center justify-between gap-2 rounded-lg border border-slate-200 bg-neutral-white px-3 py-2 text-left text-sm text-neutral-light-500 shadow-sm outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-primary/15",
-            className,
-          )}
-        >
-          <span className="truncate">{chosen.length ? chosen.join(", ") : placeholder}</span>
-          <ChevronDown className="h-4 w-4 shrink-0 text-slate-400" aria-hidden />
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-(--radix-dropdown-menu-trigger-width)">
-        {options.map((option, index) => (
-          <DropdownMenuCheckboxItem
-            key={option}
-            checked={checked[index]}
-            onCheckedChange={() => onToggle(index)}
-            onSelect={(event) => event.preventDefault()}
-          >
-            {option}
-          </DropdownMenuCheckboxItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
-}
-
 /** A masked key with a show/hide toggle. */
-export const SecretField = ({ id, value, onChange }: { id: string, value: string, onChange: (value: string) => void }) => {
-  const [visible, setVisible] = useState(false)
-
-  return (
-    <div className="relative">
-      <Input id={id} type={visible ? "text" : "password"} value={value} onChange={(e) => onChange(e.target.value)} className={cn(FIELD, "w-full pr-10 font-mono")} />
-      <button
-        type="button"
-        onClick={() => setVisible((shown) => !shown)}
-        aria-label={visible ? "Hide key" : "Show key"}
-        aria-pressed={visible}
-        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-neutral-light-400"
-      >
-        {visible ? <EyeClosed className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-      </button>
-    </div>
-  )
-}
-
 /** A read-only value with a copy button, e.g. a webhook URL. */
 export const CopyField = ({ id, value, label = "Copy" }: { id: string, value: string, label?: string }) => {
   const [copied, setCopied] = useState(false)
@@ -288,10 +246,25 @@ export const TagInput = ({
 }
 
 /** A setting with its label above the control, for fields laid out in a grid. */
-export const StackedField = ({ label, description, htmlFor, children }: { label: string, description?: string, htmlFor?: string, children: React.ReactNode }) => (
+export const StackedField = ({
+  label,
+  description,
+  htmlFor,
+  children,
+  locked = false,
+}: { label: string, description?: string, htmlFor?: string, children: React.ReactNode, locked?: boolean }) => (
   <div>
-    <Label htmlFor={htmlFor} className="text-sm font-semibold text-neutral-light-500">{label}</Label>
-    <div className="mt-1.5">{children}</div>
+    <Label htmlFor={htmlFor} className="text-sm font-semibold text-neutral-light-500">
+      {label}
+      {locked && <LockedTag />}
+    </Label>
+    {locked ? (
+      <fieldset disabled aria-label={`${label}, not available yet`} className="mt-1.5 opacity-60">
+        {children}
+      </fieldset>
+    ) : (
+      <div className="mt-1.5">{children}</div>
+    )}
     {description && <p className="mt-1.5 text-xs text-neutral-light-400">{description}</p>}
   </div>
 )
@@ -320,20 +293,3 @@ export const SettingsActions = ({ isDirty, justSaved, onDiscard, onSave, isSavin
   </div>
 )
 
-/**
- * Settings the server does not act on yet. They stay visible so the plan is
- * clear, but locked: a switch that changes nothing would mislead whoever flips it.
- */
-export const UnavailableSettings = ({ children }: { children: React.ReactNode }) => (
-  <div className="space-y-4">
-    <div role="note" className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
-      <Lock className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" aria-hidden />
-      <p className="text-sm text-amber-900">
-        <span className="font-semibold">Not available yet.</span> These settings are not connected to the platform, so they can&apos;t be changed.
-      </p>
-    </div>
-    <fieldset disabled aria-label="Not available yet" className="space-y-6 opacity-60">
-      {children}
-    </fieldset>
-  </div>
-)
