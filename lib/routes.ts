@@ -6,6 +6,7 @@ export const ROUTES = {
   liveConnection: "/dashboard/live-connection",
   events: "/dashboard/events",
   communities: "/dashboard/communities",
+  reports: "/dashboard/reports",
   subscriptions: "/dashboard/subscriptions",
   settings: "/dashboard/settings",
 } as const
@@ -21,6 +22,7 @@ export const PAGE_HEADINGS: Record<string, { title: string, description: string,
   [ROUTES.liveConnection]: { title: "Live Connection", description: "Monitor active meetups and connection locations in real-time." },
   [ROUTES.events]: { title: "Events", description: "Monitor and manage all platform events.", search: "Search event or host..." },
   [ROUTES.communities]: { title: "Community Management", description: "Monitor and manage all platform communities.", search: "Search community or creator..." },
+  [ROUTES.reports]: { title: "Member Reports", description: "Review members reported by other members." },
   [ROUTES.subscriptions]: { title: "Subscription Management", description: "Monitor and manage all platform subscriptions.", search: "Search name or email..." },
   [ROUTES.settings]: { title: "Platform Settings", description: "Configure and manage platform preferences." },
 }

@@ -1,10 +1,10 @@
-export type AdminNotificationKind = "kyc_submitted" | "support_message" | "event_created"
+export type AdminNotificationKind = "kyc_submitted" | "support_message" | "event_created" | "user_reported"
 
 export interface AdminNotification {
   /** `<kind>:<source id>` */
   id: string
   kind: AdminNotificationKind
-  /** The KYC submission, the member who wrote to support, or the event. */
+  /** The KYC submission, the member who wrote to support, the event, or the report. */
   targetId: string
   title: string
   body: string

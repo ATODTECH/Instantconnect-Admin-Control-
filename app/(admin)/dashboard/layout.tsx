@@ -3,9 +3,9 @@ import FooterIndex from "@/components/footer"
 import HeaderIndex from "@/components/header"
 import LogoIndex from "@/components/logo"
 import TopBarIndex from "@/components/topbar"
-import { Calendar, FileText, LayoutDashboard, MessageCircle, Settings, Users, Wallet } from "lucide-react"
+import { Calendar, FileText, Flag, LayoutDashboard, MessageCircle, Settings, Users, Wallet } from "lucide-react"
 
-const HEADER_ICONS = [LayoutDashboard, Users, FileText, Calendar, MessageCircle, Wallet, Settings]
+const HEADER_ICONS = [LayoutDashboard, Users, FileText, Calendar, MessageCircle, Flag, Wallet, Settings]
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (

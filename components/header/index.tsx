@@ -10,7 +10,7 @@ interface HeaderProps {
 }
 
 const HeaderIndex = ({icons}: HeaderProps) => {
-  const [LayoutDashboard,Users,FileText,Calendar,MessageCircle,Wallet,Settings] = icons
+  const [LayoutDashboard,Users,FileText,Calendar,MessageCircle,Flag,Wallet,Settings] = icons
   const route = [
     {name:"Dashboard", route:ROUTES.overview, icon:LayoutDashboard},
     {name:"User", route:ROUTES.users, icon:Users},
@@ -18,6 +18,7 @@ const HeaderIndex = ({icons}: HeaderProps) => {
     {name:"Live Connections", route:ROUTES.liveConnection, icon:LiveConnections},
     {name:"Events", route:ROUTES.events, icon:Calendar},
     {name:"Communities", route:ROUTES.communities, icon:MessageCircle},
+    {name:"Reports", route:ROUTES.reports, icon:Flag},
     {name:"Subscriptions", route:ROUTES.subscriptions, icon:Wallet},
     {name:"Platform Settings", route:ROUTES.settings, icon:Settings},
   ]

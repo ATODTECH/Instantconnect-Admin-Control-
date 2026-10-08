@@ -34,6 +34,7 @@ const NOTIFICATION_ROUTES: Record<AdminNotificationKind, string> = {
   kyc_submitted: ROUTES.kycVerification,
   support_message: ROUTES.users,
   event_created: ROUTES.events,
+  user_reported: ROUTES.reports,
 }
 
 const TopBarIndex = ({ children }: TopBarProps) => {
