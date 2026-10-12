@@ -27,7 +27,7 @@ export const getSubscription = async (id: string): Promise<AdminSubscriptionDeta
 
 export const exportSubscriptions = async (filters: SubscriptionFilters): Promise<void> => {
   const response = await api.get<Blob>("/admin/subscriptions/export", { params: filters, responseType: "blob" })
-  saveBlobResponse(response, "instantconnect-subscriptions.csv")
+  saveBlobResponse(response, "instantlinkup-subscriptions.csv")
 }
 
 export const retrySubscription = async (id: string): Promise<void> => {

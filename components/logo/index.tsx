@@ -14,7 +14,7 @@ const LogoIndex = () => {
         className="h-9 w-9 text-xs"
       />
       <p className="flex h-fit justify-between flex-col">
-        <span className=" text-lg leading-[100%] tracking-wide font-semibold text-ic-light">InstantConnect</span>
+        <span className=" text-lg leading-[100%] tracking-wide font-semibold text-ic-light">InstantLinkUp</span>
         <span className=" text-[11px] font-medium uppercase text-ic-muted">Admin Console</span>
       </p>
     </div>

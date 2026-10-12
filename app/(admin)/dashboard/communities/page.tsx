@@ -2,7 +2,7 @@ import CommunitiesHomeIndex from '@/modules/communities';
 import { Metadata, NextPage } from 'next'
 
 export const metadata: Metadata = {
-  title: "Communities - InstantConnect",
+  title: "Communities - InstantLinkUp",
   description: "Monitor and manage all platform communities.",
 };
 

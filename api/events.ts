@@ -20,7 +20,7 @@ export const getEvent = async (id: string): Promise<AdminEventDetail> => {
 /** Every event matching the filters, including the status tab. */
 export const exportEvents = async (filters: AdminEventFilters): Promise<void> => {
   const response = await api.get<Blob>("/admin/events/export", { params: filters, responseType: "blob" })
-  saveBlobResponse(response, "instantconnect-events.csv")
+  saveBlobResponse(response, "instantlinkup-events.csv")
 }
 
 export const getCategories = async (): Promise<Lookup[]> => {

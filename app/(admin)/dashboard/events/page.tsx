@@ -2,7 +2,7 @@ import EventsHomeIndex from "@/modules/events";
 import { Metadata, NextPage } from "next";
 
 export const metadata: Metadata = {
-  title: "Events - InstantConnect",
+  title: "Events - InstantLinkUp",
   description: "Review and verify user identity documents.",
 };
 

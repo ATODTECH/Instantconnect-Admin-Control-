@@ -2,7 +2,7 @@ import SettingsHomeIndex from '@/modules/settings'
 import { Metadata, NextPage } from 'next'
 
 export const metadata: Metadata = {
-  title: "Platform Settings - InstantConnect",
+  title: "Platform Settings - InstantLinkUp",
   description: "Configure and manage platform preferences.",
 }
 

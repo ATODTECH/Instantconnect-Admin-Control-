@@ -63,7 +63,7 @@ const KYCHomeIndex = () => {
 
   const exportSelected = () =>
     downloadCsv(
-      "InstantConnect-KYC-Submissions.csv",
+      "InstantLinkUp-KYC-Submissions.csv",
       ["Submission ID", "User ID", "Name", "Email", "Phone", "Date of Birth", "Documents", "Address", "Next of Kin", "Kin Relationship", "Kin Phone", "Submitted", "Status", "Reviewed", "Reviewed By", "Rejection Reason"],
       [...picked.values()].map((row) => [
           row.id,

@@ -16,7 +16,7 @@ export const ROUTES = {
  * is the search box's placeholder; pages without it have nothing to search.
  */
 export const PAGE_HEADINGS: Record<string, { title: string, description: string, search?: string }> = {
-  [ROUTES.overview]: { title: "Dashboard", description: "Welcome back, Admin. InstantConnect overview and quick metrics." },
+  [ROUTES.overview]: { title: "Dashboard", description: "Welcome back, Admin. InstantLinkUp overview and quick metrics." },
   [ROUTES.users]: { title: "User Management", description: "Manage platform members, KYC verification records, and billing tiers.", search: "Search name or email..." },
   [ROUTES.kycVerification]: { title: "KYC Verification", description: "Review and verify user identity documents.", search: "Search name or email..." },
   [ROUTES.liveConnection]: { title: "Live Connection", description: "Monitor active meetups and connection locations in real-time." },
