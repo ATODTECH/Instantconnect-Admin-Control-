@@ -2,7 +2,7 @@ import ReportsHomeIndex from '@/modules/reports';
 import { Metadata, NextPage } from 'next'
 
 export const metadata: Metadata = {
-  title: "Reports - InstantConnect",
+  title: "Reports - InstantLinkUp",
   description: "Review members reported by other members.",
 };
 

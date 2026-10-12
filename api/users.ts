@@ -37,5 +37,5 @@ export const exportUsers = async (filters: AdminUserFilters, ids: string[]): Pro
     responseType: "blob",
   })
 
-  saveBlobResponse(response, "instantconnect-users.csv")
+  saveBlobResponse(response, "instantlinkup-users.csv")
 }

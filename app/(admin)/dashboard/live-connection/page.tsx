@@ -2,7 +2,7 @@ import LiveConnectionHomeIndex from "@/modules/live-connection";
 import { Metadata, NextPage } from "next";
 
 export const metadata: Metadata = {
-  title: "Live Connection - InstantConnect",
+  title: "Live Connection - InstantLinkUp",
   description: "Monitor active meetups and connection locations in real-time",
 }
 

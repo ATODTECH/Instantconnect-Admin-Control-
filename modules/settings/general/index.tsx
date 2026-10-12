@@ -107,7 +107,7 @@ const GeneralSettings = () => {
 
       <Panel title="General Settings">
         <FieldShell label="Platform Name" description="The brand name displayed to users across the platform emails and client apps." htmlFor="platformName" locked>
-          <TextField id="platformName" value="Instant Connect" onChange={noop} />
+          <TextField id="platformName" value="InstantLinkUp" onChange={noop} />
         </FieldShell>
         <FieldShell label="Platform Description" description="Brief overview of the platform purpose used for metadata and SEO." htmlFor="platformDescription" locked>
           <TextField id="platformDescription" value="A community and events platform for real-time local connection" onChange={noop} />

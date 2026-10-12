@@ -5,8 +5,8 @@ import Logo from "@/assets/images/logo.png"
 import LoginForm from "./_component/LoginForm"
 
 export const metadata: Metadata = {
-  title: "Login - InstantConnect",
-  description: "Sign in to the InstantConnect admin console.",
+  title: "Login - InstantLinkUp",
+  description: "Sign in to the InstantLinkUp admin console.",
 }
 
 const Login: NextPage = () => {
@@ -26,7 +26,7 @@ const Login: NextPage = () => {
           <div className="flex items-center gap-3">
             <Image src={Logo} alt="" height={40} width={40} className="h-10 w-10" />
             <div className="flex flex-col">
-              <span className="text-xl font-bold leading-tight text-white">InstantConnect</span>
+              <span className="text-xl font-bold leading-tight text-white">InstantLinkUp</span>
               <span className="text-[11px] font-medium uppercase tracking-wide text-white/60">Admin Console</span>
             </div>
           </div>
@@ -45,7 +45,7 @@ const Login: NextPage = () => {
         <div className="mx-auto w-full max-w-lg">
           <div className="mb-10 flex items-center gap-3 lg:hidden">
             <Image src={Logo} alt="" height={48} width={48} className="h-12 w-12" />
-            <h1 className="text-2xl font-bold text-brand">InstantConnect</h1>
+            <h1 className="text-2xl font-bold text-brand">InstantLinkUp</h1>
           </div>
           <LoginForm />
         </div>

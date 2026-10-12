@@ -46,7 +46,7 @@ const LoginForm = () => {
 					id="email"
 					type="email"
 					label="Email address"
-					placeholder="admin@instantconnect.com"
+					placeholder="admin@instantlinkup.com"
 					autoComplete="username"
 					disabled={isLoading}
 					iconLeft={<Mail className="h-4 w-4" />}

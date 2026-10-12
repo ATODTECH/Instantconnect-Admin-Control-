@@ -29,7 +29,7 @@ export const getCommunity = async (id: string): Promise<AdminCommunityDetail> =>
 /** Every community matching the filters, including the status tab. */
 export const exportCommunities = async (filters: AdminCommunityFilters): Promise<void> => {
   const response = await api.get<Blob>("/admin/communities/export", { params: filters, responseType: "blob" })
-  saveBlobResponse(response, "instantconnect-communities.csv")
+  saveBlobResponse(response, "instantlinkup-communities.csv")
 }
 
 export const deleteCommunity = async (id: string): Promise<void> => {
