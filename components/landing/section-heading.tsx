@@ -25,7 +25,7 @@ export const SectionHeading = ({ eyebrow, title, description, align = "center", 
     )}
     <h2
       className={cn(
-        "text-balance text-3xl font-bold leading-[1.1] tracking-tight sm:text-5xl",
+        "text-balance font-display text-4xl font-bold leading-[1.02] tracking-[-0.03em] sm:text-6xl",
         tone === "dark" ? "text-neutral-white" : "text-ink-title",
       )}
     >

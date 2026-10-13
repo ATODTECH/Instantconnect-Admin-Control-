@@ -1,4 +1,8 @@
+"use client"
+
+import { useState } from "react"
 import Image from "next/image"
+import { AnimatePresence, motion } from "motion/react"
 import { CalendarDays, Heart, MapPin, MessageSquare, Pin, Star } from "lucide-react"
 import { cn } from "cn"
 import { IconBadge } from "@/components/landing/feature-card"
@@ -6,7 +10,7 @@ import { RevealGroup, RevealItem } from "@/components/landing/reveal"
 import { Section } from "@/components/landing/section"
 import { SectionHeading } from "@/components/landing/section-heading"
 import { EXPLORE_FEATURES } from "../constants"
-import { Avatar, PEOPLE } from "../screens/parts"
+import { Avatar, PEOPLE } from "../people"
 
 type ExploreKey = (typeof EXPLORE_FEATURES)[number]["key"]
 
@@ -97,11 +101,95 @@ const PREVIEWS: Record<ExploreKey, () => React.JSX.Element> = {
   chat: ChatPreview,
 }
 
-const SPANS: Record<ExploreKey, string> = {
-  events: "lg:col-span-3",
-  communities: "lg:col-span-2",
-  places: "lg:col-span-2",
-  chat: "lg:col-span-3",
+/** Panel fills, after the app's category tones. */
+const PANEL_TONES: Record<ExploreKey, string> = {
+  events: "bg-tone-peach",
+  communities: "bg-tone-lilac",
+  places: "bg-tone-blush",
+  chat: "bg-tone-sky",
+}
+
+type Feature = (typeof EXPLORE_FEATURES)[number]
+
+const PanelBody = ({ feature }: { feature: Feature }) => {
+  const Preview = PREVIEWS[feature.key]
+
+  return (
+    <div className="flex h-full flex-col gap-5">
+      <div className="flex flex-col items-start gap-4 sm:flex-row">
+        <IconBadge icon={feature.icon} tone={feature.tone} className="border-2 border-ink-title" />
+        <div className="flex flex-col gap-1.5">
+          <h3 className="font-display text-2xl font-bold tracking-[-0.02em] text-ink-title sm:text-3xl">{feature.title}</h3>
+          <p className="max-w-md text-[0.95rem] leading-relaxed text-ink-body">{feature.body}</p>
+        </div>
+      </div>
+      <div className="mt-auto rounded-3xl border-2 border-ink-title bg-white p-4 shadow-[5px_5px_0_0_#141417]">
+        <Preview />
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Wide screens: a row of panels, one open at a time. Closed panels show their
+ * name running up the side; hovering or focusing one opens it.
+ */
+const Accordion = () => {
+  const [open, setOpen] = useState<ExploreKey>(EXPLORE_FEATURES[0].key)
+
+  return (
+    <div className="mt-14 hidden h-[36rem] gap-3 lg:flex">
+      {EXPLORE_FEATURES.map((feature) => {
+        const isOpen = open === feature.key
+
+        return (
+          <motion.div
+            key={feature.key}
+            layout
+            onMouseEnter={() => setOpen(feature.key)}
+            onFocus={() => setOpen(feature.key)}
+            transition={{ type: "spring", stiffness: 200, damping: 28 }}
+            style={{ flex: isOpen ? 5 : 1 }}
+            className={cn("relative min-w-0 overflow-hidden rounded-[2rem] border-2 border-ink-title shadow-[6px_6px_0_0_#141417]", PANEL_TONES[feature.key])}
+          >
+            <button
+              type="button"
+              aria-expanded={isOpen}
+              aria-label={feature.title}
+              onClick={() => setOpen(feature.key)}
+              className={cn("absolute inset-0 z-10", isOpen && "pointer-events-none")}
+            />
+            <AnimatePresence initial={false} mode="popLayout">
+              {isOpen ? (
+                <motion.div
+                  key="open"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1, transition: { delay: 0.15 } }}
+                  exit={{ opacity: 0, transition: { duration: 0.1 } }}
+                  className="absolute inset-0 w-[min(46rem,62vw)] p-8"
+                >
+                  <PanelBody feature={feature} />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="closed"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 flex flex-col items-center justify-between py-8"
+                >
+                  <IconBadge icon={feature.icon} tone={feature.tone} className="border-2 border-ink-title" />
+                  <span className="rotate-180 whitespace-nowrap font-display text-5xl font-extrabold tracking-[-0.04em] text-ink-title/85 [writing-mode:vertical-rl]">
+                    {feature.label}
+                  </span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )
+      })}
+    </div>
+  )
 }
 
 const Explore = () => (
@@ -112,27 +200,17 @@ const Explore = () => (
       description="Events, communities, great places to meet and conversations that go somewhere, all in one place."
     />
 
-    <RevealGroup className="mt-14 grid gap-4 lg:grid-cols-5">
-      {EXPLORE_FEATURES.map((feature) => {
-        const Preview = PREVIEWS[feature.key]
+    <Accordion />
 
-        return (
-          <RevealItem key={feature.key} className={cn(SPANS[feature.key])}>
-            <div className="group flex h-full flex-col gap-4 rounded-3xl bg-neutral-white p-6 ring-1 ring-ink-border transition-shadow duration-300 hover:shadow-[0_24px_48px_-24px_rgba(147,51,234,0.35)] sm:p-7">
-              <div className="flex items-start gap-4">
-                <IconBadge icon={feature.icon} tone={feature.tone} />
-                <div className="flex flex-col gap-1.5">
-                  <h3 className="text-xl font-semibold tracking-tight text-ink-title">{feature.title}</h3>
-                  <p className="text-[0.95rem] leading-relaxed text-ink-muted">{feature.body}</p>
-                </div>
-              </div>
-              <div className="mt-auto">
-                <Preview />
-              </div>
-            </div>
-          </RevealItem>
-        )
-      })}
+    {/* Narrow screens: every panel open, stacked. */}
+    <RevealGroup className="mt-12 flex flex-col gap-5 lg:hidden">
+      {EXPLORE_FEATURES.map((feature) => (
+        <RevealItem key={feature.key}>
+          <div className={cn("rounded-[2rem] border-2 border-ink-title p-6 shadow-[6px_6px_0_0_#141417]", PANEL_TONES[feature.key])}>
+            <PanelBody feature={feature} />
+          </div>
+        </RevealItem>
+      ))}
     </RevealGroup>
   </Section>
 )

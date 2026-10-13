@@ -29,12 +29,13 @@ export const STORE_LINKS: Record<Store, string | null> = {
 
 export const CONTACT_EMAIL = "privacy@instantlinkup.com"
 
+/** Sections of the landing page. Rooted at "/" so they also work from /privacy and /terms. */
 export const NAV_LINKS = [
-  { label: "How it works", href: "#how-it-works" },
-  { label: "Safety", href: "#safety" },
-  { label: "Explore", href: "#explore" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "FAQ", href: "#faq" },
+  { label: "How it works", href: "/#how-it-works" },
+  { label: "Safety", href: "/#safety" },
+  { label: "Explore", href: "/#explore" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "FAQ", href: "/#faq" },
 ] as const
 
 export type Category = { name: string, body: string, icon: LucideIcon, tone: Tone }
@@ -89,6 +90,7 @@ export const SAFETY_FEATURES = [
 export const EXPLORE_FEATURES = [
   {
     key: "events",
+    label: "Events",
     icon: CalendarDays,
     tone: "peach" as Tone,
     title: "Events happening around you",
@@ -96,6 +98,7 @@ export const EXPLORE_FEATURES = [
   },
   {
     key: "communities",
+    label: "Communities",
     icon: Users,
     tone: "lilac" as Tone,
     title: "Communities that feel local",
@@ -103,6 +106,7 @@ export const EXPLORE_FEATURES = [
   },
   {
     key: "places",
+    label: "Places",
     icon: Coffee,
     tone: "blush" as Tone,
     title: "Places worth meeting at",
@@ -110,6 +114,7 @@ export const EXPLORE_FEATURES = [
   },
   {
     key: "chat",
+    label: "Chat",
     icon: MessageCircle,
     tone: "sky" as Tone,
     title: "Chat that leads somewhere",
@@ -192,6 +197,3 @@ export const FAQS = [
     a: "Yes. Discovering people, chatting, verified meetups, events and communities are all free. Premium Elite and Pro Creator add extras like priority listing, unlimited meetups and a creator badge.",
   },
 ] as const
-
-/** Shown in the hero's scrolling strip. */
-export const MARQUEE_WORDS = ["Friendship", "Business", "Talents", "Social", "Events", "Communities", "Verified meetups", "Places"] as const

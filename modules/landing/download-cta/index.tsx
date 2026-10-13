@@ -4,7 +4,7 @@ import { Reveal } from "@/components/landing/reveal"
 import { Container } from "@/components/landing/section"
 import { StoreButtons } from "@/components/landing/store-buttons"
 import { STORE_LINKS } from "../constants"
-import { PEOPLE } from "../screens/parts"
+import { PEOPLE } from "../people"
 
 /** Faces scattered round the banner's edge, positioned in percent of the banner. */
 const FACES = [
