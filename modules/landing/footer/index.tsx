@@ -19,11 +19,13 @@ const Footer = () => (
           <nav aria-label="Footer" className="flex flex-col gap-3">
             <span className="text-xs font-semibold uppercase tracking-[0.14em] text-ink-meta">Product</span>
             {NAV_LINKS.map((link) => (
-              <a key={link.href} href={link.href} className="text-sm text-ink-muted transition-colors hover:text-brand">{link.label}</a>
+              <Link key={link.href} href={link.href} className="text-sm text-ink-muted transition-colors hover:text-brand">{link.label}</Link>
             ))}
           </nav>
           <div className="flex flex-col gap-3">
             <span className="text-xs font-semibold uppercase tracking-[0.14em] text-ink-meta">Company</span>
+            <Link href={ROUTES.privacy} className="text-sm text-ink-muted transition-colors hover:text-brand">Privacy Notice</Link>
+            <Link href={ROUTES.terms} className="text-sm text-ink-muted transition-colors hover:text-brand">Terms of Use</Link>
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-sm text-ink-muted transition-colors hover:text-brand">Contact us</a>
           </div>
         </div>
