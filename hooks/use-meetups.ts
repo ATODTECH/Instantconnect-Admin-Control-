@@ -1,6 +1,6 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { flagMeetup, getMeetup, getMeetupStats, getMeetups, sendSafetyCheck, stopTracking, unflagMeetup } from "@/api/meetups"
+import { flagMeetup, getMeetup, getMeetupStats, getMeetups, sendSafetyCheck, stopTracking, unflagMeetup } from "@/lib/api/meetups"
 import type { AdminMeetupDetail, MeetupView } from "@/types/admin-meetups"
 
 /** The server's page cap. Enough for a live board; older past meetups drop off. */

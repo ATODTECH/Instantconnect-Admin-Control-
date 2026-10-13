@@ -11,7 +11,7 @@ import {
   getOfficialPosts,
   getReportedPosts,
   resolveReport,
-} from "@/api/communities"
+} from "@/lib/api/communities"
 import type { AdminCommunityFilters, ReportStatus } from "@/types/admin-communities"
 
 export const COMMUNITIES_PAGE_SIZE = 8

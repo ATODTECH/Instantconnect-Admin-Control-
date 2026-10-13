@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from "next/server"
 import { ADMIN_REFRESH_COOKIE } from "@/lib/session"
-import { ROUTES } from "@/lib/routes"
+import { PUBLIC_PATHS, ROUTES } from "@/lib/routes"
 
 const LOGIN_PATH = ROUTES.login
 
 // Optimistic check only: the cookie's presence decides the redirect, and the
 // API still rejects a token that has expired or been revoked.
 export function proxy(request: NextRequest) {
+  if (PUBLIC_PATHS.includes(request.nextUrl.pathname)) {
+    return NextResponse.next()
+  }
+
   const hasSession = request.cookies.has(ADMIN_REFRESH_COOKIE)
   const isLogin = request.nextUrl.pathname === LOGIN_PATH
 

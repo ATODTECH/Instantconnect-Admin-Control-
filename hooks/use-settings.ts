@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { getPlatformSettings, updatePlatformSettings } from "@/api/settings"
+import { getPlatformSettings, updatePlatformSettings } from "@/lib/api/settings"
 
 export const settingsKeys = {
   platform: ["settings", "platform"] as const,

@@ -1,6 +1,6 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { deleteUser, disableUser, enableUser, exportUsers, getUser, getUsers, messageUser } from "@/api/users"
+import { deleteUser, disableUser, enableUser, exportUsers, getUser, getUsers, messageUser } from "@/lib/api/users"
 import type { AdminUserDetail, AdminUserFilters } from "@/types/admin-users"
 
 export const USERS_PAGE_SIZE = 10

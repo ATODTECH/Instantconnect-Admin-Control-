@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { getAdminNotifications, markAllNotificationsRead, markNotificationsRead } from "@/api/notifications"
+import { getAdminNotifications, markAllNotificationsRead, markNotificationsRead } from "@/lib/api/notifications"
 import type { AdminNotificationPage } from "@/types/admin-notifications"
 
 const NOTIFICATIONS_LIMIT = 20

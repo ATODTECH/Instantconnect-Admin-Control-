@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
-import { getDashboardActivity, getDashboardStats, getEventsByCategory, getUserGrowth } from "@/api/dashboard"
+import { getDashboardActivity, getDashboardStats, getEventsByCategory, getUserGrowth } from "@/lib/api/dashboard"
 
 export const USER_GROWTH_MONTHS = 9
 export const ACTIVITY_PAGE_SIZE = 5

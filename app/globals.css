@@ -9,6 +9,8 @@
   --color-foreground: var(--foreground);
   --font-inter-sans: var(--font-inter-sans);
   --font-sans: var(--font-inter-sans);
+  /* The mobile app's wordmark face, Abyssinica SIL. */
+  --font-brand: var(--font-brand-serif);
 
   /* colors */
   --color-bg-primary: #0F172A;
@@ -40,9 +42,34 @@
   --color-danger: #D94949;
   --color-brand-surface: #F3E8FF;
   --color-brand-surface-subtle: #FAF5FF;
+  --color-brand-orange: #FB923C;
+  --color-brand-coral: #F67B58;
+  --color-brand-rose: #F05E7E;
+  --color-brand-pink: #EC4899;
+  --color-brand-magenta: #CE41B5;
+  --color-brand-violet: #A136DD;
+  --color-brand-light: #A855F7;
+  --color-brand-soft: #C084FC;
+  --color-ink-body: #2B2A31;
+  --color-ink-online: #41C97C;
+  --color-ink-verified: #16A34A;
+  --color-ink-secure: #10B981;
+
+  /* Category tones, the pale disc and icon tint behind each home category. */
+  --color-tone-peach: #FFF7ED;
+  --color-tone-peach-icon: #FB923C;
+  --color-tone-sky: #DBF0FF;
+  --color-tone-sky-icon: #248DDE;
+  --color-tone-mint: #DCFCE7;
+  --color-tone-mint-icon: #16A34A;
+  --color-tone-blush: #FDF2F8;
+  --color-tone-blush-icon: #EC4899;
+  --color-tone-lilac: #F3E8FF;
+  --color-tone-lilac-icon: #9333EA;
 
   --animate-shimmer: shimmer 1.6s ease-in-out infinite;
   --animate-progress: progress 1.2s ease-in-out infinite;
+  --animate-marquee: marquee 40s linear infinite;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -166,6 +193,18 @@
 /* The mobile app's brand gradient, bottom right coral to top left purple. */
 @utility bg-brand-gradient {
   background-image: linear-gradient(290.4deg, #F67B58 0%, #F05E7E 17.87%, #EC4899 31.57%, #CE41B5 56.42%, #A136DD 96.49%, #9333EA 100%);
+}
+
+/* The brand gradient run as text, for one highlighted word in a headline. */
+@utility text-brand-gradient {
+  background-image: linear-gradient(100deg, #9333EA 0%, #CE41B5 40%, #EC4899 65%, #F67B58 100%);
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 @keyframes shimmer {
