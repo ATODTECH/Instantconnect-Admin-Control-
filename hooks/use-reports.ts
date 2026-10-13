@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { getUserReports, reviewUserReport } from "@/api/reports"
+import { getUserReports, reviewUserReport } from "@/lib/api/reports"
 import type { UserReportStatus } from "@/types/admin-reports"
 
 export const REPORTS_PAGE_SIZE = 10

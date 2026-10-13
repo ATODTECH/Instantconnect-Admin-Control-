@@ -1,6 +1,6 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { approveKycSubmission, getKycStats, getKycSubmission, getKycSubmissions, rejectKycSubmission } from "@/api/kyc"
+import { approveKycSubmission, getKycStats, getKycSubmission, getKycSubmissions, rejectKycSubmission } from "@/lib/api/kyc"
 import type { KycSubmission, KycSubmissionFilters } from "@/types/admin-kyc"
 import { userKeys } from "./use-users"
 

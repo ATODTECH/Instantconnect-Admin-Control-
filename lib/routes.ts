@@ -1,4 +1,5 @@
 export const ROUTES = {
+  home: "/",
   login: "/login",
   overview: "/dashboard/overview",
   users: "/dashboard/users",
@@ -10,6 +11,9 @@ export const ROUTES = {
   subscriptions: "/dashboard/subscriptions",
   settings: "/dashboard/settings",
 } as const
+
+/** Pages anyone can open, signed in or not. */
+export const PUBLIC_PATHS: readonly string[] = [ROUTES.home]
 
 /**
  * The title and one-line description the top bar shows for each page. `search`

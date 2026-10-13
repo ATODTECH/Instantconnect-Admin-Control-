@@ -1,0 +1,43 @@
+import { cn } from "cn"
+import { IconBadge } from "@/components/landing/feature-card"
+import { Marquee } from "@/components/landing/marquee"
+import { RevealGroup, RevealItem } from "@/components/landing/reveal"
+import { Section } from "@/components/landing/section"
+import { SectionHeading } from "@/components/landing/section-heading"
+import { CATEGORIES, MARQUEE_WORDS } from "../constants"
+
+/** Spans for a 5-up bento on wide screens: two wide tiles, three narrow. */
+const SPANS = ["lg:col-span-3", "lg:col-span-3", "lg:col-span-2", "lg:col-span-2", "lg:col-span-2"]
+
+const Categories = () => (
+  <>
+    <div className="border-y border-ink-border bg-brand-surface-subtle py-5">
+      <Marquee items={MARQUEE_WORDS} className="text-xl font-semibold tracking-tight text-ink-title sm:text-2xl" />
+    </div>
+
+    <Section id="categories">
+      <SectionHeading
+        eyebrow="Way more than a swipe"
+        title={<>Whatever you&apos;re looking for, <span className="text-brand-gradient">it&apos;s nearby</span></>}
+        description="Dating apps stop at a match. InstantLinkUp starts with what you want from the people around you, then helps you actually meet them."
+      />
+
+      <RevealGroup className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
+        {CATEGORIES.map((category, i) => (
+          <RevealItem key={category.name} className={cn(SPANS[i], i === CATEGORIES.length - 1 && "sm:col-span-2 lg:col-span-2")}>
+            <div className="group relative flex h-full flex-col justify-between gap-10 overflow-hidden rounded-3xl bg-neutral-white p-7 ring-1 ring-ink-border transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_48px_-24px_rgba(147,51,234,0.35)]">
+              <div aria-hidden className="absolute -right-10 -top-10 size-40 rounded-full bg-brand-surface-subtle transition-transform duration-500 group-hover:scale-150" />
+              <IconBadge icon={category.icon} tone={category.tone} className="relative" />
+              <div className="relative flex flex-col gap-2">
+                <h3 className="text-2xl font-bold tracking-tight text-ink-title">{category.name}</h3>
+                <p className="text-[0.95rem] leading-relaxed text-ink-muted">{category.body}</p>
+              </div>
+            </div>
+          </RevealItem>
+        ))}
+      </RevealGroup>
+    </Section>
+  </>
+)
+
+export default Categories

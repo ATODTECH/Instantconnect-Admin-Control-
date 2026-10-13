@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { getCurrentAdmin, signIn, signOut } from "@/api/auth"
+import { getCurrentAdmin, signIn, signOut } from "@/lib/api/auth"
 import { ROUTES } from "@/lib/routes"
 
 export const authKeys = {

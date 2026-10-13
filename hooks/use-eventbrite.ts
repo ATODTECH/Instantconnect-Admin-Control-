@@ -6,7 +6,7 @@ import {
   removeEventbriteOrganizer,
   setEventbriteOrganizerActive,
   syncEventbriteOrganizers,
-} from "@/api/eventbrite"
+} from "@/lib/api/eventbrite"
 import { eventKeys } from "@/hooks/use-events"
 
 export const ORGANIZERS_PAGE_SIZE = 10

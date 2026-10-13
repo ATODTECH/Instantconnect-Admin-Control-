@@ -10,7 +10,7 @@ import {
   refundLastPayment,
   retrySubscription,
   updatePlan,
-} from "@/api/subscriptions"
+} from "@/lib/api/subscriptions"
 import type { SubscriptionFilters } from "@/types/admin-subscriptions"
 
 export const SUBSCRIPTIONS_PAGE_SIZE = 8

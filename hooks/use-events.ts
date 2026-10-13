@@ -1,6 +1,6 @@
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { exportEvents, getCategories, getEvent, getEventStats, getEvents } from "@/api/events"
+import { exportEvents, getCategories, getEvent, getEventStats, getEvents } from "@/lib/api/events"
 import type { AdminEventFilters } from "@/types/admin-events"
 
 export const EVENTS_PAGE_SIZE = 8
