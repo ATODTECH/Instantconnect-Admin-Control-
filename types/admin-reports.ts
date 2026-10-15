@@ -34,6 +34,24 @@ export interface UserReport {
   reviewedAt: string | null
 }
 
+export interface ReportMessage {
+  id: string
+  senderId: string
+  kind: "text" | "image" | "system" | "meetup"
+  body: string | null
+  mediaUrl: string | null
+  createdAt: string
+}
+
+export interface ReportConversation {
+  /** False when the two never had a chat. */
+  exists: boolean
+  /** Oldest first. */
+  messages: ReportMessage[]
+  /** More exist; these are the latest. */
+  truncated: boolean
+}
+
 export interface UserReportPage {
   items: UserReport[]
   page: { total: number, limit: number, offset: number }

@@ -2,7 +2,7 @@
 
 # Terms of Use
 
-_Last updated 11 October 2026_
+_Last updated 15 October 2026_
 
 ## Agreement to Our Legal Terms
 
@@ -115,15 +115,16 @@ Some events listed in the app are published by third parties on Eventbrite. Regi
 
 Some features are available only with a paid subscription ("Subscription").
 
-- **Prices.** Prices are shown in the app in Nigerian naira, including any applicable taxes, before you pay.
-- **Billing.** Subscriptions are billed monthly or annually, as you choose, through our payment provider Paystack. By subscribing, you authorise us to charge your chosen payment method at the start of each billing period.
+- **Plans.** The free plan includes a limited number of new connection requests each day. LinkUp Plus removes that limit, within fair use limits that protect members from spam, and adds the features described in the app.
+- **Prices.** Prices are shown in the app, in your local currency and including any applicable taxes, before you pay.
+- **Billing.** Subscriptions are billed monthly or annually, as you choose, by Google Play or the App Store, depending on where you got the app. Your payment is taken by the store under its own terms, and you authorise the store to charge your chosen payment method at the start of each billing period.
 - **Automatic renewal.** **Your Subscription renews automatically at the end of each billing period until you cancel it.**
-- **Cancelling.** You can cancel at any time in the app under Profile, Subscription. Cancelling stops the next renewal. You keep access to paid features until the end of the period you have already paid for.
-- **Refunds.** Payments are non refundable, except where the law requires a refund, or where we decide to give one, for example if you were charged in error.
+- **Cancelling.** You can cancel at any time in your Google Play or App Store subscription settings, which the app links to from Profile, Subscription. Cancelling stops the next renewal. You keep access to paid features until the end of the period you have already paid for.
+- **Refunds.** Refunds are handled by Google Play or the App Store under their refund policies. We do not otherwise refund payments, except where the law requires it.
 - **Price changes.** We will tell you about a price change before it applies. The new price applies from your next renewal, and you can cancel before then if you do not accept it.
-- **Failed payments.** If a renewal payment fails, your access to paid features may end until payment succeeds.
+- **Failed payments.** If a renewal payment fails, the store may retry it for a short time. Your access to paid features may end until payment succeeds.
 
-Deleting your account cancels your Subscription but does not by itself give you a refund.
+Deleting your account does not cancel a Subscription bought through Google Play or the App Store. Cancel it in the store first, or you may be charged again.
 
 ## 11. Intellectual Property Rights
 

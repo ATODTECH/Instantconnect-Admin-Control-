@@ -8,7 +8,7 @@ const column = createDataTableColumns<UserReport>()
 
 type Review = (report: UserReport, outcome: "dismiss" | "resolve") => void
 
-export const reportColumns = (onReview: Review, pendingId: string | null) =>
+export const reportColumns = (onReview: Review, pendingId: string | null, onViewChat: (report: UserReport) => void) =>
   column.columns([
     column.display({
       id: "reported",
@@ -71,12 +71,28 @@ export const reportColumns = (onReview: Review, pendingId: string | null) =>
       header: "Action",
       meta: { headerClassName: "text-right", cellClassName: "text-right" },
       cell: ({ row }) => {
+        const viewChat = (
+          <button
+            type="button"
+            onClick={() => onViewChat(row.original)}
+            aria-label={`View the chat between ${row.original.reporter.fullName} and ${row.original.reportedUser.fullName}`}
+            className="rounded-md border border-primary-border px-2.5 py-1 text-xs font-semibold text-primary hover:bg-slate-50"
+          >
+            View chat
+          </button>
+        )
         if (row.original.status !== "open") {
-          return <span className="text-xs text-neutral-light-300">{row.original.reviewedAt ? formatDay(row.original.reviewedAt) : "—"}</span>
+          return (
+            <div className="flex items-center justify-end gap-2">
+              <span className="text-xs text-neutral-light-300">{row.original.reviewedAt ? formatDay(row.original.reviewedAt) : "—"}</span>
+              {viewChat}
+            </div>
+          )
         }
         const busy = pendingId === row.original.id
         return (
           <div className="flex justify-end gap-2">
+            {viewChat}
             <button
               type="button"
               disabled={busy}
