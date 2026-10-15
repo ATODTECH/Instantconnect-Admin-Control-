@@ -13,7 +13,6 @@ import {
   Mic2,
   PartyPopper,
   Radar,
-  ShieldCheck,
   Sparkles,
   Users,
   type LucideIcon,
@@ -137,37 +136,47 @@ export type Plan = {
 }
 
 /**
- * Mirrors the seeded `subscription_plans`. Admins can change prices in
- * Settings → Payment, so update these alongside.
+ * Mirrors Free in the app and the `plus` row of `subscription_plans`. Admins
+ * can change prices in Settings → Payment, so update these alongside.
  */
 export const PLANS: Plan[] = [
   {
     id: "free",
-    name: "Free Basic",
-    tagline: "Everything you need to get started",
+    name: "Free",
+    tagline: "Discover, connect and meet safely",
     monthly: 0,
     annual: 0,
     icon: MapPinned,
-    features: ["Discover people nearby", "Connect and chat", "Safety-verified meetups", "Join events and communities"],
+    features: [
+      "Discover people nearby, in every category",
+      "Up to 5 new connection requests a day",
+      "Chat with your accepted connections",
+      "Photo swap before confirming a meetup",
+      "GPS arrival check and one-time meetup codes",
+      "Live location sharing and meetup summaries for your trusted contacts",
+      "Block, report, hide from discovery and privacy controls",
+      "Ads while browsing, never during safety checks",
+    ],
   },
   {
-    id: "premium",
-    name: "Premium Elite",
-    tagline: "Best for active local explorers",
-    monthly: 2500,
+    id: "plus",
+    name: "LinkUp Plus",
+    tagline: "More reach, more control, no ads",
+    monthly: 2000,
     annual: 24000,
     featured: true,
     icon: Sparkles,
-    features: ["Unlimited community connections", "Priority listing in Discover", "Create unlimited social meetups", "Ad-free experience"],
-  },
-  {
-    id: "pro",
-    name: "Pro Creator",
-    tagline: "For super hosts and communities",
-    monthly: 5000,
-    annual: 48000,
-    icon: ShieldCheck,
-    features: ["Everything in Premium", "Verified creator badge", "Featured profile locally", "Priority helpdesk", "Visitor analytics"],
+    features: [
+      "Unlimited connection requests, within fair use",
+      "Completely ad-free",
+      "Advanced discovery filters and preferences",
+      "Expanded search and discovery",
+      "Preview people in other cities before you travel",
+      "Full, searchable connection history",
+      "Saved discovery preferences and connections",
+      "Better group and trusted circle management",
+      "More visibility controls",
+    ],
   },
 ]
 
@@ -194,6 +203,6 @@ export const FAQS = [
   },
   {
     q: "Is it free?",
-    a: "Yes. Discovering people, chatting, verified meetups, events and communities are all free. Premium Elite and Pro Creator add extras like priority listing, unlimited meetups and a creator badge.",
+    a: "Yes. Discovering people, chatting and every meetup safety feature are free. LinkUp Plus adds unlimited connection requests, advanced discovery filters, travel previews and no ads.",
   },
 ] as const

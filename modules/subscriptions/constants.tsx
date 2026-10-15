@@ -38,7 +38,7 @@ export const WINDOW_FILTER: readonly FilterOption<SubscriptionWindow>[] = [
   { label: "Last 12 Months", value: "12m" },
 ]
 
-export const planTone = (planId: string): Tone => (planId === "pro" ? "brand" : "info")
+export const planTone = (planId: string): Tone => (planId === "plus" ? "brand" : "info")
 
 /** Kobo in, "₦15,000" out: the exact figure the design shows. */
 export const formatNairaExact = (amountMinor: number) => `₦${(amountMinor / 100).toLocaleString("en-NG", { maximumFractionDigits: 2 })}`
