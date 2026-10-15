@@ -7,6 +7,7 @@ import { FilterTabs } from "@/components/shared/filter-tabs"
 import { REPORTS_PAGE_SIZE, useReviewUserReport, useUserReports } from "@/hooks/use-reports"
 import type { UserReport, UserReportStatus } from "@/types/admin-reports"
 import { reportColumns } from "./columns"
+import { ConversationSheet } from "./conversation-sheet"
 import { reportTabs } from "./constants"
 
 const NO_REPORTS: UserReport[] = []
@@ -29,10 +30,11 @@ const ReportsHomeIndex = () => {
 
   const { data, isPending, isError, error, refetch, isRefetching, isPlaceholderData, isFetching } = useUserReports(tab, page)
   const review = useReviewUserReport()
+  const [chatFor, setChatFor] = useState<UserReport | null>(null)
   const pendingId = review.isPending ? (review.variables?.id ?? null) : null
 
   const columns = useMemo(
-    () => reportColumns((report, outcome) => review.mutate({ id: report.id, outcome }), pendingId),
+    () => reportColumns((report, outcome) => review.mutate({ id: report.id, outcome }), pendingId, setChatFor),
     [review, pendingId],
   )
 
@@ -68,6 +70,8 @@ const ReportsHomeIndex = () => {
           }
         />
       </div>
+
+      <ConversationSheet report={chatFor} onClose={() => setChatFor(null)} />
     </div>
   )
 }

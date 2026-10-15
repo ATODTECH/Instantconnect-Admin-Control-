@@ -15,6 +15,7 @@ import {
   Radar,
   Sparkles,
   Users,
+  UtensilsCrossed,
   type LucideIcon,
 } from "lucide-react"
 import type { Tone } from "@/components/landing/feature-card"
@@ -39,12 +40,13 @@ export const NAV_LINKS = [
 
 export type Category = { name: string, body: string, icon: LucideIcon, tone: Tone }
 
-/** The five categories people are surfaced by in the app. */
+/** The six categories people are surfaced by in the app. */
 export const CATEGORIES: Category[] = [
   { name: "Friendship", body: "New faces for brunch, gym sessions or a walk round the lagoon.", icon: HeartHandshake, tone: "blush" },
   { name: "Business", body: "Co-founders, clients and collaborators working a few streets away.", icon: Briefcase, tone: "sky" },
   { name: "Talents", body: "Musicians, designers, photographers and makers ready to create.", icon: Mic2, tone: "peach" },
   { name: "Social", body: "Plans tonight, a game this weekend, a crew for the next concert.", icon: PartyPopper, tone: "lilac" },
+  { name: "Food Promotion", body: "Chefs, home cooks and food spots showing what's cooking nearby.", icon: UtensilsCrossed, tone: "peach" },
   { name: "General", body: "Curious about the people around you? Start anywhere.", icon: Globe2, tone: "mint" },
 ]
 
@@ -155,7 +157,6 @@ export const PLANS: Plan[] = [
       "GPS arrival check and one-time meetup codes",
       "Live location sharing and meetup summaries for your trusted contacts",
       "Block, report, hide from discovery and privacy controls",
-      "Ads while browsing, never during safety checks",
     ],
   },
   {

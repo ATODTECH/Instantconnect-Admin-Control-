@@ -2,7 +2,7 @@
 
 # Privacy Notice
 
-_Last updated 11 October 2026_
+_Last updated 15 October 2026_
 
 This Privacy Notice for ATOD Tech, a company operating in Lagos, Nigeria ("we", "us" or "our"), explains how and why we collect, store, use and share ("process") your personal information when you use our services ("Services"), including when you:
 
@@ -18,11 +18,11 @@ This Privacy Notice for ATOD Tech, a company operating in Lagos, Nigeria ("we", 
 
 **Do we process sensitive personal information?** Yes, but only if you choose to verify your identity. Verification uses a government issued ID, a second ID, proof of address and a selfie. We only process these with your explicit consent. See section 1.
 
-**Do we collect information from third parties?** Only payment confirmations from our payment provider, Paystack. We do not buy data about you from data brokers or marketing partners.
+**Do we collect information from third parties?** Only subscription confirmations from Google Play or the App Store, passed to us by RevenueCat. We do not buy data about you from data brokers or marketing partners.
 
 **How do we process your information?** To run your account, to help you meet people and events near you, to keep members safe, to take payments, to support you, and to comply with the law. See section 2.
 
-**Do we sell your information or use it for advertising?** No. We do not sell personal information, we do not show third party advertising, and we do not track you across other apps or websites.
+**Do we sell your information or use it for advertising?** No. We do not sell personal information, we do not show third party advertising today, and we do not track you across other apps or websites. If we start showing ads on the free plan, we will update this notice first. See section 6.
 
 **Who do we share personal information with?** Other members see your profile. The service providers that host and run the Services process data on our behalf, and some of them are outside Nigeria. See section 3.
 
@@ -60,7 +60,11 @@ We do not access your contacts, microphone, calendar, SMS messages or location w
 
 ### Information from payments
 
-If you buy a subscription, our payment provider Paystack processes your card or bank details. We never see or store your full card number. Paystack tells us whether a payment succeeded and gives us the card brand, the last four digits, the expiry date, the bank name and reference codes that let us renew or refund your subscription.
+If you buy LinkUp Plus, you pay Google (through Google Play) or Apple (through the App Store), and they process your payment details under their own privacy policies. We never see your card or bank details. RevenueCat, the service that tracks subscriptions for us, receives your member ID and the purchase from the store, and tells us which plan you bought, the price and currency, when it started, when it renews or ends, and the store's reference for it. RevenueCat also receives basic information about your device and app version.
+
+### Discovery preferences and visibility settings
+
+If you save discovery filters, choose a place to preview before you travel, or change who can see you, we store those choices with your account so the app can apply them.
 
 ### Sensitive personal information
 
@@ -82,7 +86,7 @@ When you add next of kin or safety circle contacts, you give us another person's
 | Verify your identity and show the verified badge | Identity verification information, next of kin | Explicit consent |
 | Safety alerts during meetups | Live location, meetup details, safety circle contacts | Consent, and the vital interests of you or another person |
 | Act on reports, blocks and content that breaks our rules, including automatic checks of messages and posts against a list of banned words and links | Reports, messages, posts, account details | Legitimate interests (keeping members safe) |
-| Take payments, renew and refund subscriptions | Payment information, email | Contract, legal obligation (tax and accounting records) |
+| Know which plan you are on, and keep subscription records | Subscription information from the store, through RevenueCat | Contract, legal obligation (tax and accounting records) |
 | Send account, security and safety emails and push notifications | Email, push token | Contract |
 | Answer support requests | Support messages, account details | Contract, legitimate interests |
 | Run the referral programme | Referral code and referrals | Contract |
@@ -105,7 +109,8 @@ These companies process personal information on our behalf, under contracts that
 | Render | Server hosting | All information passing through our servers | To be confirmed |
 | Cloudinary | Photo and document storage | Profile, chat, community and event photos; identity documents and selfies (stored privately) | To be confirmed |
 | Resend | Email delivery | Email addresses and the content of emails we send, including safety alerts to safety circle contacts | United States |
-| Paystack | Payments | Email address, payment details and amounts | Nigeria |
+| Google (Google Play) and Apple (App Store) | Taking subscription payments | Payment details, which you give to them directly, and the purchase | United States |
+| RevenueCat | Subscription management | Your member ID, purchases, and basic device and app information | United States |
 | Expo, Apple and Google | Push notifications | Push tokens and notification text | United States |
 | Google Maps (Android) and Apple Maps (iOS) | Maps and turning typed addresses into locations | The map area you view and the addresses you search | United States |
 
@@ -129,7 +134,7 @@ Some of our service providers store or process information outside Nigeria, incl
 
 Members who block you, or whom you block, no longer see each other. A block hides your chat with that member rather than deleting it, so it can be reviewed if either of you reports the other, and it comes back if the block is lifted. Any meetup still planned between you is cancelled, and location sharing stops.
 
-Our staff can see account details, identity verification documents, reports, support messages and meetup status, only when they need to for verification, safety, support or moderation. Staff cannot read your private chat messages.
+Our staff can see account details, identity verification documents, reports, support messages and meetup status, only when they need to for verification, safety, support or moderation. Staff do not read private chats, with one exception: when one member reports another, a member of our safety team can read the chat between those two members to review the report, including a chat hidden by a block. Each time this happens it is recorded.
 
 ## 5. What Is Our Stance on Third Party Websites?
 
@@ -137,7 +142,7 @@ The Services link to other websites, such as Eventbrite event pages. Those websi
 
 ## 6. Do We Use Cookies, Tracking or Automated Decisions?
 
-The app does not use advertising, analytics or tracking tools, and we do not track you across other companies' apps or websites. The app stores a sign in token on your device, in your phone's secure storage, to keep you signed in.
+The app does not use advertising, analytics or tracking tools today, and we do not track you across other companies' apps or websites. Our plans allow for ads on the free plan in future. Before any advertising provider receives information about you, we will update this notice, name the provider, and ask for your consent where the law requires it. Ads will never appear during safety checks or meetup verification. The app stores a sign in token on your device, in your phone's secure storage, to keep you signed in.
 
 The people and events we suggest are ranked by your interests, category and distance. Messages and posts are checked automatically against a list of banned words and links, and a message that fails the check is not sent. We do not make decisions based solely on automated processing that have legal or similarly significant effects on you. Decisions to verify, suspend or disable an account are made by our staff.
 
