@@ -102,7 +102,7 @@ const PlanCard = ({ plan, cycle }: { plan: Plan, cycle: BillingCycle }) => {
           featured ? "bg-brand-gradient text-white hover:opacity-90" : "bg-brand-surface text-brand-deep hover:bg-brand-tint",
         )}
       >
-        {price === 0 ? "Get started free" : `Go ${plan.name.split(" ")[0]}`}
+        {price === 0 ? "Get started free" : `Get ${plan.name}`}
       </a>
     </div>
   )
@@ -116,14 +116,14 @@ const Pricing = () => {
       <SectionHeading
         eyebrow="Pricing"
         title={<>Free to meet people. <span className="text-brand-gradient">Upgrade</span> when you&apos;re ready.</>}
-        description="Everything that keeps you safe is free, always. Paid plans add reach and perks for power users and hosts."
+        description="Everything that keeps you safe is free, always. LinkUp Plus adds reach, control and an ad-free app."
       />
 
       <div className="mt-10 flex justify-center">
         <CycleToggle cycle={cycle} onChange={setCycle} />
       </div>
 
-      <RevealGroup className="mx-auto mt-14 grid max-w-5xl items-stretch gap-6 lg:grid-cols-3 lg:gap-5">
+      <RevealGroup className="mx-auto mt-14 grid max-w-4xl items-stretch gap-6 md:grid-cols-2 lg:gap-5">
         {PLANS.map((plan) => (
           <RevealItem key={plan.id}>
             <PlanCard plan={plan} cycle={cycle} />

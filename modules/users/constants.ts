@@ -17,8 +17,7 @@ export const KYC_LABELS: Record<KycStatus, { label: string, tone: Tone }> = {
 
 export const PLAN_LABELS: Record<UserPlan, string> = {
   free: "Free",
-  premium: "Premium",
-  pro: "Pro",
+  plus: "LinkUp Plus",
 }
 
 export const STATUS_FILTER: readonly FilterOption<UserStatus>[] = [
@@ -39,8 +38,7 @@ export const KYC_FILTER: readonly FilterOption<KycStatus>[] = [
 export const PLAN_FILTER: readonly FilterOption<UserPlan>[] = [
   { label: "All Plans" },
   { label: "Free", value: "free" },
-  { label: "Premium", value: "premium" },
-  { label: "Pro", value: "pro" },
+  { label: "LinkUp Plus", value: "plus" },
 ]
 
 export const JOINED_FILTER: readonly FilterOption<JoinedWithin>[] = [

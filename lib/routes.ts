@@ -2,6 +2,7 @@ export const ROUTES = {
   home: "/",
   privacy: "/privacy",
   terms: "/terms",
+  deleteAccount: "/delete-account",
   login: "/login",
   overview: "/dashboard/overview",
   users: "/dashboard/users",
@@ -15,7 +16,7 @@ export const ROUTES = {
 } as const
 
 /** Pages anyone can open, signed in or not. */
-export const PUBLIC_PATHS: readonly string[] = [ROUTES.home, ROUTES.privacy, ROUTES.terms]
+export const PUBLIC_PATHS: readonly string[] = [ROUTES.home, ROUTES.privacy, ROUTES.terms, ROUTES.deleteAccount]
 
 /**
  * The title and one-line description the top bar shows for each page. `search`

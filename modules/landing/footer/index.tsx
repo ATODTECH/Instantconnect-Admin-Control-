@@ -26,6 +26,7 @@ const Footer = () => (
             <span className="text-xs font-semibold uppercase tracking-[0.14em] text-ink-meta">Company</span>
             <Link href={ROUTES.privacy} className="text-sm text-ink-muted transition-colors hover:text-brand">Privacy Notice</Link>
             <Link href={ROUTES.terms} className="text-sm text-ink-muted transition-colors hover:text-brand">Terms of Use</Link>
+            <Link href={ROUTES.deleteAccount} className="text-sm text-ink-muted transition-colors hover:text-brand">Delete your account</Link>
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-sm text-ink-muted transition-colors hover:text-brand">Contact us</a>
           </div>
         </div>
