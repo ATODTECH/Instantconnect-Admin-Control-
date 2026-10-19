@@ -24,7 +24,7 @@ const Login: NextPage = () => {
         <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-black/10" />
         <div className="absolute inset-0 flex flex-col justify-between p-10">
           <div className="flex items-center gap-3">
-            <LogoMark className="h-10 w-10" title="" />
+            <LogoMark variant="tile" className="h-10 w-10" title="" />
             <div className="flex flex-col">
               <span className="text-xl font-bold leading-tight text-white">InstantLinkUp</span>
               <span className="text-[11px] font-medium uppercase tracking-wide text-white/60">Admin Console</span>
