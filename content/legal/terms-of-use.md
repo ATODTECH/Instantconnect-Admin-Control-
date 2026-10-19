@@ -2,7 +2,7 @@
 
 # Terms of Use
 
-_Last updated 15 October 2026_
+_Last updated 19 October 2026_
 
 ## Agreement to Our Legal Terms
 
@@ -40,7 +40,7 @@ If you give us information that is untrue, inaccurate, out of date or incomplete
 
 You can choose to verify your identity by submitting identity documents and a selfie. A verified badge means only that our staff checked that your documents appeared genuine and matched your selfie at the time of review. **Verification is not a background check, a criminal record check or a guarantee of anyone's identity, character or intentions.** We may refuse or remove verification at our discretion, for example if documents appear altered or a member breaks these Legal Terms.
 
-Some features may only be available to verified members.
+Only verified members can propose a meetup. Members who are not verified can still connect and chat, and can accept, decline or suggest another time for a meetup that a verified member proposes. Some other features may also be available only to verified members.
 
 ## 4. Meeting People and Your Safety
 

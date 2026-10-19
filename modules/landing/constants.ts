@@ -196,7 +196,7 @@ export const FAQS = [
   },
   {
     q: "What does verification involve?",
-    a: "You submit a government ID and a selfie in the app. Our team reviews it, and once approved your profile shows a verified badge. Your documents are never shown to other members.",
+    a: "You submit a government ID and a selfie in the app. Our team reviews it, and once approved your profile shows a verified badge and you can propose meetups. Your documents are never shown to other members.",
   },
   {
     q: "Where is InstantLinkUp available?",
